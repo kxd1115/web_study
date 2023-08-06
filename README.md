@@ -1,4 +1,4 @@
 # web_study
-学习HTML
-学习CSS
-学习Javascript
+1. 学习HTML
+2. 学习CSS
+3. 学习Javascript
