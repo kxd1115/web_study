@@ -121,7 +121,32 @@ name='description'的meta元素中的元数据内容会在搜索该网页时展�
 
 ---
 ## CSS基础介绍
-为`web`内容添加样式的代码
+
+
+### 根据状态确定样式
+点击a标签中的链接前后，链接的颜色区别
+```css
+a: link {
+  color: pink;
+}
+
+a: visit {
+  color:green;
+}
+```
+改变链接被鼠标悬停时候的样式
+```css
+a: hover {
+  text-decoration: none
+}
+```
+
+### 在HTML中应用CSS
+1. 使用link元素链接外部样式表文件
+2. 在HTML中使用style元素，构建内部样式表
+3. 内嵌样式表，嵌入在元素标签的style属性中
+
+##### 为`web`内容添加样式的代码
 ```css
 p {
     color: red;
@@ -130,18 +155,54 @@ p {
 }
 ```
 
-CSS规则集各部分名称
+##### CSS规则集各部分名称
 * 选择器`(Selector)`
 * 声明`(Declaration)`
   * 属性`(Property)`
   * 属性值`(Property value)`
 
-选择器类型
+##### 选择器类型
 * 元素选择器
+```CSS
+p {
+  color: red;
+}
+```
 * ID选择器
+```CSS
+#test {
+  color: red;
+}
+```
 * 类选择器
+```css
+.animal {
+  color: red;
+}
+```
 * 属性选择器
+```css
+p[class] {/*所有class*/
+  color: red;
+}
+p[class=value] {/*值为value的class*/
+  color: red;
+}
+p[class~=value] {/*至少有一个值为value的class*/
+  color: red;
+}
+p[class|=value] {/*值为value，或者开始的值为value*/
+  color: red;
+}
+```
 * 伪类选择器
+* 
+
+##### `Transform`函数
+##### @规则
+##### 简写属性
+##### 注释
+* `/*注释内容*/`
 
 ## CSS中一切都是盒子
 ### CSS盒子模型属性
