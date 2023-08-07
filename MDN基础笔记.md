@@ -162,25 +162,25 @@ p {
   * 属性值`(Property value)`
 
 ##### 选择器类型
-* 元素选择器
+###### 元素选择器
 ```CSS
 p {
   color: red;
 }
 ```
-* ID选择器
+###### ID选择器
 ```CSS
 #test {
   color: red;
 }
 ```
-* 类选择器
+###### 类选择器
 ```css
 .animal {
   color: red;
 }
 ```
-* 属性选择器
+###### 属性选择器
 ```css
 p[class] {/*所有class*/
   color: red;
@@ -195,8 +195,53 @@ p[class|=value] {/*值为value，或者开始的值为value*/
   color: red;
 }
 ```
-* 伪类选择器
-* 
+###### 伪类选择器，开头是`:`
+`:pseudo-class-name`
+```css
+article p:first-child {/*选中第一个class名称为first的p元素*/
+  font-size: 120%;
+  font-weight: bold;
+}
+```
+```html
+<article>
+  <p class="first">first</p>
+  <p class="first">second</p>
+</article>
+```
+类似的还有
+1. `:last-child`
+2. `:only-child`
+3. `:invalid`
+
+其他
+1. `:hover` 指针悬停时激活
+2. `:focus` 使用键盘控制时激活
+
+###### 伪元素选择器, 开头是`::` 
+`::pseudo-element-name`
+```css
+article p::first-line {/*将文章中的p元素中的第一行内容放大加粗*/
+  font-size:120%;
+  font-weight:bold
+}
+```
+###### 将伪类和伪元素组合起来
+```css
+article p:first-child::first-line {/*将第一个类名为first的p元素中的第一行放大加粗*/
+  font-size:120%;
+  font-weight: bold;
+}
+.box::before {/*通过conten将内容添加到类名为box的原有内容的前面*/
+  content: "This should show before the other content. ";
+}
+.box::after {/*通过conten将内容添加到类名为box的原有内容的后面*/
+  content: " ➥";
+}
+
+```
+以上仅为举例的几个伪类和伪元素，伪类和伪元素还有很多，可以翻阅MDN进行了解和学习
+
 
 ##### `Transform`函数
 ##### @规则
