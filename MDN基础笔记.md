@@ -285,6 +285,28 @@ Transform函数
 简写属性
 注释 /**/
 
+#### 级联层
+
+```css
+@layer test1 {
+    div {
+        color: red;
+    }
+    li {
+        color: blue;
+    }
+}
+
+div {
+    color: green;
+}
+```
+
+级联层内的样式比外部的样式优先级更低
+靠后的级联层比靠前的级联层优先级更高
+
+* 未被@layer包裹的样式>靠后的@layer级联层包裹的样式>>靠前的@layer级联层包裹的样式
+
 ## CSS中一切都是盒子
 ### CSS盒子模型属性
 
@@ -302,5 +324,71 @@ Transform函数
     2. 阴影的**垂直偏移量**
     3. 阴影的**模糊半径**
     4. 阴影的**基色**
-* display：设置元素的显示模式
 
+
+#### display：设置元素的显示模式
+* 通过`display`属性来改变盒子的外部显示类型是块级还是内联
+`display`属性值
+1. block（块级盒子）
+   * 让盒子和父容器一样宽
+   * 盒子会换行
+   * width和height会起作用
+   * 内外边距和边框会将其他元素从当前盒子周围推开 
+   * 除非特殊指定，标题段落等元素默认都是块级盒子
+2. inline（内联盒子）
+   * 盒子不会换行
+   * width和height不会起作用
+   * 垂直方向会被应用（内外边距和边框），但不会把其他处于`inline`状态的盒子推开
+   * 水平方向会被应用（内外边距和边框），且不会把其他处于`inline`状态的盒子推开
+   * `a`, `span`, `em`, `strong`默认处于`inline`状态
+3. inline-flex
+4. flex
+5. inline-block 提供内联和块之间的中间状态
+   * width和height会生效
+   * 内外边距和边框会将其他元素推开
+   * 不会换行
+
+## 背景与边框
+### 背景
+```css
+.box {
+    background-color: antiquewhite;
+    width: 100px;
+    height: 200px;
+    background-image: url(https://mdn.github.io/css-examples/learn/backgrounds-borders/star.png);
+    background-repeat: no-repeat;
+    background-size: 5px 2em;
+    background-position: top center;
+}
+```
+* background-color 设置元素的背景颜色
+* background-image 可以在元素的背景中显示一个图像, 支持多个背景图像
+* background-repeat 控制图像的平铺行为
+  * no-repeat 阻止平铺
+  * repeat-x 默认水平方向平铺
+  * repeat-y 默认垂直方向平铺
+  * repeat 默认重复平铺
+* background-size 调整背景图像大小
+  * cover 完全覆盖盒子区域
+  * contain 缩放到合适尺寸
+* backgroun-position 背景图像定位
+  * 默认值是(0,0)
+  * 可以使用top, center或者长度和百分比去描述
+
+### 边框
+`border: 1px solid black`
+以上为简写
+```css
+.box {
+  border-width: 1px;
+  border-style: solid;
+  border-color: black;
+}
+```
+
+### 圆角
+```css
+.box {
+  border-radius: 10px;
+}
+```
