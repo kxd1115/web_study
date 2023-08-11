@@ -392,3 +392,55 @@ div {
   border-radius: 10px;
 }
 ```
+
+## 处理不同方向的文本
+
+书写模式是指文本的排列方向是横向还是纵向
+* writing-modeo 控制文本的显示模式
+  * horizontal-tb 块流从上至下，文本横向
+  * vertical-rl 块流从右向左，文本纵向
+  * vertical-lr 块流从左向右，文本纵向
+
+
+## 溢出的内容
+CSS中万物皆盒字，溢出是在往盒子中塞了太多东西时发生的
+
+溢出的目的是为了尽力减少"数据损失"
+
+#### `overflow`属性
+控制元素内容溢出的方式
+* `visible` 默认值
+* `hiden` 裁剪掉溢出内容 
+* `scroll` 内容溢出时，显示滚动条 
+  * 可以使用`overflow-x` 或者 `overflow-y`来控制滚动条在哪个轴上
+  * 也可以直接使用 `overflow: auto` 让浏览器自己决定是否显示滚动条
+
+#### 溢出建立了块级排版上下文
+
+## 值与单位
+#### 数值类型
+* integer 整数
+* number 小数
+* dimension 带有附加单位的数字，例如`10px`, `5s`等
+* percentage 其他值的一部分，例如`50%`
+
+#### 绝对长度单位
+用的最多的就是 `px` 像素
+
+#### 相对长度单位
+* em 相对于父元素的字体大小
+还有很多，可以翻阅MDN了解
+
+## 组织CSS
+#### OOCSS
+可以创建一个`media`排布，里面包含几种排布共有的CSS格式，然后通过其他类处理微小区别
+```css
+.media {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+}
+
+.media .content {
+  font-size: 0.8em;
+}
+```
