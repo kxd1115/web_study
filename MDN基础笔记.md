@@ -318,12 +318,9 @@ div {
 * width：元素的宽度
 * background-color：border内所有内容的底色
 * color：元素内容的颜色（一般都是文本）
-* text-shadow：元素内容的阴影效果
-    - 可以设置4个值
-    1. 阴影的**水平偏移量**
-    2. 阴影的**垂直偏移量**
-    3. 阴影的**模糊半径**
-    4. 阴影的**基色**
+
+`box-shadow: 2px 2px 10px rgb(192, 181, 181), 3px 3px 3px rgba(255, 255, 255, 0.5) inset, -3px -3px 3px rgba(8, 8, 8, 0.5) inset;`
+box-shadow和text-shadow用法差不多，前2个值正数代表向右，向下偏移，前2个值负数代表向左，向上偏移
 
 
 #### display：设置元素的显示模式
@@ -440,7 +437,69 @@ CSS中万物皆盒字，溢出是在往盒子中塞了太多东西时发生的
   grid-template-columns: 1fr 3fr;
 }
 
-.media .content {
+.media .content { 
   font-size: 0.8em;
 }
 ```
+
+## 基本文本和字体样式
+
+#### `font-family` 
+设置字体属性，选择想使用的字体
+
+#### font-size
+设置字体的大小
+* px 像素
+* em 1em是父元素上设置的字体大小
+* rem 1rem是html根元素的字体大小
+
+#### 其他字体样式、粗细、文本转换和文本装饰
+* `font-style` 
+  * normal 普通字体
+  * italic 斜体
+  * olique 斜体字的模拟版本
+* `font-weight` 设置文本的粗体大小
+  * `normal` `blod` 普通或者加粗
+  * `lighter` `bolder` 设置为比父元素粗体更粗或者更细的字体 (100-900)
+* `text-transform` 转换字体
+  * `none` 防止转换
+  * `uppercase` 全部大写
+  * `lowercase` 全部小写
+  * `capitalize` 首字母大写
+  * `full-width` 转换成全角
+* `text-decoration` 设置文本装饰
+  * `none` 取消任何文本装饰
+  * `underline` 下划线
+  * `overline` 上划线
+  * `line-through` 穿过文本的中划线
+* `text-shadow` 设置文本阴影
+  * 四个属性
+    * 水平偏移值
+    * 垂直偏移值
+    * 模糊半径
+    * 阴影基础颜色
+可以使用逗号，将多种阴影方式隔开，并应用于同一文本
+
+* `text-align` 设置文本对齐方式
+  * `left` 左对齐
+  * `right` 右对齐
+  * `center` 居中
+  * `justify` 文本展开，改版单词之间的差距，是所有文本行的宽度相同
+* `line-height` 设置文本每行之间的行高
+* `letter-spacing` `word-spacing` 设置文本中的字母与字母之间的间距或者单词与单词之间的间距
+
+#### font 简写
+
+## 列表添加样式
+#### 使用`start`属性，管理列表计数
+#### `start="4" reversed` 倒序
+也可以直接使用`value`设置列表项的指定数值
+
+## 样式化链接
+* Link 默认状态
+* Visited 表示已经被访问过了
+* Hover 鼠标停留在上面时
+* Focus 被选中时
+* Active 被激活时
+
+## Web字体

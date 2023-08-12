@@ -1,0 +1,43 @@
+p {
+    color: red;
+    width: 500px;
+    border: 1px solid black;
+  }
+
+li, h1 {
+  color: red;
+}
+
+article p:first-child::first-line {
+  font-size:120%;
+  font-weight: bold;
+}
+
+.box::before {
+  content: "This should show before the other content. ";
+}
+.box::after {
+  content: " ➥";
+}
+
+#css1 {
+  color: red;
+}
+
+#css1 {
+  color: blue;
+}
+
+.box {
+  border: 5px solid rebeccapurple;
+  background-color: lightgray;
+  padding: 40px;
+  margin: 40px;
+  width: 300px;
+  height: 150px;
+}
+
+.alternate {
+  box-sizing: inherit;
+}
+    
