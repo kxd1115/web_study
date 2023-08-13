@@ -503,3 +503,68 @@ CSS中万物皆盒字，溢出是在往盒子中塞了太多东西时发生的
 * Active 被激活时
 
 ## Web字体
+
+## CSS排版
+
+#### 弹性盒子
+
+##### 主轴 `main axis` 沿着flex元素放置的方向延伸的轴，开始和结束被称为`main start`和`main end`
+##### 交叉轴 `cross axis` 垂直于flex元素放置方向的轴，开始和结束被称为`cross start`和`cross end`
+##### 设置了`display:flex`的父元素被称之为flex容器
+##### 在flex容器中表现为弹性的盒子的元素被称之为flex项
+
+* flex-direction:row; 指定主轴方向，默认是row
+* flex-wrap: wrap; 改变子代超出容器范围的问题
+```css
+section {
+    display: flex;
+    flex-flow: row wrap;
+    /*
+    等同于
+    flex-direction:row; 指定主轴方向，默认是row
+    flex-wrap: wrap; 改变子代超出容器范围的问题
+    同时设置article属性flex: 200px;
+    */
+}
+
+article {x: 200px;
+    */
+    flex: 1 200px;
+}
+
+article:nth-of-type(3) {
+    flex: 2 200px;
+}
+```
+* align-items 控制flex项在交叉轴上的位置
+* justify-content控制flex项在主轴上的位置
+* order 控制flex项排序
+```css
+div {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  /**/
+}
+
+button:first-child {
+  align-self: flex-end;
+}
+```
+
+#### 网格
+`display: grid;` 声明创建一个只有一列的网格
+`grid-template-columns: repeat(3, 1fr);` 使用repeat重复构建某些宽度配置的某些列，一般用来创建等宽轨道
+`grid-gap: 20px;` 设置网格间隙
+```css
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 100px;
+    grid-gap: 20px;
+}
+```
+通过`grid-template-columns`或者`grid-template-rows`创建的是显式网格
+通过`grid-auto-columns`或者`grid-auto-rows`创建的是隐式网格
+
+* minmax()函数
