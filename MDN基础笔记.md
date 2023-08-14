@@ -568,3 +568,118 @@ button:first-child {
 通过`grid-auto-columns`或者`grid-auto-rows`创建的是隐式网格
 
 * minmax()函数
+
+## 浮动
+```css
+.box {
+  float: left;
+  margin-right: 15px;
+}
+```
+`float: left;` 让盒子浮动起来，并吸附到父容器的左边
+`margin-left: 15px;` 设置浮动元素的左侧与父元素的距离
+
+`clear: left;` 让元素不受到浮动元素的影响，清除左侧浮动
+  * `right`清除右侧浮动
+  * `both` 清除任何左右浮动
+`display: flow-root;` 该元素生成一个块级元素盒，其会建立一个新的块级格式化上下文，定义格式化上下文的根元素。
+
+## 定位
+如果2个相邻元素都在其上设置外边距`margin`，并且2个外边距接触，则2个外边距中的较大者保留，较小的外边距会消失 ———— 这叫`外边距折叠`
+
+定位是允许我们覆盖上面描述的基本文档流行为
+
+要使某个元素上的特定类型的定位，使用`position`属性
+  
+#### 静态定位 `position: static`
+将元素放入它在文档布局流中的正常位置
+```css
+.positioned {
+  position: static;
+  background: yellow;
+}
+/*该段CSS属性仅对背景颜色做出了修改，没有其他任何影响*/
+```
+
+#### 相对定位 `position: relative`
+```css
+.positioned {
+    position: relative;
+    background: yellow;
+    top: 30px;
+    left: 30px;
+}
+/*需要配合top left bottom right等属性将元素移动到你想要的位置*/
+```
+相对定位时，元素是依据自己原本所在的位置进行定位，不会影响文档布局流中的其他元素
+
+* 需要注意，当使用`top`时，是将该元素从顶部往下推(相当于将该元素从原位置开始往下推)
+
+总结: 相对定位是依据元素原位置进行定位
+
+#### 绝对定位 `position: absolute`
+```css
+.positioned {
+    position: absolute;
+    background: yellow;
+    top: 30px;
+    left: 30px;
+}
+```
+绝对定位中的元素不再存在于正常文档布局流中。相反，它坐在他自己的层独立于一切。
+总结: 绝对定位元素是依据于有显式的`position`属性(非`static`属性)的父级元素进行定位
+
+#### 定位上下文
+如果所有的父元素都没有定义`position`属性。绝对定位的元素会被包含在**初始块容器**中。这个容器和浏览器视口尺寸一致，意味着该绝对定位的元素会根据浏览器视口进行定位
+```css
+body {
+    width: 500px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.positioned {
+    position: absolute;
+    background: yellow;
+    top: 30px;
+    left: 30px;
+}
+/*此时，绝对定位元素才会依据父级元素body进行定位*/
+```
+
+#### z-index
+当有多个绝对定位元素时，使用`z-index`来决定谁在最上面一层
+```css
+.positioned {
+    position: absolute;
+    background: yellow;
+    top: 30px;
+    left: 30px;
+}
+
+p:nth-of-type(1) {
+    position: absolute;
+    background: lime;
+    top: 10px;
+    right: 30px;
+    z-index: 1;
+}
+```
+
+#### 固定定位 `position: fixed`
+与绝对定位的工作方式完全相同
+* 只有一个区别：固定定位元素永远相对于浏览器视口本身进行定位
+
+#### `position: fixed`
+相对位置和固定位置的混合体，允许被定位的元素表现得像相对定位一样，直到它滚动到某个阈值点，然后会停住，并会表现出固定定位的元素特性
+```css
+dt {
+    background-color: black;
+    color: white;
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    left: 0;
+    margin: 1em 0;
+}
+```
