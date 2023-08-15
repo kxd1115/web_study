@@ -670,7 +670,7 @@ p:nth-of-type(1) {
 与绝对定位的工作方式完全相同
 * 只有一个区别：固定定位元素永远相对于浏览器视口本身进行定位
 
-#### `position: fixed`
+#### `position: sticky`
 相对位置和固定位置的混合体，允许被定位的元素表现得像相对定位一样，直到它滚动到某个阈值点，然后会停住，并会表现出固定定位的元素特性
 ```css
 dt {
@@ -683,3 +683,40 @@ dt {
     margin: 1em 0;
 }
 ```
+
+## 多列式布局
+使用`column-count`或者`column-width`开启`multicol`容器
+```css
+.container {
+    column-count: 3;
+}
+```
+每一列的内容有浏览器弹性分布
+
+```css
+.container {
+    column-count: 3;
+    column-width: 200px;
+}
+```
+添加`column-width`后，浏览器会根据你设定的宽度尽可能多的创建列，但是当内容不够时，可能无法达到你想要的列数
+
+#### 增加样式
+```css
+.container {
+    column-count: 3;
+    column-gap: 20px;
+    column-rule: 4px dotted rgb(79,185,227);
+}
+```
+* `column-gap` 设置列间间隙
+* `column-rule` 设置列分割线，并规定样式
+
+#### 设置break-inside
+描述在多列布局时，内容盒字如何终端
+* `break-inside: avoid;` 避免中断
+* `page-break-inside: aviod;` 旧版属性，可以对更多浏览器支持
+
+
+## 响应式设计
+RWD指允许Web页面适应不同屏幕宽度因素等
