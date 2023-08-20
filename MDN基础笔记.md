@@ -40,10 +40,10 @@ name='description'的meta元素中的元数据内容会在搜索该网页时展�
 * 粗体字: i
 * 下划线: u
 
-###超链接
+### 超链接
 * 使用a标签
 
-####描述列表
+#### 描述列表
 ```html
 <dl>
   <dt>名称</dt>
@@ -51,8 +51,8 @@ name='description'的meta元素中的元数据内容会在搜索该网页时展�
 </dl>
 ```
 
-####段落引用 blockquote
-####行内引用 q
+#### 段落引用 blockquote
+#### 行内引用 q
 
 * cite
 必须通过javascript或者CSS编写解决方案让浏览器显示，否则cite标签内的内容不会展示
