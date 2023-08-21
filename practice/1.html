@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>practice</title>
+    <style>
+        @media print  {
+            h1 {color: aqua;}
+            body {background: yellow;}
+        }
+
+        [class |= "kang" i] { color: red;} /*当无法区分大小写时，后面加i*/
+        [class ~= "kang"] { color: green;}
+        h1[class *= "don"] { color: blue;}
+    </style>
+</head>
+<body>
+    <h1>你好</h1>
+
+    <p class="KANG"> 这是一个段落</p>
+    <p class="xiaodongkang"> 这是一个段落</p>
+    <p class="kangxiaodong kang"> 这是一个段落</p>
+    <p class="xiaokangdong"> 这是一个段落</p>
+</body>
+</html>

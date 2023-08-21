@@ -1,0 +1,82 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-image: url("background.jpg");
+    background-repeat: no-repeat;
+    background-size: 1920px 1080px;
+}
+
+#head {
+    background-color: rgba(18, 49, 78, 0.5);
+    height: 60px;
+    width: 100%;
+    min-height: 50px;
+    position: relative;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.left-nav {
+    top: 20px;
+    left: 0;
+    position: absolute;
+    margin: auto;
+    height: 20px;
+    
+
+}
+
+.right-nav {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    margin-right: 15px;
+    height: 20px;
+}
+
+.baidu_logo {
+    display: block;
+    width: 250px;
+    margin: 10px auto;
+}
+
+.input_baidu {
+    display: block;
+    width: 650px;
+    border: 1px solid rgb(78, 119, 242);
+    border-radius: 5px;
+    background-color: rgb(78, 119, 242);
+    margin: 0 auto;
+}
+
+input[type="text"] {
+    height: 35px;
+    margin: 0;
+    border: 1px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    width: 540px;
+}
+
+input[type="submit"] {
+    height: 35px;
+    width: 100px;
+    margin: 0 auto;
+    border: 0;
+    background-color: rgb(78, 119, 242);
+    color: white;
+    float: right;
+}
+
+input[type="submit"]:default {
+    
+}

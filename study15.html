@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>study</title>
+
+    <style>
+        a:link:hover {
+            color: red;
+        }
+        a:visited:hover {
+            color: green;
+        }
+
+        h2 p:only-of-type {
+            color: red;
+        }
+
+        h2 div:nth-child(3) {
+            color: blue;
+        }
+
+        tr:nth-child(2n) {
+            background-color: silver;
+        }
+
+        h2 p:nth-of-type(1) {
+            color: aqua;
+        }
+
+        input[type="text"] {width: attr(maxlength em);}
+
+    </style>
+</head>
+<body>
+    <a href="www.baidu.com" type="_blank">百度一下</a>
+
+
+    <h2>
+        <div>nihao </div>
+        <p>首长好！</p>
+        你好
+        <div>你好</div>
+    </h2>
+
+    <input type="text">
+    <input type="submit">
+
+    <table>
+        <thead>
+            <tr>
+                <th>name</th>
+                <th>age</th>
+                <th>male</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>kang</td>
+                <td>33</td>
+                <td>man</td>
+            </tr>
+            <tr>
+                <td>kang</td>
+                <td>33</td>
+                <td>man</td>
+            </tr>
+            <tr>
+                <td>kang</td>
+                <td>33</td>
+                <td>man</td>
+            </tr>
+            <tr>
+                <td>kang</td>
+                <td>33</td>
+                <td>man</td>
+            </tr>
+        </tbody>
+    </ul>
+</body>
+</html>
