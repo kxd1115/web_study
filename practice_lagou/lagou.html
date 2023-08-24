@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拉勾网</title>
+
+    <style>
+        
+        html, body {
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        .box {
+            min-width: 1024px;
+            border-radius: 5%;
+        }
+
+        .header {
+            background-color: #fff;
+        }
+
+        .nav {
+            height: 60px;
+            width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hd_left {
+            float: left;
+            height: 22px;
+            margin: 19px 0;
+        }
+
+        .hd_right {
+            float: right;
+            height: 60px;
+            line-height: 60px;
+        }
+        
+        .show_qrcode_qpp {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #999;
+
+        }
+
+        .text_lagou {
+            font-size: 14px;
+        }
+        
+
+        .icon_app {
+            display: inline-block;
+            margin: 5px;
+            background-image: url(img/下载icon.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 15px;
+            width: 15px;
+
+        }
+        
+        .middle {
+            background-color: #00b38a;
+            min-height: 694px;
+        }
+
+        .content {
+            width: 1000px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .slogan2 {
+            display: block;
+            height: 34px;
+            margin: 28px 0 8px;
+        }
+
+        .content_left {
+            height: 480px;
+            width: 610px;
+            float: left;
+        }
+        
+        .serach_bar {
+            position: relative;
+            height: 46px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+        }
+
+        .icon_serach {
+            background-image: url(img/搜索.png);
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 16px;
+            height: 16px;
+            padding: 0;
+            border: 0;
+            margin: 0 11px 0 22px;
+
+        }
+
+        .job_input {
+            color: #666;
+            font-size: 14px;
+            margin-right: 5px;
+            border: none;
+            width: 100%;
+        }
+        .job_input:focus {
+            outline: none;
+        }
+
+        .job_submit {
+            position: absolute;
+            font-size: 16px;
+            background-color: #00b38a;
+            text-align: center;
+            color: #fff;
+            right: 5px;
+            border: none;
+            border-radius: 2px;
+            padding: 7px 25px;
+
+        }
+
+        .serach_content {
+            margin-top: 10px;
+        }
+
+        .job_type {
+            float: left;
+            height: 414px;
+            width: 112px;
+            background-color: #00906f;
+            margin-right: 10px;
+            border-radius: 4px;
+            position: relative;
+        }
+        .job_type_content {
+            position: absolute;
+        }
+        
+        .job_type a {
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            width: 102px;
+            height: 63px;
+            margin: 5px 5px;
+            color: #fff;
+        }
+
+        .job_type a:nth-child(1) {
+            background-color: rgb(128, 200, 183);
+            color: #00906f;
+        }
+
+        .job_example {
+            height: 424px;
+            width: 488px;
+            position: relative;
+            top: -10px;
+            float: right;
+            display: flex;
+            justify-content: space-between; /*均匀排列每个元素*/
+            align-items: flex-end; /*元素向侧轴终点对齐*/
+            flex-wrap: wrap; /*元素自动换行*/
+        }
+
+        .job_example img {
+            opacity: 0.72;
+            border-radius: 4px;
+            border: 0px;
+        }
+        .job_example img:hover {
+            opacity: 1;
+        }
+
+        .content_right {
+            position: relative;
+            float: right;
+            background-color: #fff;
+            border-radius: 4px;
+            width: 360px;
+            height: 470px;
+        }
+        .login_title {
+            display: block;
+            text-align: center;
+            line-height: 26px;
+            padding-left: 36px;
+            padding-right: 36px;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 57px auto;
+        }
+        .login_list {
+            display: block;
+            padding-left: 50px;
+            padding-right: 50px;
+            
+        }
+        .login_list input {
+            outline: none;
+            border: none;
+        }
+
+        .login_input_1, .login_input_2 {
+            display: block;
+            position: relative;
+            margin-bottom: 34px;
+            border: none;
+            border-bottom: 1px solid #e6e6e6;
+            height: 38px;
+        }
+        .login_input_1 select {
+            outline: none;
+            border: none;
+            position: absolute;
+            bottom: 10px;
+            font-size: 16px;
+        }
+        .login_input_1 input {
+            position: absolute;
+            right: 0;
+            bottom: 10px;
+            font-size: 16px;
+        }
+        .login_input_2 a {
+            position: absolute;
+            right: 0;
+            bottom: 10px;
+            color: #00b38a;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .login_input_2 input {
+            position: absolute;
+            left: 0;
+            bottom: 10px;
+            font-size: 16px;
+        }
+        .login_submit {
+            display: block;
+            text-align: center;
+            font-size: 16px;
+            padding: 14px;
+            border-radius: 4px;
+            color: #fff;
+            text-decoration: none;
+            background-color: #00b38a;
+        }
+
+        .login_agree {
+            display: block;
+            padding: 14px;
+            text-align: center;
+            color: #00b38a;
+            font-size: 14px;
+        }
+        .login_agree_text {
+            font-size: 12px;
+            padding: 28px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login_agree_text input {
+            margin: 0 3px;
+        }
+        .login_agree_text a {
+            text-decoration: none;
+            color: #00b38a;
+            margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="header">
+            <div class="nav">
+                <img src="img/logo.png" alt="" class="hd_left">
+                <div class="hd_right">
+                    <a href=""  class="show_qrcode_qpp">
+                        <i class="icon_app"></i>
+                        <span class="text_lagou">拉钩APP</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="middle">
+            <div class="content">
+                <img src="img/slgon2.png" alt="" class="slogan2">
+                <div class="content_left">
+                    <div class="serach_bar">
+                        <i class="icon_serach"></i>
+                        <input type="text" class="job_input" placeholder="搜索职位名称，查看本月高薪招聘信息">
+                        <input type="submit" value="搜索职位" class="job_submit">
+                    </div>
+                    <div class="serach_content">
+                        <div class="job_type">
+                            <div class="job_type_content">
+                                <a>技术</a>
+                                <a>产品</a>
+                                <a>设计</a>
+                                <a>市场</a>
+                                <a>运营</a>
+                                <a>销售</a>
+                            </div>
+                        </div>
+                        <div class="job_example">
+                            <img src="img/baidu.png" alt="">
+                            <img src="img/meituan.png" alt="">
+                            <img src="img/wangyi.png" alt="">
+                            <img src="img/xindongfang.png" alt="">
+                            <img src="img/haoweilai.png" alt="">
+                            <img src="img/beike.png" alt="">
+                            <img src="img/zhaohang.png" alt="">
+                            <img src="img/qutoutiao.png" alt="">
+                            <img src="img/bilibili.png" alt="">
+                            <img src="img/didi.png" alt="">
+                            <img src="img/jinshan.png" alt="">
+                            <img src="img/mayi.png" alt="">
+                            <img src="img/jingdong.png" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="content_right">
+                    <p class="login_title">
+                        <span style="color: #00b38a;">一键</span>注册 轻松获高薪
+                    </p>
+                    <div class="login_list">
+                        <div class="login_input_1">
+                            <select>
+                                <option value="0086">0086</option>
+                            </select>
+                            <input type="text" placeholder="请输入常用手机号">
+                        </div>
+                        <div class="login_input_2">
+                            <input type="text" placeholder="请输入手机验证码">
+                            <a href="" class="login_yanzheng">获取验证码</a>
+                        </div>
+                        <a href="" class="login_submit">立即注册</a>
+                        <a href="" class="login_agree">已有帐号，直接登录</a>
+                    </div>
+                    <div class="login_agree_text">
+                        <input type="checkbox">
+                        进入即代表你已同意
+                        <a href="">《用户协议》</a>
+                        及
+                        <a href="">《隐私政策》</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    </html>
+</body>
