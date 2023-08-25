@@ -91,3 +91,28 @@ input[type="text"] {width: attr(maxlength em);}
 使用font同时将设置多种字体格式
 `font: <font-style> || [normal | small-caps] || <font-weight> || <font-size>[/line-weight]? || <font-family>;`
 可以加入行高`line-height`
+
+
+### 块级框
+通常情况，块级框的`width`和`height`是指内容的宽度和高度（内边界之间的距离）
+* 可以通过设置`box-sizing`属性来改变`width`和`height`的具体意义
+  * 默认值是`content-box`
+  * `box-sizing: border-box;` 使`width`和`height`计算边框之间的距离，内容区的尺寸相对变小
+  * `box-sizing: padding-box;` 使`width`和`height`计算内容加上内边距的距离
+
+* 通过`margin: 0 auto;` 将块级框居中显示
+
+置换元素的外边距和边框对行内框的高度有影响
+非置换元素的内边距、边框和外边距在对应的方框上没有纵向效果(对高度没有影响)
+
+* `vertical-algin`设置元素行内框的对其方式
+  * `top` 行内框的顶边与所在行框的顶边对齐 
+  * `bottom`
+  * `text-top` 与父元素的内容区顶边对齐
+  * `text-bottom`
+  * `middle` 
+  * `super`
+  * `sub`
+
+* `line-height` 行内元素内容的高度（块级元素也可以设置）
+  * 可以将`line-height`设定为以`em`为单位的行高，与其他元素不同的是，`em`为单位的`line-height`是基于该元素本身的`font-size`而言
