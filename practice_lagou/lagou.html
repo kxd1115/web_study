@@ -183,7 +183,7 @@
             border-radius: 4px;
             border: 0px;
         }
-        .job_example img:hover {
+        .job_example img:hover {/*点击时透明度变化*/
             opacity: 1;
         }
 
@@ -286,6 +286,50 @@
             margin: 0;
         }
 
+        .footer {
+            padding: 50px;
+            background: #fff;
+        }
+        .clearfix {
+            display: block;
+            list-style: none;
+            width: 1024px;
+            padding: 0;
+            margin: 0 auto;
+        }
+        .info {
+            float: left;
+            margin-right: 65px;
+        }
+        .end {
+            float: left;
+            margin-right: 0;
+        }
+        .fix_img {
+            float: left;
+            width: 43px;
+        }
+        .fix_div {
+            float: right;
+            margin-left: 15px;
+        }
+        .fix_div p:nth-child(1) {
+            font-size: 18px;
+            color: #333;
+            line-height: 20px;
+            height: 20px;
+            margin: 0;
+            padding: 0;
+        }
+        .fix_div p:nth-child(2) {
+            font-size: 12px;
+            color: #666;
+            height: 32px;
+            line-height: 32px;
+            margin: 0;
+            padding: 0;
+        }
+        
     </style>
 </head>
 <body>
@@ -367,10 +411,36 @@
             </div>
         </div>
         <div class="footer">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+            <ul class="clearfix">
+                <li class="info">
+                    <img src="img/fix1.png" alt="" class="fix_img">
+                    <div class="fix_div">
+                        <p>极速入职</p>
+                        <p>最快24小时拿到企业offer</p>
+                    </div>
+                </li>
+                <li class="info">
+                    <img src="img/fix2.png" alt="" class="fix_img">
+                    <div class="fix_div">
+                        <p>隐私保护</p>
+                        <p>安全私密快速投简历</p>
+                    </div>
+                </li>
+                <li class="info">
+                    <img src="img/fix3.png" alt="" class="fix_img">
+                    <div class="fix_div">
+                        <p>薪资透明</p>
+                        <p>薪资透明真实谢绝面议</p>
+                    </div>
+                </li>
+                <li class="end">
+                    <img src="img/fix4.png" alt="" class="fix_img">
+                    <div class="fix_div">
+                        <p>海量信息</p>
+                        <p>海量互联网职位实时更新</p>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
     </html>
