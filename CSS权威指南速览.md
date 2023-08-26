@@ -116,3 +116,35 @@ input[type="text"] {width: attr(maxlength em);}
 
 * `line-height` 行内元素内容的高度（块级元素也可以设置）
   * 可以将`line-height`设定为以`em`为单位的行高，与其他元素不同的是，`em`为单位的`line-height`是基于该元素本身的`font-size`而言
+
+
+### 背景裁剪
+* `background-clip` 调整背景以什么为边界
+    * 默认值`border-box`
+    * `padding-box` 背景区域只延伸到内边框区域边界处
+    * `content-box` 背景区域只延伸到内容区域边界处
+
+* `background-position` 背景定位
+    * 初始值 0% 0%
+    * 可以使用百分比，数值（px,em等），或者方位（top left center等）
+
+* `background-origin` 调整背景图像的位置以什么为边界
+    * 默认值是`padding-box`
+    * `border-box`
+    * `content-box`
+
+背景可以通过逗号分隔，从而接收多个背景图片；其他参数也可以根据图片数量，通过逗号分隔，对对应的图片属性进行调整
+
+### 线性渐变
+* 使用`linear-gradient`调整背景图像的渐变方式
+
+### 径向渐变
+* `radial-gradient`
+
+### 循环渐变
+* `repeating-radial-gradient`
+* `repeating-linear-gradient`
+处理渐变图像在平铺是遇到的一些问题
+
+### 盒子投影
+* `box-shadow` 控制盒子投影及方式
