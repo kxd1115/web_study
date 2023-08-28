@@ -212,3 +212,11 @@ input[type="text"] {width: attr(maxlength em);}
 </body>
 </html>
 ```
+
+#### 置换元素
+存在内置的宽高度
+
+
+#### z-index
+使用z-index决定元素在z轴上的位置，值越大，代表元素距离用户越近
+* z-index的值没有最大值限制
