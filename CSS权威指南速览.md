@@ -154,3 +154,61 @@ input[type="text"] {width: attr(maxlength em);}
 如果浮动的是非置换元素，那么需要给元素设定宽度；否则该元素的宽度趋近于零
 
 使用浮动之后元素都会变成块级元素
+
+### 定位 position
+
+关于溢出内容和裁剪
+* `overflow`
+  * visible
+  * hidden 超出元素框的内容无法呈现给用户
+  * scroll 超出元素框的内容隐藏起来，并在元素框边界提供滚动条
+  * auto 
+
+
+设置元素的可见性
+* `visibility`
+
+#### 绝对定位 absolute
+
+注意：绝对定位的元素是其后代元素的容纳快（也就是父元素和子元素同时是绝对定位时，子元素相对于父元素的位置进行定位）
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权威指南速览</title>
+
+    <style>
+        .box1 {
+            width: 100%;
+            height: 500px;
+            background-color: antiquewhite;
+            position: relative;
+        }
+        .box2 {
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            position: absolute;
+            background-color: aqua;
+        }
+        .box3 {
+            position: absolute;
+            background-color: aquamarine;
+            height: 50%;
+            width: 50%;
+            top: 10px;
+            left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box1">
+        <div class="box2">
+            <div class="box3"></div>
+        </div>
+    </div>
+</body>
+</html>
+```
