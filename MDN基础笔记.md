@@ -393,7 +393,7 @@ box-shadow和text-shadow用法差不多，前2个值正数代表向右，向下�
 ## 处理不同方向的文本
 
 书写模式是指文本的排列方向是横向还是纵向
-* writing-modeo 控制文本的显示模式
+* writing-mode 控制文本的显示模式
   * horizontal-tb 块流从上至下，文本横向
   * vertical-rl 块流从右向左，文本纵向
   * vertical-lr 块流从左向右，文本纵向
@@ -541,7 +541,7 @@ article:nth-of-type(3) {
 * order 控制flex项排序
 ```css
 div {
-  display: flex;
+  display: flex; 
   align-items: center;
   justify-content: space-around;
   /**/
