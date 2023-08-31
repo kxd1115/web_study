@@ -222,8 +222,9 @@ input[type="text"] {width: attr(maxlength em);}
 
 
 #### 弹性盒布局
-
-* `display: flex;`
+非常依赖父子元素关系，以下属性设置都只影响弹性盒子的子元素，不影响子元素之后的后代元素
+* `display: flex;` 定义弹性盒容器
+* `display: inline-flex;` 定义行内弹性盒容器
 
 * `flex-direction`
   * 调整弹性元素的布局方式
@@ -234,3 +235,25 @@ input[type="text"] {width: attr(maxlength em);}
 
 * `flex-flow: row wrap;`
   * 同时定义主轴的方向和弹性元素是否换行
+* `justify-content` 定义弹性元素在主轴方向的排列方式
+  * flex-start 默认值 紧靠主轴起边
+  * flex-end 紧靠主轴终边
+  * center 居中展示
+  * space-between 第一个元素和最后一个元素分别靠近起边和终边，中间的间隔等宽
+  * space-around 相当于对每个弹性元素分别在两侧添加相同的不折叠的外边距
+  * space-evently 等分每个元素之间的距离（相当于相同的折叠的外边距）
+* `algin-items` 定义**每一行内**弹性元素在当前行内的垂轴方向的排列方式
+  * flex-start flex-end center
+  * baseline 向第一条弹性元素的基线对齐
+  * stretch 将同一行的所有弹性元素高度拉伸为相同高度（以高度最高的元素为准）
+
+* `algin-content` 当有**多行弹性元素**时，定义多行弹性元素在垂轴方向的排列方式
+  * 属性值基本和`justify-content`一致
+  * 多了一个`strech`
+
+
+一些关于弹性盒中的弹性元素（弹性盒子的子元素）的单独设置方式
+* `algin-self` 定义单个弹性元素在垂轴上的排列方式
+  * 属性值和`algin-items`基本一致
+  * 设置后会覆盖弹性盒子在该弹性元素上的`algin-itmes`属性
+
