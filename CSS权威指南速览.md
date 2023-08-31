@@ -222,7 +222,7 @@ input[type="text"] {width: attr(maxlength em);}
 
 
 #### 弹性盒布局
-非常依赖父子元素关系，以下属性设置都只影响弹性盒子的子元素，不影响子元素之后的后代元素
+非常依赖父子元素关系，以下属性设置都只影响弹性盒子的子元素（也就是弹性元素），不影响子元素之后的后代元素
 * `display: flex;` 定义弹性盒容器
 * `display: inline-flex;` 定义行内弹性盒容器
 
@@ -232,6 +232,9 @@ input[type="text"] {width: attr(maxlength em);}
   * row-reverse 反向横向排列
   * column 纵向排列
   * cloumn-reverse 反向纵向排列
+* `flex-wrap` 当弹性元素超出弹性容器时，控制弹性元素是否换行
+  * nowrap
+  * wrap
 
 * `flex-flow: row wrap;`
   * 同时定义主轴的方向和弹性元素是否换行
@@ -252,8 +255,29 @@ input[type="text"] {width: attr(maxlength em);}
   * 多了一个`strech`
 
 
-一些关于弹性盒中的弹性元素（弹性盒子的子元素）的单独设置方式
+##### 一些关于弹性盒中的弹性元素的单独设置方式
 * `algin-self` 定义单个弹性元素在垂轴上的排列方式
   * 属性值和`algin-items`基本一致
   * 设置后会覆盖弹性盒子在该弹性元素上的`algin-itmes`属性
 
+
+###### 注意：
+1. float和clear对弹性元素不起作用
+2. 弹性元素可以使用绝对定位
+
+* `flex` 适用于弹性元素（弹性容器的子元素）
+  * 是`flex-grow` `flex-shrink` `flex-basis` 三个属性的简写形式
+  * 0 1 auto 默认值
+  * 常见弹性值
+    * `flex: initial;` 根据`width`和`height`确定弹性元素的尺寸（由主轴方向决定），允许缩小
+    * `flex: auto;` 元素完全弹性，既可以缩小也能增大
+    * `flex: none;` 元素失去弹性，禁止变形
+* `flex-grow` 设置弹性增长因子，决定是否将弹性容器多余的空间分配给弹性元素
+  * number 始终是一个正数
+* `flex-shrink` 设置弹性缩减因子
+
+通过这些行为可以实现弹性布局（响应式弹性布局）
+
+* `flex-basis` 定义弹性元素的初始或默认大小
+* `order` 默认为0，可以设置order属性，重新排列弹性元素的顺序
+  * 扩展引用：可以利用该属性，将当前激活的导航栏显示在第一位（仅修改视觉顺序）
