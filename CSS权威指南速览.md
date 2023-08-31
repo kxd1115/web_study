@@ -216,7 +216,21 @@ input[type="text"] {width: attr(maxlength em);}
 #### 置换元素
 存在内置的宽高度
 
-
 #### z-index
 使用z-index决定元素在z轴上的位置，值越大，代表元素距离用户越近
 * z-index的值没有最大值限制
+
+
+#### 弹性盒布局
+
+* `display: flex;`
+
+* `flex-direction`
+  * 调整弹性元素的布局方式
+  * row 横向排列
+  * row-reverse 反向横向排列
+  * column 纵向排列
+  * cloumn-reverse 反向纵向排列
+
+* `flex-flow: row wrap;`
+  * 同时定义主轴的方向和弹性元素是否换行
