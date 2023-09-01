@@ -285,7 +285,7 @@ input[type="text"] {width: attr(maxlength em);}
 
 ### 栅格布局
 
-* 创建栅格容器
+#### 创建栅格容器
 和弹性盒布局中创建弹性容器一样
     * 栅格容器的子元素是栅格元素，但子元素之后的后代元素不是栅格元素
     * 栅格容器中的空白文字也会被当做单个容器的子元素之一
@@ -301,7 +301,7 @@ input[type="text"] {width: attr(maxlength em);}
     * `float`和`clear`会被忽略
     * `vertical-algin`对栅格元素不起作用
 
-栅格布局的构成
+#### 栅格布局的构成
 1. 栅格轨道
     * 2条栅格线之间的整个区域
 2. 栅格单元
@@ -311,7 +311,7 @@ input[type="text"] {width: attr(maxlength em);}
         * 最小的栅格区域就是栅格单元
         * 最大的栅格区域是栅格中所有单元
 
-使用`grid-template-rows`和`grid-template-columns`放置栅格线
+#### 使用`grid-template-rows`和`grid-template-columns`放置栅格线
 ```css
 grid-template-columns: 200px 20% 100px;
 
@@ -337,8 +337,8 @@ grid-template-areas:
 
 #### 在栅格容器中附加栅格元素
 
-##### 列线和行线（适用于栅格元素和绝对定位元素）
-把元素的边界附加到某条栅格线上
+##### 列线和行线
+- 把元素的边界附加到某条栅格线上（适用于栅格元素和绝对定位元素）
 * `grid-row-start` 行边界起始于某一条栅格线
 * `grid-row-end` 行边界终止于某一条栅格线
 * `grid-column-start` 列边界起始于某一条栅格线
@@ -363,6 +363,7 @@ grid-template-areas:
 ```
 
 ##### 使用`span值`
+- （适用于栅格元素和绝对定位元素）
 * `span n`的意思是，从开始栅格线之后第n条栅格线截止
   * 开始和结束时都可以使用span值
 ```css
@@ -376,6 +377,7 @@ grid-template-areas:
 ```
 
 ##### 跨越多条栅格线
+- （适用于栅格元素和绝对定位元素）
 如果栅格线有名称，也可以引用栅格线名称（或者二者混用）
 ```css
 .grid_box {
@@ -397,6 +399,7 @@ grid-template-areas:
 ```
 
 #### 行列简写属性
+- （适用于栅格元素和绝对定位元素）
 使用 start / end 来区分开始和结束栅格线 
 * `grid-row`
 * `grid-column`
@@ -409,6 +412,7 @@ grid-template-areas:
 ```
 
 #### 隐式栅格
+- （适用于栅格元素和绝对定位元素）
 ```css
 .grid_box2 {
     height: 300px;
@@ -426,6 +430,7 @@ grid-template-areas:
 *该栅格容器只有3条行栅格线，但结束的行栅格线在第四行，此时浏览器会创建第4条行栅格线，由此产生的行轨道都是隐式栅格的一部分*
 
 #### 使用区域
+- 适用于栅格元素和绝对定位元素
 * `grid-area`
 
 ```css
@@ -436,3 +441,48 @@ grid-template-areas:
 ```
 逆时针顺序
 *row-start/column-start/row-end/row-start*
+
+
+#### 栅格流（适用于栅格容器）
+* `grid-auto-flow` 决定排布方式（行排布或列排布）
+  * row | column
+
+```css
+.grid_box3 {
+    height: 8em;
+    width: 20em;
+    padding: 0;
+    text-align: center;
+    background-color: rgb(127, 161, 255);
+    display: inline-grid;
+    grid-auto-flow: column;
+}
+.grid_box3 li {
+    list-style: none;
+    background-color: rgb(39, 201, 201);
+    grid-column: auto;
+    grid-row: auto;
+}
+```
+
+#### 自动增加栅格线（适用于栅格容器）
+为自动增加的行或列设置尺寸
+* `grid-auto-rows`
+* `grid-auto-columns`
+
+#### `grid` 简写属性
+取值很多，需要多加练习才能记住
+
+#### 释放栅格空间
+##### 栏距
+两个栅格轨道之间的间隔（类似border加粗的效果）
+* `grid-row-gap`
+* `grid-column-gap`
+* `grid-gap: 2em 2em;` 简写方式
+
+##### 栅格对齐方式
+类似于弹性容器和弹性元素中的对齐相关属性，也可以在栅格中使用
+
+##### 分层和排序
+* `z-index` 改变栅格元素在z轴上的位置，数字越大，离用户越近
+* `order` 改变栅格元素的顺序
