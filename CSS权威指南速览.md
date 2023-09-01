@@ -221,7 +221,7 @@ input[type="text"] {width: attr(maxlength em);}
 * z-index的值没有最大值限制
 
 
-#### 弹性盒布局
+### 弹性盒布局
 非常依赖父子元素关系，以下属性设置都只影响弹性盒子的子元素（也就是弹性元素），不影响子元素之后的后代元素
 * `display: flex;` 定义弹性盒容器
 * `display: inline-flex;` 定义行内弹性盒容器
@@ -281,3 +281,58 @@ input[type="text"] {width: attr(maxlength em);}
 * `flex-basis` 定义弹性元素的初始或默认大小
 * `order` 默认为0，可以设置order属性，重新排列弹性元素的顺序
   * 扩展引用：可以利用该属性，将当前激活的导航栏显示在第一位（仅修改视觉顺序）
+
+
+### 栅格布局
+
+* 创建栅格容器
+和弹性盒布局中创建弹性容器一样
+    * 栅格容器的子元素是栅格元素，但子元素之后的后代元素不是栅格元素
+    * 栅格容器中的空白文字也会被当做单个容器的子元素之一
+    * 栅格元素自身也能变成栅格容器
+    * 表格也是一种栅格布局，但没有栅格布局强大
+* `display: grid;` 创建块级框（常规栅格容器）
+* `display: inline-grid;` 创建行内框（行内栅格容器）
+    * 栅格容器不是块级容器（二者很像，但不一样）
+    * 浮动元素不会打乱栅格内容
+    * 栅格元素的上外边距不会与栅格容器的上外边距折叠
+    * 栅格容器会忽略column属性
+    * 没有`::first-line`和`::first-letter`伪元素
+    * `float`和`clear`会被忽略
+    * `vertical-algin`对栅格元素不起作用
+
+栅格布局的构成
+1. 栅格轨道
+    * 2条栅格线之间的整个区域
+2. 栅格单元
+    * 四条栅格线限定的区域，内部没有其他栅格线贯穿
+3. 栅格区域
+    * 任何四条栅格线限定的矩形区域
+        * 最小的栅格区域就是栅格单元
+        * 最大的栅格区域是栅格中所有单元
+
+使用`grid-template-rows`和`grid-template-columns`放置栅格线
+```css
+grid-template-columns: 200px 20% 100px;
+
+/*重复栅格线：使用repeat*/
+grid-template-columns: repeat(3, 5em);
+```
+
+自动填充整个栅格
+```css
+grid-template-row: repeat(auto-fill, [top] 5em [bottom]);
+/*每隔5em放置一条行栅格线，知道没有空间为止*/
+```
+
+使用`grid-template-areas`填充栅格区域
+```css
+grid-template-areas:
+    "h h h h" 
+    "l c c r"
+    "l f f f"
+    ;
+/*header left center right footer等的简写*/
+```
+
+#### 在栅格容器中附加栅格元素
