@@ -336,3 +336,103 @@ grid-template-areas:
 ```
 
 #### 在栅格容器中附加栅格元素
+
+##### 列线和行线（适用于栅格元素和绝对定位元素）
+把元素的边界附加到某条栅格线上
+* `grid-row-start` 行边界起始于某一条栅格线
+* `grid-row-end` 行边界终止于某一条栅格线
+* `grid-column-start` 列边界起始于某一条栅格线
+* `grid-column-end` 列边界终止于某一条栅格线
+说明：grid-row-start和grid-row-end之间的最小间隔是1（默认值）
+
+```css
+.grid_one {
+      background-color: aqua;
+      grid-column-start: 2;
+      grid-column-end: 3;
+      grid-row-start: 2;
+      grid-row-end: 4;
+  }
+.grid_two {
+      background-color: aquamarine;
+      grid-column-start: 5;
+      grid-column-end: 6;
+      grid-row-start: 1;
+      grid-row-end: 2;
+  }
+```
+
+##### 使用`span值`
+* `span n`的意思是，从开始栅格线之后第n条栅格线截止
+  * 开始和结束时都可以使用span值
+```css
+.grid_one {
+      background-color: aqua;
+      grid-column-start: 2;
+      grid-column-end: span 3;
+      grid-row-start: 2;
+      grid-row-end: 4;
+  }
+```
+
+##### 跨越多条栅格线
+如果栅格线有名称，也可以引用栅格线名称（或者二者混用）
+```css
+.grid_box {
+      height: 500px;
+      width: 1000px;
+      background-color: #bfbfbf;
+      margin: 20px;
+      display: grid;
+      grid-template-columns: repeat(20, 5%);
+      grid-template-rows: 10% 10% [col-c] 10% 20% 20% [col-a] 20% [col-c] 10%;
+  }
+.grid_one {
+      background-color: aqua;
+      grid-column-start: 2;
+      grid-column-end: span 2;
+      grid-row-start: 2;
+      grid-row-end: span col-c 2; /*从开始栅格线之后的第二个名称为col-2的栅格线截止，也可以 span 2 col-c 陈列*/
+  }
+```
+
+#### 行列简写属性
+使用 start / end 来区分开始和结束栅格线 
+* `grid-row`
+* `grid-column`
+```css
+.grid_one {
+      background-color: aqua;
+      grid-column: 2 / span 2;
+      grid-row: 2 / span col-c 2;
+  }
+```
+
+#### 隐式栅格
+```css
+.grid_box2 {
+    height: 300px;
+    width: 200px;
+    background-color: aquamarine;
+    display: grid;
+    grid-template-columns: repeat(5, 20%);
+    grid-template-rows: repeat(2, 50px);
+}
+.grid_three {
+    background-color: azure;
+    grid-column: 2 / 4;
+    grid-row: 1 / 4;
+```
+*该栅格容器只有3条行栅格线，但结束的行栅格线在第四行，此时浏览器会创建第4条行栅格线，由此产生的行轨道都是隐式栅格的一部分*
+
+#### 使用区域
+* `grid-area`
+
+```css
+.grid_four {
+    background-color: bisque;
+    grid-area: 1/2/3/4; 
+}
+```
+逆时针顺序
+*row-start/column-start/row-end/row-start*
