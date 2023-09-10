@@ -130,3 +130,98 @@ for (let i=0; i<5; ++i) {
 }
 console.log(i); //输出0/1/2/3/4
 ```
+
+##### const声明
+与`let`声明基本相同，区别是，`const`声明变量时必须同时**初始化变量**，且修改声明过的变量会**导致运行错误**
+```js
+const age1 = 26;
+age1=36; //TypeError
+
+//const也不允许重复声明
+const name = 'kang'
+const name = 'xiaoDong' //SyntaxError
+
+//const 声明的作用域也是块
+const name = 'Matt';
+if (true) {
+    const name = 'Nicholas';
+}
+console.log(name); // Matt
+```
+* `const`声明的限制只适用于它指向的变量的引用
+* 不能用`const`来声明迭代变量(`const`声明的变量不允许改变，但迭代变量会自增)
+
+```js
+let i = 0;
+for (const j=7; i<5; ++i) {
+    console.log(j);
+}
+// 7 7 7 7 7
+
+for (const key in {a:1, b:2}) {
+    console.log(key);
+}
+// a b
+
+for (const value of [1,2,3,4,5]) {
+    console.log(value);
+}
+// 1 2 3 4 5
+```
+
+#### 数据类型
+ECMScript有6种数据类型（也成为**原始类型**）
+* `Undefined`、`Null`、`Boolean`、`Number`、`String`、`Symbol`
+* `Object`对象是一种复杂数据类型
+
+##### `Typeof`操作符
+使用`Typeof`操作符查看变量的数据类型
+```js
+let message = 'some string';
+console.log(typeof(message)); // string
+console.log(typeof message);  // string
+console.log(typeof null);     // object
+// 因为null值被认为是对空对象的引用，所以反馈object
+```
+##### `Undefined`类型
+只有一个值，就是`undefined`。当使用`var`或者`let`声明变量但没初始化时，则相当于给变量赋值`undefined`。
+```js
+var male;
+console.log(male === undefined); //true
+```
+
+##### `Null`类型
+只有一个值，`null`，表示一个空对象指针
+* `null`是由`undefined`派生而来，他们**表面上相等**
+```js
+console.log(null == undefined);  //true
+console.log(null === undefined); //false
+```
+
+##### `Boolean`类型
+布尔值，`true`和`false`（区分大小写）
+* 如果想将一个其他类型的变量转换为布尔值，可以调用特定的Boolean()转型函数
+```js
+let hello = 'Hello World';
+let helloBoolean = Boolean(hello);
+
+console.log(hello);        // Hello World
+console.log(helloBoolean); // true
+```
+
+不同类型与布尔值之间的转换规则
+* string    非空字符串 true；""空字符串  false
+* number    非零数值   true；0、NaN     false
+* object    任意对象   true；null      false
+* undefined N/A：     true；undefined false
+
+
+##### `Number`类型
+表示整数和浮点数（双精度值）
+
+* 当超过js的值范围时
+  * 无法表示的正数：`Infinity`（无穷大）
+  * 无法表示IDE负数：`-Infinity`（无穷小）
+* `NaN`
+  * Not a Number
+  * 使用`isNaN()`函数判断一个值是否不是一个数值
