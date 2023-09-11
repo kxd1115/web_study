@@ -225,3 +225,112 @@ console.log(helloBoolean); // true
 * `NaN`
   * Not a Number
   * 使用`isNaN()`函数判断一个值是否不是一个数值
+* 数值转换
+  * `Number()`
+    * true返回1，false返回0
+    * null返回0
+    * undefined返回NaN      
+  * `parseInt()`    
+    * 从字符串的第一个字符开始检测，如果第一个字符不是数字，立刻返回NaN；如果是，则在遇到第一个非数字停止
+  * `parseFloat()`
+    * 始终忽略字符串开始的0
+    * 在遇到第一个小数点之后，碰到第一个非数字停止
+    * 如果字符串是整数，则会返回整数
+
+```js
+let num1 = Number("Hello World");  // NaN
+let num2 = Number("");             // 0
+let num3 = Number("0000011");      // 11
+let num4 = Number(true);           // 1
+
+let num5 = parseInt("AF", 16);     // 将AF转换为16进制的整数 175
+// 建议在使用parseInt()时，始终传递第二个参数，虽然不传递也能运行
+
+let num6 = parseFloat("09.8.2");   // 9.8
+```
+
+##### `String`类型
+字符串可以使用双引号（"），单引号（'）和反引号（`）标示
+```js
+let text = "This is the letter sigma: \u03a3.";
+console.log(text);
+console.log(text.length);  // 28
+// 转义序列表只算一个字符
+```
+字符字面量可以出现在字符串的任何位置，且只算作一个字符
+
+* 字符串一旦被创建，值就不会被改变；除非再创建一个新的字符串保存到该变量
+
+* `toString()`方法
+  * `null`和`undefined`没有`toString()`方法 
+  * 一般情况不用传递参数，但转换数值时，可以传递（2，8，10，12，16等）得到数值的二进制、八进制……的字符串结果
+```js 
+let age = 11;
+let ageAsString = age.toString();
+console.log(ageAsString, typeof ageAsString);  // 11 string
+```
+* `String()`方法
+
+```js
+let value1 = null;
+let value2;
+console.log(String(value1)); // 字符串状态的"null"
+console.log(String(value2)); // 字符串状态的"undefined"
+```
+* 模版字面量
+会保持反引号内部的空格，因此要确保模版的排版
+```js
+let pageHTML = `
+<div>
+    <a href="#">
+    <span>Jake</span>
+</div>`;
+console.log(pageHTML);
+```
+
+* 字符串插值
+可以使用`${}`插入模版字面量
+```js
+let value = 5;
+let exponet = 'second';
+
+// 以前是这样进行字符串插值
+let interpolatedString = 
+    value + ' to the ' + exponet + ' power is ' + (value*value);
+console.log(interpolatedString);          // 5 to the second power is 25
+
+// 现在可以使用模版字面量进行插值
+let interpolatedTemplateLiteral = 
+    `${value} to the ${exponet} power is ${value * value}`;
+console.log(interpolatedTemplateLiteral); // 5 to the second power is 25
+```
+严格意义上来讲，模版字面量不是字符串，而是一种特殊的句法表达式，只不过求值后得到的是字符串
+
+* 模版字面量标签函数
+  * 模版字面量支持定义**标签函数**，通过标签函数可以自定义插值行为
+```js
+let a = 6;
+let b = 9;
+
+function simpleTag(strings, aValExpression, bValExpression, sumExpression) {
+    console.log(strings);        // 展示原始字符串数组：["", " + ", " = ", ""]
+    console.log(aValExpression); // 表达式求值的结果1：6
+    console.log(bValExpression); // 表达式求值的结果2：9
+    console.log(sumExpression);  // 表达式求值的结果3：15
+
+    return 'footer';
+}
+
+let untaggedResult = `${a} + ${b} = ${a + b}`;
+let taggedResult = simpleTag`${a} + ${b} = ${a + b}`;
+console.log(untaggedResult); // 6+9=15
+console.log(taggedResult);   // footer
+```
+
+
+* 原始字符串
+  * 使用`String.raw`标签函数，返回原始的模版字面量的内容
+```js
+console.log(`\u00A9`);           // ©
+console.log(String.raw`\u00A9`); // \u00A9
+```
