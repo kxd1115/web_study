@@ -468,3 +468,243 @@ console.log(num4); // 21
 
 ###### 位操作符
 操作内存中表示数据的比特(位)
+ES中的所有数值都以 IEEE 754 7=64位格式存储，但未操作符并不直接应用64位，而是先把值转换为32位整数，再进行操作
+
+* 有符号整数使用32位的前31位表示整数值，第32位表示数值的符号
+  * 比如0表示正，1表示负（这一位叫做**符号位**）
+* 负值以一种称为**二补数**(或补码)的二进制编码存储
+  1. 确定绝对值的二进制表示
+  2. 找到数值的一补数（或反码），就是每个0都变成1，每个1都变成0
+  3. 给结果加1
+```
+18的二进制
+0000 0000 0000 0000 0000 0000 0001 0010
+
+-18的二进制
+1111 1111 1111 1111 1111 1111 1110 1101   // 反转
+                                      1   // 加1
+1111 1111 1111 1111 1111 1111 1110 1110   // 最终结果
+
+```
+
+- 按位非(`~`)
+返回一个数值的一补数
+```js
+let num5 = 25;
+let num6 = ~num5;
+console.log(num6); // -26
+```
+- 按位与(`&`)
+将数值的每一个位对齐，两个位都是以1时返回1，其他则返回0
+```js
+let result = 25 & 3;
+console.log(result); // 1
+
+// 25 = 0000 0000 0000 0000 0000 0000 0001 1001
+//  3 = 0000 0000 0000 0000 0000 0000 0000 0011
+// 25 & 3 只有在最后一位上都等于1，所以返回1
+```
+- 按位或(`|`)
+至少1位是1时返回1，否则返回0
+```js
+let result = 25 | 3;
+console.log(result); // 27
+
+// 25 = 0000 0000 0000 0000 0000 0000 0001 1001
+//  3 = 0000 0000 0000 0000 0000 0000 0000 0011
+// OR = 0000 0000 0000 0000 0000 0000 0001 1011
+```
+- 按位异或(`^`)
+2者相等返回0，2者不相等返回1
+```js
+let result = 25 ^ 3;
+console.log(result); // 26
+
+// 25 = 0000 0000 0000 0000 0000 0000 0001 1001
+//  3 = 0000 0000 0000 0000 0000 0000 0000 0011
+//XOR = 0000 0000 0000 0000 0000 0000 0001 1001
+```
+- 左移(`<<`)
+按照指定的位数将数值所在的所有位向左移动
+```js
+let oldValue = 25;
+let newValue = oldValue << 5;
+console.log(newValue); //800
+
+// oldValue = 0000 0000 0000 0000 0000 0000 0001 1001
+// newValue = 0000 0000 0000 0000 0000 0011 0010 0000 空位用0补位
+```
+- 有符号右移(`>>`)
+- 无符号右移(`>>>`)
+
+###### 布尔操作符
+- 逻辑非(`!`)
+- 逻辑与(`&&`)
+- 逻辑或(`||`)
+
+###### 乘性操作符
+- 乘法操作(`*`)
+- 除法操作(`/`)
+
+
+###### 指数操作符
+`**`
+```js
+console.log(3 ** 2); // 9
+```
+
+###### 加性操作符
+- 加法操作(`+`)
+- 减法操作(`-`)
+
+###### 关系操作符
+- 大于(`>`)，小于(`<`)，大于等于(`>=`)和小于等于(`<=`)
+
+###### 相等操作符
+- 等于(`==`)和不等于(`!=`)
+- 全等(`===`)和不全等(`!==`)
+
+###### 条件操作符
+```js
+variable = boolean_expression ? true_value : false_value;
+// 如果variable是true，则赋值true_value，如果是false，则赋值false_value
+
+
+let oldValue=10;
+let newValue=25;
+let max = (newValue > oldValue) ? newValue : oldValue;
+console.log(max); // 25
+```
+
+###### 赋值操作符
+###### 逗号操作符
+
+##### 语句
+###### `if`语句
+```js
+let i = 20;
+if (i > 25) {
+    console.log("Greater than 25."); 
+} else if (i < 0) {
+    console.log("Less than 0.");
+} else {
+    console.log("Less than or equal to 25.");
+}
+```
+###### `do-while`语句
+后测试循环语句，循环体内的代码至少会执行一次
+```js
+let j = 0;
+do {//do语句中的循环操作会一直执行到j=30才会停止
+    j += 2;
+} while (j < 30);
+```
+###### `while`语句
+先测试循环语句， 循环体内的代码有可能不会执行
+```js
+while (i < 10) {//知道j=10时才会停止
+    i += 2;
+}
+```
+###### `for`语句
+也是一种先测试语句
+```js
+let count = 10;
+for (let i = 0; i < count; i++) {
+    console.log(i); // 0-9
+}
+```
+
+###### `for-in`语句
+一种严格的迭代语句，用于枚举对象中的非符号健属性
+`for (property in expression) statement`
+```js
+for (const propName in window) {
+    document.write(propName);
+}
+```
+
+###### `for-of`语句
+一种严格的迭代语句，用于遍历克迭代对象的元素
+`for (property of expression) statement`
+```js
+for (const el of [1,2,3,4,5,6]) {
+    document.write(el);
+}
+```
+
+###### 标签语句
+用于给语句添加一个标签
+```js
+let count = 10;
+start: for (let i = 0; i < count; i++) {
+    console.log(i); // 0-9
+}
+```
+
+###### `break`和`continue`语句
+* `break` 立即退出循环，并强制执行循环后的下一条语句
+* `continue` 立即退出循环，但会再次从循环顶部开始执行
+
+```js
+let num = 0;
+for (let i = 1; i < 10; i++) {
+    if (i % 5 == 0)  {
+        // break;
+        // 当i除以5的余数是0时，则停止循环并结束循环，循环终止
+        continue;
+        // 当i除以5的余数是0时，则跳过本次循环，循环会继续执行
+    }
+    console.log(i);
+    num ++;
+}
+console.log(num);
+// break时，值是4
+// continue是，值是8
+```
+###### `with`语句
+将代码的作用域设置为特定的对象
+`with (expression) statement`
+```js
+let qs = loaction.serach.substring(1);
+let hostName = location.hostname;
+let url = location.href;
+
+// 将以上代码使用with语句调整
+with(location) {
+    let qs = serach.substring(1);
+    let hostName = hostname;
+    let url = href;
+}
+```
+**with语句影响性能切难于调试，通常不推荐在产品中使用**
+
+###### `switch`语句
+与if语句紧密关联的一种流控制语句
+```js
+let i1 = 25;
+switch(i1) {
+    case 25:
+        console.log("25");
+        break;
+    case 35:
+        console.log("35");
+        break;
+    case 45:
+        console.log("45");
+        break;
+    default:
+        console.log("Other")
+}
+```
+
+##### 函数
+使用`function`关键字声明
+```js
+// 基本语法
+function functionName(arg0,arg1,..., argN) {
+  statements
+}
+```
+- 只要碰到`return`语句，函数则会立即停止并退出执行
+- 最佳实践是，函数要么返回值，要么不返回值。（可以不给函数指定返回值，此时函数实际上会返回特殊值undefined）
