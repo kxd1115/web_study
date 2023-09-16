@@ -326,7 +326,42 @@ let taggedResult = simpleTag`${a} + ${b} = ${a + b}`;
 console.log(untaggedResult); // 6+9=15
 console.log(taggedResult);   // footer
 ```
+  * 可以使用剩余操作符将所有表达式参数手机到一个数组中
+```js
+let a = 6;
+let b = 9;
 
+function simpleTag(strings, ...expressions) {
+    console.log(strings);        // 展示原始字符串数组：["", " + ", " = ", ""]
+
+    //使用数组储存表达式参数，通过for循环遍历
+    for (const expiression of expressions) {
+        console.log(expiression);
+    }
+
+    return 'footer';
+}
+
+let untaggedResult = `${a} + ${b} = ${a + b}`;
+let taggedResult = simpleTag`${a} + ${b} = ${a + b}`;
+console.log(untaggedResult); // 6+9=15
+console.log(taggedResult);   // footer
+```
+ * 当参数数量不确定时（n参数，加上标签函数的第一个参数strings，则始终是n+1个）
+```js
+let a = 6;
+let b = 9;
+
+function zipTag(strings, ...expressions) {
+    return strings[0] + expressions.map( (e, i) => `${e}${strings[i + 1]}` ).join('');
+}
+
+let untaggedResult = `${a} + ${b} = ${a + b}`;
+console.log(untaggedResult); // 6+9=15
+
+let taggedResult = zipTag`${a} + ${b} = ${a + b}`;
+console.log(taggedResult);   // 6+9=15
+```
 
 * 原始字符串
   * 使用`String.raw`标签函数，返回原始的模版字面量的内容
@@ -334,3 +369,102 @@ console.log(taggedResult);   // footer
 console.log(`\u00A9`);           // ©
 console.log(String.raw`\u00A9`); // \u00A9
 ```
+
+##### `Symbol`类型
+ES6新增。`Symbol`符号是原始值，且是唯一、不可变的。
+
+* 基本使用方法
+```js
+let sym = Symbol();
+console.log(typeof sym); //symbol
+```
+无法与`new`关键字一起作为构造函数使用
+
+* 全局符号注册表
+使用`Symbol.for()`方法在全部覆盖注册表中创建并重用符号
+```js
+let fooGlobalSymbol = Symbol.for('foo');      // 创建新符号
+console.log(fooGlobalSymbol, typeof fooGlobalSymbol); // Symbol('foo') symbol
+
+let otherFooGlobalSymbol = Symbol.for('foo'); // 重用已有符号
+console.log(fooGlobalSymbol === otherFooGlobalSymbol); //true
+```
+普通符号不等于全局符号
+
+使用`Symbol.KeyFor()`来查询全局符号注册表
+```js
+console.log(Symbol.keyFor(fooGlobalSymbol)); // foo
+```
+返回的是某个全局符号对应的字符串健，如果查询的不是全局符号，则返回`undefined`
+
+* 使用符号作为属性
+凡是使用字符串或数值作为属性的地方，都可以使用符号
+```js
+let s1=Symbol('foo'), s2=Symbol('bar'), s3=Symbol('baz'), s4=Symbol('qux');
+let o = {
+    [s1] : 'foo val'
+};
+console.log(o); // Symbol(foo): "foo val"
+```
+
+* 常用内置符号
+用于暴露语言内部行为
+`在提到ES规范时，经常会引用符号在ES规范中的名称，前缀是@@，@@iterator指Symbol.iterator`
+
+* Symbol.asyncIterator
+* symbol.hasInstance
+* Symbol.isConcatSpreadable
+* Symbol.iterator
+* Symbol.match
+* Symbol.replace
+* Symbol.search
+* Symbol.species
+* Symbol.split
+* Symbol.toPrimitive
+* Symbol.toStringTag
+* Symbol.unscopables
+ 
+**以上这些符号属性暂时均未理解，后续再学习**
+
+##### `Object`类型
+通过`new`操作符后跟对象类型的名称来创建
+```js
+let o = new Object();
+```
+ES中的`Object`是派生其他对象的基类
+对应属性和方法（所有对象都适用这些属性和方法）
+1. constructor：创建当前对象的函数
+2. hasOwnProperty(propertyName)：判断当前对象实例上是否存在给定的属性
+3. isPrototypeOf(Object)：判断当前对象是否为另一个对象的原型
+4. propertyIsEnumerable(propertyName)：判断给定的属性是否可以使用
+5. toLocaleString()：返回对象的字符串表示
+6. toString()：返回对象的字符串表示
+7. valueOf()：返回对象对应的字符串、数值或布尔值表示
+
+##### 操作符
+数学操作符（加减乘除等）、位操作符、关系操作符和相等操作符等
+
+###### 一元操作符：只操作一个值
+* 递增/递减操作符
+```js
+let age1 = 29;
+++age1  // 相当于 age1 = age1 + 1
+console.log(age1) // 30
+--age1  // 相当于 age1 = age1 - 1
+console.log(age1) // 29
+```
+后缀 递增/递减操作符和前缀的有一点区别需要注意
+```js
+let num1 = 2;
+let num2 = 20;
+let num3 = num1-- + num2; // 这里仍然使用num1的原始值进行的相加操作
+let num4 = num1 + num2;
+console.log(num3); // 22
+console.log(num4); // 21
+```
+不管是前缀还是后缀，递增/递减可以作用于任何值
+
+* 一元加减
+
+###### 位操作符
+操作内存中表示数据的比特(位)
