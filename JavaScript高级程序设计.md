@@ -708,3 +708,35 @@ function functionName(arg0,arg1,..., argN) {
 ```
 - 只要碰到`return`语句，函数则会立即停止并退出执行
 - 最佳实践是，函数要么返回值，要么不返回值。（可以不给函数指定返回值，此时函数实际上会返回特殊值undefined）
+
+---
+### 变量、作用域与内存
+#### 原始值与引用值
+* 原始值：最简单的数据
+* 引用值：由多个值构成的对象
+
+
+##### 动态属性
+引用值可以随时添加修改和删除其属性和方法
+```js
+let person = new Object();
+person.name = "Dennis";
+console.log(person.name); // "Dennis"
+```
+
+##### 复制值
+通过变量把一个原始值赋值到另一个变量时，原始值会被复制到一个新的变量
+```js
+let num1 = 5;
+let num2 = num1; // num2是一个新的原始值为5的变量
+```
+把引用值从一个变量赋值给另一个变量时，复制的实际上是指针，指向存储在堆内的对象。对一个对象上的操作变化也会在另外一个对象上反应出来
+```js
+let obj1 = new Object();
+let obj2 = obj1;
+obj1.name = "Dennis";
+console.log(obj2.name); // "Dennis"
+```
+
+##### 传递参数
+
