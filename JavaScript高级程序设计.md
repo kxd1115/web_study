@@ -740,3 +740,129 @@ console.log(obj2.name); // "Dennis"
 
 ##### 传递参数
 
+```js
+function addTen(num) {
+    num += 10;
+    return num;
+}
+
+let count = 20;
+let result = addTen(count);
+console.log(count);  // 20
+console.log(result); // 30 result被作为参数传递进了函数addTen()，替代num
+
+
+function setName(obj) {
+    obj.name = "Dennis";
+}
+person = new Object();
+setName(person);
+console.log(person.name); // Dennis
+// 当引用值被传递为参数时，这个对象被复制到参数obj中。在函数内部，obj和person指向同一个对象
+
+
+function setName(obj) {
+    obj.name = "Dennis";
+
+    // 内部重写时，相当于在函数内部创建了一个指针，指向一个新的对象，这个对象在函数结束时就已经销毁
+    obj = new Object();
+    obj.name = "May";
+}
+person = new Object();
+setName(person);
+console.log(person.name); // Dennis
+
+```
+* ECMAScript中函数的参数就是局部变量
+
+##### 确定类型
+* `typeof` 用于检测原始值的类型
+* `instanceof` 用于检测引用值是什么类型的对象
+```js
+console.log(person of Object);  // 这种情况，只要检测的是引用值和Object构造函数，都会返回true
+console.log(colors of Array);  // 变量colors时Array吗？
+```
+
+##### 执行上下文与作用域
+* 执行上下文
+  * 全局上下文
+    * 在浏览器中，全局上下文就是我们常说的`window`对象
+  * 局部上下文
+* 作用域链
+  * 决定了各级上下文中的代码在访问变量和函数时的顺序
+执行上下文都有一个关联的**变量对象**
+```js
+function changeColor() {
+    let anotherColor = "red";
+
+    function swapColors() {
+        let tempColor = anotherColor;
+        anotherColor = color;
+        color = tempColor;
+        // 这里能访问 tempColor、anotherColor、color
+    }
+    swapColors(); 
+    // 这里能访问变量anotherColor、color
+}
+changeColor(); // 这里只能访问变量color
+```
+
+##### 作用域链增强
+某些语句会导致作用域链前端临时添加一个上下文，并在代码执行后删除
+* `try/catch`语句的`catch`块
+* `with`语句
+```js
+function buildUrl() {
+    let qs = "?debug=true";
+
+    with(location) {
+        let url = href + qs;
+        // 这里的href相当于location.href
+        // url使用let声明，被限制在with语句中
+    }
+
+    return url;
+}
+```
+
+##### 变量声明
+
+
+##### 垃圾回收
+执行环境在代码执行时管理内存，通过自动内存管理实现内存分配和闲置资源的回收
+* 标记清理（最常用的垃圾回收策略）
+当变量进入上下文，则会被加上存在于上下文中的标记。当离开上下文时，则加上离开上下文的标记
+
+
+* 引用计数（不常用）
+对每个值都记录它的被引用次数
+记录每一个值的赋值记录，每一次赋值则加1；当保存对该值引用的变量被其他值覆盖，则减1；直到为0时，则收回其内存释放内存
+
+
+##### 内存管理
+解除引用：如果某个数据不再必要，可以在使用完之后把它的值设置为`null`，从而释放其引用
+比较适合全局变量和全局对象的属性
+
+1. 通过let和const声明提升性能
+
+##### 内存泄露
+要注意出现难以察觉且有害的内存泄露问题
+```js
+function setName() {
+  name = "Jake";
+}
+// 解释器会把变量当做window的属性来创建
+```
+定时器也可能会导致内存泄露
+```js
+let name = "Jake";
+setInterval(()=> {
+  let name = "Jake";
+  return function {
+    return name;
+  }
+}, 100);
+// 只要定时器一直运行，引用的name就会一直占用内存
+```
+
+##### 静态分配与对象池
