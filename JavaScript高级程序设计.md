@@ -866,3 +866,255 @@ setInterval(()=> {
 ```
 
 ##### 静态分配与对象池
+
+---
+### 基本引用类型
+引用类型虽然有点像类，但跟类并不是一个概念
+
+
+#### `Date`
+```js
+// 创建日期对象
+let now = new Date();
+console.log(now); // Thu Sep 21 2023 13:07:47
+
+let someDate = new Date(Date.parse("May 23,   2019"));
+// 等价于 let someDate = new Date("May 23, 2019")
+console.log(someDate); // Thu May 23 2019 00:00:00
+
+// 返回日期的毫秒表示，从0开始计月份，月份(0-11) 日期(1-31) 时(0-23)
+let y2k = new Date(Date.UTC(2000, 0));
+console.log(y2k); // 返回本地时间2000年1月1日零点
+```
+
+##### 继承的方法
+
+* `toLocalString()` 返回与浏览器运行的本地环境一致的日期和实践
+* `valueOf()` 返回日期的毫秒表示
+
+##### 日期格式化方法
+```js
+let nowDateString = new Date("2023,01,01");
+
+console.log(nowDateString.toDateString()); // Sun Jan 01 2023
+console.log(nowDateString.toTimeString()); // 00:00:00 GMT+0800
+console.log(nowDateString.toLocaleDateString()); // 2023/1/1
+console.log(nowDateString.toLocaleTimeString()); // 00:00:00
+console.log(nowDateString.toUTCString()); // Sat, 31 Dec 2022 16:00:00 GMT
+```
+
+##### 日期/时间组件方法
+* `getTime()`  返回日期的毫秒表示
+* `getMonth()` 返回日期中的月
+* `getDate()`  返回日期中的日
+* `getFullYear()` 返回4位数年
+* `getDay()`   返回日期中的周几（0表示周日）
+* `getHours()` 返回日期中的时(0~23)
+* `getMinutes()`  返回日期中的分
+* `getSeconds()`  返回日期中的秒
+等等……
+* 以上对应的大部分get都可以替换为set，表示设置日期中的XX表示用于修改日期（如`setDate()` 设置日期中的日） 
+
+
+#### `RegExp`
+通过`RegExp`类型支持正则表达式
+* g: 全局模式，查找字符串的全部内容
+* i: 不区分大小写
+* m: 多行模式
+* y: 粘附模式，只查找从lastIndex开始及之后的字符串
+* u: Unicode模式
+* s: dotAll模式，表示元字符.匹配任何字符
+```js
+let patternl1 = /at/g;
+// 匹配字符串中所有的"at"
+
+let patternl2 = /[bc]at/i;
+// 匹配第一个bat或者cat，不区分大小写
+
+let patternl3 = /.at/gi;
+// 匹配所有以at结尾的三字符，不区分大小写
+```
+如果是匹配元字符本身，需要使用"\"进行转义
+```js
+let patternl3 = /\.at/gi;
+// 匹配所有".at"，不区分大小写
+```
+也可以使用构造函数进行创建
+```js
+let patternl4 = new RegExp(".at", "gi");
+// 匹配所有以at结尾的三字符，不区分大小写
+
+
+const re1 = /cat/g;
+console.log(re1); // /cat/g
+
+const re2 = new RegExp("cat", "g");
+console.log(re2); // /cat/g
+
+const re3 = new RegExp("cat", "i");
+console.log(re3); // /cat/i
+// 还可以基于已有的正则表达式选择性的修改标记
+```
+
+##### `RegExp`实例属性
+
+##### `RegExp`实例方法
+* `exec()` 用于配合捕获组使用
+```js
+let text = "mom and dad and baby";
+let pattern = /mom( and dad( and baby)?)?/gi;
+
+let matches = pattern.exec(text);
+console.log(matches.index); //返回字符串中匹配模式的起始位置
+console.log(matches.input); //返回要查找的字符串
+console.log(matches[0]);    //返回捕获到的第一个字符串
+console.log(matches[1]);    //返回捕获到的第二个字符串
+console.log(matches[2]);    //返回捕获到的第三个字符串
+```
+```js
+let text1 = "cat, bat, sat, fat";
+let pattern5 = /.at/;
+
+matches1 = pattern5.exec(text1);
+console.log(matches1.index);        // 0
+console.log(matches1[0]);           // cat
+console.log(pattern.lastIndex);     // 0
+// 没有g标记，不是全局模式，因此匹配到一个符合的字符串就停止了
+```
+
+* `test()`用于测试特定的正则表达式数值序列是否正确
+```js
+let text2 = "0000-00-0000";
+let pattern6 = /\d{4}-\d{2}-\d{4}/;
+
+if (pattern6.test(text2)) {
+    console.log("The pattern was matched.");
+} else {
+    console.log("Oh No!");
+}
+```
+
+##### `RegExp`构造函数属性
+这些属性适用于作用域内的所有正则表达式（也可以称作静态属性）
+```js
+let text3 = "this has been a short summer";
+let pattern7 = /(.)hort/g;
+
+if (pattern7.test(text3)) {
+    // 搜索的字符串，简写: $_
+    console.log(RegExp.input);        // this has been a short summer
+    // 出现在lastMatch前面的文本，简写: $`
+    console.log(RegExp.leftContext);  // this has been a 
+    // 出现在lastMatch后面的文本， 简写: $'
+    console.log(RegExp.rightContext); // summer
+    // 最后匹配的文本，简写: $&
+    console.log(RegExp.lastMatch);    // short
+    // 最后匹配的捕获组，简写: $+
+    console.log(RegExp.lastParen);    // s
+}
+```
+* 不要在生产环境中使用他们！！！
+
+#### 原始值包装类型
+目前有3种: `Number` `Boolean` `String`
+
+* isInterger() 辨别一个数值是否是整数
+```js
+console.log(Number.isInterger(1)); // true
+```
+* charAt() 返回给定索引位置的字符
+```js
+let message = "abcde";
+console.log(message.charAt(2)); // c
+```
+* 字符串操作方法
+1. `concat()`
+2. `slice()` 切片
+3. `substr()`
+4. `substring()`
+```js
+let text4 = "hello ";
+let result = text4.concat("world!");
+console.log(result); // hello world!
+console.log(text4.substr(2)); // 第二位后面的字符内容：llo 
+console.log(text4.substr(1, 3)); // 第2位开始，展示3位字符：ell 
+console.log(text4.substring(1,3)); // 第2-3位字符（前包后闭）：el 
+```
+
+* 字符串位置方法
+
+1. `indexOf()`     从字符串开头开始查找对应字符的位置
+2. `lastIndexOf()` 从字符串结束开始查找对应字符的位置
+```js
+let result = "hello world!";
+console.log(result.indexOf("l")); //2
+console.log(result.lastIndexOf("l")); //9
+
+
+// 传递第二个参数，限制开始的位置
+console.log(result.indexOf("l", 6)); //0
+console.log(result.lastIndexOf("l", 6)); //3
+```
+
+* 字符串包含方法
+
+1. startsWith() 判断是否是从某个字符串开始，接收第二个参数，表示开始查询的位置
+2. endsWith() 判断是否是某个字符串结尾
+3. includes() 判断是否包含某个字符串，接收第二个参数，表示开始查询的位置
+
+* `trim()`
+创建一个字符串的副本，删除前后所有的空格
+* `repeat()`
+接收整数参数，表示要将字符串复制多少次
+* `padStart(a, b)`和`padEnd(a, b)`
+  * a 表示长度
+  * b 可选的填充字符串是什么
+
+* 大小写转换
+1. `toLowerCase()`
+2. `toLocaleLowerCase()`
+3. `toLocaleUpperCase()`
+4. `toUpperCase()`
+
+* 字符串模式匹配方法
+1. `match()` 与`RegExp`中的`exec()`方法相同
+2. `serach()` 返回第一个匹配的位置索引
+
+
+#### 单例内置对象
+##### `Global`
+在全局作用域中定义的变量和函数都会半成Global对象的属性
+
+* `URL`编码方法
+
+1. `encodeURI()`
+2. `encodeURIComponet()`
+
+* `eval()`方法
+
+* `window`对象
+浏览器将`window`对象实现为`Global`对象的代理
+```js
+var color = "red";
+function sayColor() {
+    console.log(window.color);
+}
+window.sayColor(); //red
+```
+
+#### `Math`
+保存数学公式、信息和计算
+
+* `min()`和`max()`
+```js
+console.log(Math.max(3,45,1,2,6)); // 45
+console.log(Math.min(3,45,1,2,6)); // 1
+```
+* 四舍五入
+1. Math.ceil() 向上舍入最近的整数
+2. Math.floor() 向下舍入最近的整数
+3. Math.round() 执行四舍五入
+4. Math.fround() 返回最接近的单精度浮点值
+
+* `random()`
+返回一个`[0,1)`范围内的随机数
