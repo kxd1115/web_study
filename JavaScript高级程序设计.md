@@ -1118,3 +1118,91 @@ console.log(Math.min(3,45,1,2,6)); // 1
 
 * `random()`
 返回一个`[0,1)`范围内的随机数
+
+
+### 集合引用类型
+
+#### Object
+除了使用`new`操作符创建`Object`实例，还可以使用`对象字面量`表示法
+```js
+let person = {
+  name: "Dennis";
+  age: 29;
+};
+console.log(person.age);
+```
+* 比较适合函数有大量可选参数的情况
+```js
+function displayInfo(args) {
+    let output = "";
+
+    if (typeof args.name == "string") {
+        output += "Name: " + args.name + "\n";
+    }
+
+    if (typeof args.age == "number") {
+        output += "Age: " + args.age + "\n";
+    }
+
+    alert(output);
+}
+
+displayInfo({
+    name: "Dennis",
+    age: 29
+});
+```
+属性一般是通过**点语法**来存取，但也可以使用中括号来存取属性
+
+#### `Array`
+数组，每个槽位可以存储任意类型的数据
+* 动态大小，随着数据添加而自动增长
+
+
+##### 创建数组
+* 使用`new Array()`或者`Array`构造函数
+```js
+let colors = new Array();
+
+// 设置数组容纳的元素数量
+let colors = new Array(20);
+
+// 直接使用Array
+let colors = Array(3) // 创建一个包含3个元素的数组
+let colors = Array("Grey") // 创建一个只包含元素"Grey"的数组
+```
+* 使用**数组字面量**表示法
+```js
+let colors = ["red", "blue", "green"];
+let names = [];
+let values = [1, 3];
+```
+* `Array.from()`
+用于将类数组结构转换为数组实例
+```js
+console.log(Array.from("Dennis")); // ["D", "e", "n", "n", "i", "s"]
+
+// 对现有数组进行浅复制
+const a1 = [1,2,3,4];
+const a2 = Array.from(a1);
+console.log(a1); // [1,2,3,4]
+console.log(a2); // [1,2,3,4]
+console.log(a1 === a2); // false
+```
+`from()`包含第二个和第三个可选参数
+第二个可选的映射函数参数：增强新数组的值
+第三个可选参数：指定函数中this的值
+
+* `Array.of()`
+可以把一组参数转换为数组
+```js
+console.log(Array.of(1,2,3,4));   // [1,2,3,4]
+console.log(Array.of(undefined)); // [undefined]
+```
+
+##### 数组空位
+```js
+const options = [,,,,,];
+console.log(options.length); // 5
+console.log(options);        // 空数组
+```
