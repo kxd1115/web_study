@@ -1206,3 +1206,111 @@ const options = [,,,,,];
 console.log(options.length); // 5
 console.log(options);        // 空数组
 ```
+
+##### 数组索引
+数组的`length`属性也可以修改数组的长度
+```js
+let colors = ["red", "blue", "black"];
+colors.length = 2;
+console.log(colors); // ["red", "blue"]
+// 变成了一个长度为2的数组
+
+colors.length = 4;
+// 变成一个长度为4的数组
+```
+
+##### 检测数组
+使用`instanceof`判断一个对象是不是数组
+使用`Array.isArray()`方法确定一个值是否是一个数组
+
+##### 迭代器方法
+* `keys()` 返回数组索引
+* `values()` 返回数组元素
+* `entries()` 返回索引/值对
+
+
+##### 复制和填充方法
+* 批量复制: `copyWithin()`
+```js
+let ints, reset = () => ints = [0,1,2,3,4,5,6,7,8,9];
+reset();
+
+// 从ints中复制索引0开始的内容，插入到索引5开始的位置
+// 在源索引或目标索引到达数组的边界停止
+ints.copyWithin(5);
+console.log(ints); // [0,1,2,3,4, 0,1,2,3,4]
+reset();
+
+// 从ints中复制索引5开始的内容，插入到索引0开始的位置
+ints.copyWithin(0, 5);
+console.log(ints); // [5,6,7,8,9, 5,6,7,8,9]
+reset();
+
+// 从ints中复制索引[0,3)的内容，插入到索引4开始的位置
+ints.copyWithin(4, 0, 3);
+console.log(ints); // [5,6,7,8,9, 5,6,7,8,9]
+reset();
+```
+默认忽略索引值超出数组边界，过期和过高的情况
+
+* 填充数组: `fill()`
+```js
+const zeroes = [0,0,0,0,0];
+
+// 用5填充整个数组
+zeroes.fill(5);
+console.log(zeroes); // [5,5,5,5,5]
+
+// 用6填充索引≥3的元素
+zeroes.fill(6, 3);
+console.log(zeroes); // [5,5,5,6,6]
+
+// 用7填充1≤索引＜3的元素
+zeroes.fill(7,1,3);
+console.log(zeroes); // [5,7,7,6,6]
+```
+默认忽略索引值超出数组边界，过低和过高的情况
+
+##### 转换方法
+* `toString()`方法会返回有数组中每个值的等效字符串拼接的一个逗号分隔的字符串
+```js
+let colors = ["red", "blue", "green"];
+console.log(colors.toString()); // red,blue,green
+console.log(colors.valueOf());  // ["red", "blue", "green"]
+console.log(colors);            // ["red", "blue", "green"]
+```
+* `toLocaleString()`稍微有一点区别，会调用数组每个值的`toLocaleString()`方法
+```js
+let person1 = {
+    toLocaleString() {
+        return "Dennis";
+    },
+
+    toString() {
+        return "Kangxiaodong";
+    }
+};
+
+let person2 = {
+    toLocaleString() {
+        return "May";
+    },
+
+    toString() {
+        return "May";
+    }
+};
+
+let people = [person1, person2];
+alert(people); // Kangxiaodong,May
+alert(people.toLocaleString()); // Dennis,May
+alert(people.toString()); // Kangxiaodong,May
+```
+* `join()` 方法，得到`toString()`相同的结果，且能够更改分隔符
+```js
+let colors = ["red", "blue", "green"];
+// 让字符串的分隔符变成 ||
+alert(colors.join("||")); //red||blue||green
+```
+
+##### 栈方法
