@@ -1314,3 +1314,113 @@ alert(colors.join("||")); //red||blue||green
 ```
 
 ##### 栈方法
+栈是一种后进先出的结构（LIFO）
+数据项的插入（称之为**推入**，push），删除（称之为**弹出**，pop）只在栈顶发生
+```js
+let colors1 = new Array();
+let count = colors1.push("red", "blue"); // 推入2项
+console.log(count); // 返回数组的长度，2
+console.log(colors1);
+
+let item = colors1.pop(); // 取得最后一项
+console.log(item); // blue
+```
+
+##### 队列方法
+以先进先出（FIFO）形式限制访问
+推入: push()，删除: shift()
+```js
+let colors1 = new Array();
+let count = colors1.push("red", "blue"); // 推入2项
+console.log(count); // 返回数组的长度，2
+console.log(colors1);
+
+let item = colors1.shift(); // 取得第一项
+console.log(item); // red
+```
+ES6提供了一种新的方法`unshift()`，执行和`shift()`相反的操作，在数组的开通添加值
+```js
+let item = colors1.unshift("white"); // 在数组开头添加值
+console.log(item); // 数组长度：3
+```
+
+##### 排序方法
+* `reverse()` 反向排列
+* `sort()`    在比较时，会通过`String()`转型函数将元素转换为`string`再进行比较
+```js
+let values = [0,1,5,10,15];
+console.log(values.sort()); // [0,1,10,15,5]
+
+// sort()可以接收一个比较函数
+values.sort( (a, b) => a < b ? 1 : a > b ? -1 : 0 );
+console.log(values); // [15,10,5,1,0]
+// 如果数组的元素都是数值，还有更简单的方法
+values.sort( (a, b) => b - a ); // 同上
+console.log(values); // [15,10,5,1,0]
+```
+
+##### 操作方法
+* `concat()` 在现有数组的基础上创建一个新的数组
+```js
+let valuse2 = values.concat("yellow");
+console.log(valuse2); // [15,10,5,1,0, 'yellow']
+
+let newValues = [12, 13];
+newValues[Symbol.isConcatSpreadable] = false; // 修改该参数，让concat的数组参数不被打平
+
+let values3 = values.concat(newValues);
+console.log(values3); // [15,10,5,1,0, [12, 13]]
+```
+
+* `slice()` 原有数组的切片
+
+* `splice()` 在数组中插入元素
+  * 删除：传递2个参数
+  * 插入：传递3个参数
+  * 替换：在删除元素的同时在指定位置插入新元素，传递3个参数
+  插入和替换的区别在于是否要删除元素
+```js
+// 从索引0开始删除1个元素
+let remove = colors.splice(0, 1); // 删除第一项
+console.log(remove); // red
+console.log(colors); // ['blue', 'green']
+
+// 从索引1开始，删除0个元素，添加元素white
+let insert = colors.splice(1, 0, "white");
+console.log(insert); // 空数组
+console.log(colors); // ['blue', "white", 'green']
+
+// 从索引2开始，删除1个元素，添加元素yellow
+let replace = colors.splice(1, 1, "yellow");
+console.log(replace); // white
+console.log(colors);  // ['blue', "yellow", 'green']
+```
+
+##### 搜索和位置方法
+1. 严格相等
+
+从前往后开始搜索
+* `indexOf()` 
+* `includes()` 
+
+从后往前开始搜索
+* `lastIndexOf()` 
+
+均有两个参数：要查找的元素和一个可选的起始搜索位置
+```js
+let numbers = [1,2,3,4,5,6,2,1];
+console.log(numbers.indexOf(2)); // 1
+console.log(numbers.lastIndexOf(2)); // 6
+console.log(numbers.includes(2)); // true
+```
+
+2. 断言函数
+接收三个参数：元素，索引和数组本身
+* `find()`
+* `findIndex()`
+```js
+// 返回数组中第一个＞3的元素
+console.log(numbers.find( (number, index, array) => number > 3 )); // 4
+// 返回数组中第一个＞5的元素的索引
+console.log(numbers.findIndex( (number, index, array) => number > 5 )); // 5
+```
