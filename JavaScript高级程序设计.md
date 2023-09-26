@@ -1083,7 +1083,7 @@ console.log(result.lastIndexOf("l", 6)); //3
 
 #### 单例内置对象
 ##### `Global`
-在全局作用域中定义的变量和函数都会半成Global对象的属性
+在全局作用域中定义的变量和函数都会变成Global对象的属性
 
 * `URL`编码方法
 
@@ -1390,7 +1390,7 @@ let insert = colors.splice(1, 0, "white");
 console.log(insert); // 空数组
 console.log(colors); // ['blue', "white", 'green']
 
-// 从索引2开始，删除1个元素，添加元素yellow
+// 从索引1开始，删除1个元素，添加元素yellow
 let replace = colors.splice(1, 1, "yellow");
 console.log(replace); // white
 console.log(colors);  // ['blue', "yellow", 'green']
