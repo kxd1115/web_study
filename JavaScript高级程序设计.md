@@ -1688,3 +1688,152 @@ ES6新增的"弱集合"，API是`Set`的子集
 value不属于正式引用，不阻止垃圾回收
 
 ##### `WeakSet`的值不可迭代
+
+---
+### 迭代器与生成器
+
+#### 迭代器模式
+把有些结构称为`可迭代对象`(Iterable)
+* 任何实现`可迭代对象Iterable`接口的数据结构都可以被实现`迭代器Iterator`接口的结构**消费**
+* 每个迭代器都会关联一个**可迭代对象**
+
+#### 可迭代协议
+很多内置类型都实现了`Iterable`接口
+* 字符串
+* 数组
+* 映射
+* 集合
+* `arguments`对象
+* `NodeList`等DOM集合类型
+
+#### 迭代器协议
+迭代器API使用`next()`方法，在可迭代对象中遍历数据
+成功调用后，返回一个`IteratorResult`对象，包含迭代器返回的下一个值
+```js
+let arr = ["foo", "bar"];
+
+// 迭代器（给数组创建迭代器接口）
+let iter = arr[Symbol.iterator]();
+
+// 执行迭代
+console.log(iter.next()); // {value: 'foo', done: false}
+console.log(iter.next()); // {value: 'bar', done: false}
+console.log(iter.next()); // {value: undefined, done: true}
+```
+
+#### 生成器
+ES6新增的一个极为灵活的结构，拥有在一个函数块内暂停和恢复代码执行的能力
+
+##### 生成器基础
+在函数名称前面加一个星号(*)表示是一个生成器
+```js
+function* generator() {}
+```
+* 调用生成器函数会产生一个**生成器对象**
+* 生成器对象一开始处于暂停执行的状态
+* 生成器实现了`Iterator`接口，因此可以使用`next()`方法
+```js
+function* generatorFn() {}
+
+const g = generatorFn();
+
+console.log(g);         // generatorFn {<suspended>}
+console.log(g.next);    // f next() { [native code] }
+console.log(g.next());  // {value: undefined, done: true}
+```
+* 生成器在初次调用`next()`方法之后开始执行
+
+##### 通过yield中断执行
+生成器函数遇到`yield`关键字之后，执行会停止，函数作用域的状态会被保留
+* 在生成器对象上调用`next()`恢复执行
+
+```js
+function* generatorFn1() {
+    yield 'foo';
+    yield 'bar';
+    return 'baz';
+}
+
+let g1 = generatorFn1();
+
+console.log(g1.next());
+console.log(g1.next());
+console.log(g1.next());
+console.log(g1.next());
+```
+
+* `yield`关键字只能在生成器函数内部使用
+
+1. 将生成器对象作为一个可迭代对象
+```js
+function* nTimes(n) {
+    while(n--) {
+        yield;
+    }
+}
+
+for (let _ of nTimes(3)) {
+    console.log('foo');
+}
+```
+2. 使用yield实现输入输出
+
+3. 产生可迭代对象
+可以使用星号增强`yield`的行为
+```js
+function* generatorFn2() {
+    yield* [1,2,3]; // 将一个可迭代对象序列化为一连串可以单独产出的值
+}
+
+let generatorObject = generatorFn();
+
+for (const x of generatorFn2()) {
+    console.log(x);
+}
+// 1
+// 2
+// 3
+```
+
+4. 使用`yield*`实现递归算法
+```js
+function* nTimes1(n) {
+    if (n>0) {
+        yield* nTimes1(n-1);
+        yield n - 1;
+    }
+}
+
+for (const x of nTimes1(4)) {
+    console.log(x);
+}
+// 0
+// 1
+// 2
+// 3
+```
+
+##### 生成器作为默认迭代器
+```js
+class Foo {
+    constructor() {
+        this.values = [1,3,2];
+    }
+
+    *[Symbol.iterator]() {
+        yield* this.values;
+    }
+}
+
+const f = new Foo();
+for (const x of f) {
+    console.log(x);
+}
+```
+##### 提前终止生成器
+1. `return()`
+    * 所有生成器都有`return()`方法
+    * 强制生成器进入关闭状态，且无法恢复
+2. `throw()`
+    * 会在暂停的时候将一个提供的错误注入到生成器对象中，如果错误未处理，生成器就会关闭
+    * 如果生成器函数**内部**处理了这个错误，那么生成器就不会关闭，而且还可以恢复执行
