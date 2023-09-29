@@ -1424,3 +1424,213 @@ console.log(numbers.find( (number, index, array) => number > 3 )); // 4
 // 返回数组中第一个＞5的元素的索引
 console.log(numbers.findIndex( (number, index, array) => number > 5 )); // 5
 ```
+
+3. 迭代方法
+5个迭代方法，2个参数，A：以数组项为参数的函数，B：作用域对象
+A中的函数接收3个参数（类似断言函数，元素，索引和数组本身）
+对数组每一项都运行传入的函数
+* `every()`：如果数组的每一项都返回`true`，则返回`true`
+* `filter()`：返回`true`时，将对应选项组成新的数组
+* `forEach()`：没有返回值
+* `map()`：返回每次调用的结果组成的数组
+* `some()`：如果有一项返回`true`，则返回`true`
+
+```js
+let numbers1 = [1,2,3,4,4,3,2,1]
+
+let everyResult = numbers1.every( (item, index, array) => item>=1 );
+console.log(everyResult); // true
+
+let filterResult = numbers1.filter( (item, index, array) => item>=3 );
+console.log(filterResult); // [3,4,4,3]
+
+let mapResult = numbers1.map( (item, index, array) => item * 2 );
+console.log(mapResult); // [2,4,6,8,8,6,4,2]
+```
+
+4. 归并方法
+* `reduce()` 从第一项开始遍历
+* `reduceRight()` 从最后一项开始遍历
+
+```js
+let values1 = [1,2,3,4,5]
+
+/*
+遍历数组的每一项，并最终返回值
+prev 上一个归并项
+cur 当前归并项
+当前归并项的索引和数组本身
+*/ 
+let sum = values1.reduce( (prev, cur, index, array) => prev+cur );
+console.log(sum); // 15
+```
+
+#### 定型数组`(typed array)`
+一种特殊的包含数值类型的数组
+
+##### `ArrayBuffer`
+构造函数，用于在内存中分配特定数量的字节空间，一经创建，大小就不能调整，但可以被`slice`切片复制到新数组
+```js
+const buf = new ArrayBuffer(16) // 在内存中分配16字节
+alert(buf.byteLength);          // 16
+
+const buf2 = buf.slice(4, 12);
+alert(buf2.byteLength);         // 8
+```
+分配失败时会抛出错误，声明时会将所有二进制初始化为0
+
+##### `DataView`
+专门为文件I/O和网络I/O设计
+```js
+const buf = new ArrayBuffer(16);
+
+// DataView默认使用整个ArrayBuffer
+const fullDataView = new DataView(buf);
+console.log(fullDataView.byteOffset);       // 16   
+console.log(fullDataView.byteLength);       // 0
+console.log(fullDataView.buffer === buf);   // true
+
+// 接收一个可选的字节偏移量和字节长度
+// byteOffset = 0 表示视图从缓冲起点开始
+// byteLength = 8 限制视图为8个长度
+const firstHalfDataView = new DataView(buf, 0, 8);
+console.log(firstHalfDataView.byteOffset); // 0
+console.log(firstHalfDataView.byteLength); // 8
+console.log(firstHalfDataView.buffer === buf); // true
+
+// 这里仅一个参数，表示视图从第7个字节开始
+const secondHalfDataView = new DataView(buf, 7);
+console.log(secondHalfDataView.byteLength); // 9
+```
+1. `ElementType`
+对存储在缓冲内的数据类型没有预设。API强制开发者在读、写时指定一个`ElementType`
+* Int8/Uint8   
+  * 1字节
+  * 8位`有/无`符号整数
+* Int16/Uint16
+  * 2字节 
+  * 16位`有/无`符号整数
+* Int32/Uint32
+  * 4字节 
+  * 32位`有/无`符号整数
+* Float32
+  * 4字节 
+  * 32位IEEE-754浮点数
+* Float64
+  * 8字节 
+  * 64位IEEE-754浮点数
+
+
+1. 字节序
+大端字节序：最高有效位保存在第一个字节，最低有效位保存在最有一个字节
+小端字节序：最低有效位保存在第一个字节，最高有效位保存在最有一个字节
+
+1. 边界情况
+`DataView`读写操作的前提是必须有充足的缓冲区，否则会抛出`RangeError`
+
+##### 定型数组
+另一种形式的`ArrayBuffer`视图
+```js
+const buf1 = new ArrayBuffer(12);
+
+// 创建一个Int32Array，每个元素4个字节
+const ints1 = new Int32Array(buf1);
+console.log(ints1.length); // 3
+
+const ints2 = new Int16Array([2,4,5,7]);
+console.log(ints2.length); // 4
+console.log(ints2.buffer.byteLength); // 8，每项2个字节，一共8字节
+
+// 基于普通数组来创建
+const ints3 = Int32Array.from([1,2,3,4,6]);
+console.log(ints3.buffer.byteLength); // 20
+
+// 基于传入的参数创建一个FloatArray
+const floats1 = Float32Array.of(3.14, 2.718, 1.618, 1.01);
+console.log(floats1.buffer.byteLength); // 16
+console.log(floats1[3]); // 1.0099999904632568
+
+// 使用BYTES_PRE_ELEMENT属性，返回定型数组中每个元素的大小
+console.log(floats1.BYTES_PER_ELEMENT); // 4
+console.log(ints2.BYTES_PER_ELEMENT);   // 2
+```
+1. 定型数组行为
+定型数组和普通数组很相似，有很多相同的操作符、方法和属性
+ * 迭代方法，搜索和位置方法，归并方法，排序法方法，迭代器方法，复制和填充方法，转换方法
+slice()、find()、filter()、keys()、map()、sort()等
+其中返回新数组的方法返回的数组包含的元素类型是相同的
+ * 栈方法，concat()不适用
+
+2. 合并、复制和修改定型数组
+
+* `set()` 把提供的数组复制给当前定型数组指定的索引位置
+* `subarray()` 基于原始定型数组中复制的值返回一个新定型数组
+
+```js
+const ints3 = Int32Array.from([1,2,3,4,6]);
+
+// 长度已固定，因此这里插入时，直接替换掉了旧值
+ints3.set([1,1], 1);
+console.log(ints3); // [1,1,1,4,6]
+
+const ints3Copy = ints3.subarray();
+console.log(ints3Copy); // [1,1,1,4,6]
+
+const ints3Copy1 = ints3.subarray(4, 5);
+console.log(ints3Copy1); // [6]
+```
+
+3. 下溢和上溢
+不会影响其他索引
+```js
+const unsignedInts = new Uint8Array(2);
+
+//上溢的位不会影响相邻索引，索引只取最低有效位上的8位
+unsignedInts[1] = 256;
+console.log(unsignedInts); // [0, 0]
+
+unsignedInts[1] = 511;
+console.log(unsignedInts); // [0, 255]
+
+// 下溢会被转换为其无符号的等价值
+unsignedInts[1] = -1;
+console.log(unsignedInts); // [0, 255]
+
+const ints10 = new Int8Array(2);
+// 上溢自动变成二补数形式
+ints10[1] = 128;
+console.log(ints10); // [0, -128]
+
+// 下溢自动变成二补数形式
+ints10[1] = 255;
+console.log(ints10); // [0, -1]
+
+```
+
+#### `Map`
+ES6新增的一种集合类型
+
+##### 基本API
+初始化之后，可以使用`set()`添加键值对，也可以使用`get()`和`has()`进行查询
+```js
+// 构造一个空映射
+const m = new Map();
+
+// 使用嵌套数组初始化映射
+const m1 = new Map([
+    ["key1", "value1"],
+    ["key2", "value2"],
+    ["key3", "value3"]
+]);
+console.log(m1.size); // 3
+
+// 使用自定义迭代器额初始化映射
+const m2 = new Map({
+    [Symbol.iterator]: function*() {
+        yield ["key1", "val1"];
+        yield ["key2", "val2"];
+        yield ["key3", "val3"];
+    }
+});
+console.log(m2.size); // 3
+```
