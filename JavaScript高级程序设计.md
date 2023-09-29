@@ -1611,7 +1611,11 @@ console.log(ints10); // [0, -1]
 ES6新增的一种集合类型
 
 ##### 基本API
-初始化之后，可以使用`set()`添加键值对，也可以使用`get()`和`has()`进行查询
+初始化之后，可以使用`set()`添加键值对，
+* 使用`get()`和`has()`进行查询
+* `size`属性获取键值对的数量
+* `delete()`和`clear()`进行删除值
+
 ```js
 // 构造一个空映射
 const m = new Map();
@@ -1633,4 +1637,54 @@ const m2 = new Map({
     }
 });
 console.log(m2.size); // 3
+
+m.set("firstName", "Yue").set("lastName", "May");
+
+console.log(m.has("firstName")); // true
+console.log(m.get("firstName")); // Yue
+console.log(m.size); // 2
+
+m.delete("firstName");  // 只删除一个键值对
+console.log(m);
+
+m.clear(); // 清除所有键值对
+console.log(m);
 ```
+##### 顺序与迭代
+```js
+for (let key of m2.keys()) {
+    console.log(key);
+}
+// key1 key2 key3
+
+for (let value of m2.values()) {
+    console.log(value);
+}
+// val1 val2 val3
+```
+
+#### `WeakMap`
+ES6新增的弱映射，API是`Map`的子集
+初始化操作和`Map`基本是一样的，不能使用`clear()`
+
+##### 弱键
+表示key不属于正式引用，不会影响垃圾回收，但value不是
+
+##### 使用弱映射
+DOM节点元数据
+`WeakMap`非常适合保存关联元数据（因为对应实例不会妨碍垃圾回收）
+
+#### `Set`
+ES6新增的集合类型，像一种加强的`Map`，大多数API和行为都是共有的（像一个没有`key`的`map`）
+* `add()`增加值
+* `has()`查询
+* `size`取得元素数量
+* `delete()`和`clear()`删除元素
+
+#### `WeakSet`
+ES6新增的"弱集合"，API是`Set`的子集
+
+##### 弱值
+value不属于正式引用，不阻止垃圾回收
+
+##### `WeakSet`的值不可迭代
