@@ -1837,3 +1837,132 @@ for (const x of f) {
 2. `throw()`
     * 会在暂停的时候将一个提供的错误注入到生成器对象中，如果错误未处理，生成器就会关闭
     * 如果生成器函数**内部**处理了这个错误，那么生成器就不会关闭，而且还可以恢复执行
+
+
+### 对象、类与面向对象编程
+#### 理解对象
+
+##### 属性的类型
+1. 数据属性
+* `Configurable`: 表示属性是否可以通过delete删除并重新定义，是否可以修改它的特性，以及是否可以把它修改为访问器属性。默认是true
+* `Enumerable`: 表示属性是否可以通过for-in循环返回。默认是true
+* `Writable`: 表示属性的值是否可以被修改。默认是true
+* `Value`: 包含属性实际的值。默认是undefined
+
+```js
+let person = {};
+Object.defineProperty(person, "name", {
+    writable: false, // name变成只读属性，不能被修改
+    value: "Dennis"
+});
+
+console.log(person.name); // Dennis
+person.name = 'May';
+console.log(person.name); // Dennis
+```
+```js
+let person = {};
+Object.defineProperty(person, "name", {
+    configurable: false, // 属性无法删除，且不能修改
+    value: "Dennis"
+});
+
+console.log(person.name); // Dennis
+delete person.name;
+console.log(person.name); // Dennis
+
+person.name = "May";
+console.log(person.name); // Dennis
+```
+- 在调用`Object.defineProperty()`时，对象的4个数据属性都会默认为`false`（如果没有设置）
+
+2. 访问器属性
+不包含数据值，且不能直接定义，必须调用`Object.defineProperty()`
+* `Configurable`: 与数据属性定义一样
+* `Enumerable`: 与数据属性定义一样
+* `Get`: 获取函数，在读取属性时调用。默认为undefined
+* `Set`: 设置函数，在写入属性时调用。默认为undefined
+
+```js
+let book = {
+    year_: 2017, // _ 表示私有属性，不希望在对象方法的外部被访问
+    edition: 1   // 公共属性
+};
+
+Object.defineProperty(book, "year", {
+    // 这里使用了get和set，意味着该属性被定义为一个访问器属性
+    // 读取
+    get() {
+        // 定义一个公共属性year，直接返回year_的结果
+        return this.year_;
+    },
+    // 写入
+    set(newValue) {
+        if (newValue > 2017) {
+            this.year_ = newValue;
+            // 1 + newValue - 2017
+            this.edition += newValue - 2017;
+        }
+    }
+});
+
+book.year = 2018;
+console.log(book.edition);
+```
+
+##### 定义多个属性
+* `Object.defineProperties()`
+```js
+let book = {};
+Object.defineProperties(book, {
+    // 定义多个属性
+
+    year_: {
+        value: 2017
+    },
+
+    edition: {
+        value: 1
+    },
+
+    year: {
+        get() {
+            return year_;
+        },
+
+        set(newValue) {
+            if (newValue > 2017) {
+                this.year_ = newValue;
+                // 1 + newValue - 2017
+                this.edition += newValue - 2017;
+            }
+        }
+    }
+});
+```
+
+##### 读取属性的特性
+* `Object.getOwnPropertyDescriptor()`
+  * 参数1：属性所在的对象
+  * 参数2：要去的其描述的属性名
+
+```js
+let descriptor = Object.getOwnPropertyDescriptor(book, "year_");
+console.log(descriptor.value);        // 2017
+console.log(descriptor.configurable); // false
+console.log(descriptor.get);          // undefined
+console.log(descriptor.set);          // undefined
+
+console.log("--------------------------")
+let descriptor1 = Object.getOwnPropertyDescriptor(book, "year");
+console.log(descriptor1.value);        // undefined
+console.log(descriptor1.enumerable);   // false
+console.log(descriptor1.get);          // function
+console.log(descriptor1.set);          // function
+```
+
+* `Object.getOwnPropertyDescriptors()`
+  * 批量获取对象的所有访问器属性
+```js
+console.log(Object.getOwnPropertyDescriptors(book));
+```
