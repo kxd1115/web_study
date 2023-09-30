@@ -1965,4 +1965,89 @@ console.log(descriptor1.set);          // function
   * 批量获取对象的所有访问器属性
 ```js
 console.log(Object.getOwnPropertyDescriptors(book));
+
+// 返回内容
+edition: {value: 1, writable: false, enumerable: false, configurable: false}
+year: {enumerable: false, configurable: false, get: ƒ(), set: ƒ()}
+year_: {value: 2017, writable: false, enumerable: false, configurable: false}
 ```
+
+##### 合并对象
+* `Object.assign()`
+  * 接收一个目标对象和一个或多个源对象作为参数
+    * 将每个对象中可枚举和自由属性赋值到目标对象
+    * 使用源对象中的[[Get]]取得属性值
+    * 使用目标对象中的[[Set]]设置属性值
+  * 执行浅复制，如果每个源对象都有相同属性，则使用最后一个复制的值
+
+单个源对象
+```js
+let dest, src, result;
+
+dest = {};
+src = { id: 'src' };
+
+// 从src中复制属性到dest中，并生成一个新的对象
+result = Object.assign(dest, src);
+console.log(dest === result);   // true
+console.log(dest !== src);      // true
+console.log(result.id);         // src
+console.log(src.id);            // src
+```
+
+多个源对象
+```js
+let dest, src, result;
+
+dest = {};
+src = { id: 'src' };
+src1 = { name: 'May' };
+
+result = Object.assign(dest, src, src1);
+console.log(result.id);         // src
+console.log(result.name);       // May
+```
+复试源对象的get方法
+```js
+dest = {
+    set a(val) {
+        console.log(`Invoked dest setter with param ${val}`);
+    }
+};
+
+src = {
+    get a() {
+        console.log('Invoked src getter');
+        return 'foo'
+    }
+};
+
+result1 = Object.assign(dest, src);
+console.log(result1);
+// Invoked src getter
+// Invoked dest setter with param foo
+```
+
+##### 增强的对象语法
+1. 属性值简写
+
+```js
+let name = "May";
+
+let person = {
+    name
+};
+console.log(person.name);
+
+```
+2. 方法名简写
+```js
+let person = {
+    sayName(name) {
+        console.log(`My name is ${name}`);
+    }    
+};
+console.log(person.sayName('Dennis')); // My name is May
+```
+
+##### 对象解构
