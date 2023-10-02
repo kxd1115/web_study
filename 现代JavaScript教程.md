@@ -353,3 +353,16 @@ outer: for (let input = prompt("请输入一个大于等于100的数字", ""); i
 
 alert("Great!");
 ```
+
+```js
+// 求素数
+start: for (let num = prompt("请输入大于2的数字", ""); num>=2; num--) {
+    for (let i = 2; i < num; i++) { 
+        // 只能被1和本身整除
+        // 如果能被1和本身之外的整数整除，则不是素数
+        if (num % i == 0) continue start;
+    }
+    
+    alert(num);
+}
+```
