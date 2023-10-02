@@ -214,7 +214,7 @@ alert( !!"Dennis" ); // true
 // 类似于 Boolean(0)的效果
 ```
 
-作业
+!!! ! 作业
 ```js
 let person = prompt("Who is there?", "");
 
@@ -252,7 +252,104 @@ alert( firstName ?? lastName ?? nickName ?? "Anonymous" ); // SuperCoder
 ### 优先级
 ??的优先级是4，和||相同
 * 优先级顺序可以查看MDN
-`https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Operator_Precedence`
+> `https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Operator_Precedence`
 
 #### `?? || &&` 一起使用
 * 一般情况下禁止一起使用，除非使用括号明确指定了优先级
+
+## 循环: `while`和`for`
+
+### `while`循环
+* 条件为真时，执行循环体
+```js
+while(condition) {
+  // 循环体
+};
+```
+
+### `do...while`循环
+* 循环体至少执行一次，然后检查条件是否为真
+```js
+do {
+  // 循环体
+} while(condition);
+```
+
+### `for`循环
+```js
+for (begin; codition; step) {
+  // 循环体
+}
+```
+```js
+for (let i=0; i<3; i++) {
+    alert(i); // 0, 1, 2
+}
+```
+
+#### 省略语句段
+for循环中的任何语句段都可以被省略
+```js
+let i = 0;
+
+// 省略begin语句段
+for (; i<3; i++) {
+    alert(i); // 0, 1, 2
+}
+
+// 省略step语句段
+for (; i<3; ) {
+    alert(i++); // 0, 1, 2
+}
+
+for (;;) {
+  // 两个;必须保留
+  // 无限循环
+}
+```
+
+### 跳出循环
+* 通常条件为假时，循环终止
+* 也可以使用`break`指令强制退出循环
+
+### 继续下一次迭代
+* `continue`
+  * 停止当前这一次迭代，并强制开启新一轮循环
+
+```js
+for (let i = 0; i < 10; i++) {
+    // 当余数是0时，停止本次迭代
+    if ( i % 2 == 0 ) continue;
+    alert(i); // 1, 3, 5, 7, 9
+}
+```
+> 不能与三元运算符`?`一起使用
+
+### break/continue标签
+```js
+outer: for (let i = 0; i < 3; i++) {
+    for (let j = 0; i < 3; j++) {
+        let input = prompt(`Value at coords (${i}, ${j})`, '')
+
+        // 如果input是空值或被取消时( !input = true )，则跳出这2个循环
+        if (!input) break outer;
+    }
+}
+
+alert('Done!');
+```
+使用标签跳出当前循环的外部
+
+
+!!! ! 作业
+```js
+outer: for (let input = prompt("请输入一个大于等于100的数字", ""); input; ) {
+    if (!input || input > 100) {
+        break outer;
+    } else {
+        let input = prompt("请输入一个大于等于100的数字", "")
+    }
+}
+
+alert("Great!");
+```
