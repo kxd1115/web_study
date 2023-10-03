@@ -366,3 +366,132 @@ start: for (let num = prompt("请输入大于2的数字", ""); num>=2; num--) {
     alert(num);
 }
 ```
+
+## `switch`语句
+
+```js
+let a = 2 + 2;
+
+switch (a) {
+    case 3:
+        alert("to small!");
+        break;
+    case 4:
+        alert("Exactly!");
+        break;
+    case 5:
+        alert("too big");
+        break;
+    default:
+        alert("I don't know such values");
+}
+// 在没有break的情况下，将会执行 "casr 4"之后的所有alert
+```
+
+### `case`分组
+```js
+let a = 2 + 2;
+
+switch (a) {
+    case 4:
+        alert("Exactly!");
+        break;
+
+    // 3和5显示相同的信息
+    case 3:
+    case 5:
+        alert("Wrong!");
+        break;
+    default:
+        alert("I don't know such values");
+}
+```
+
+### 类型很关键
+switch中的相等是严格相等
+```js
+let age = prompt("Enter a value?")
+
+switch (age) {
+    case "0":
+    case "1":
+        alert("One or zero");
+        break;
+    case "2":
+        alert("Two");
+        break;
+    case 3: // 无效分支
+        alert("Never executes!");
+        break;
+    default:
+        alert("An unknown value");
+}
+```
+
+!!! ! 作业
+```js
+switch (browser) {
+    case 'Edge':
+        alert( "You've got the Edge!" );
+        break;
+
+    case 'Chrome':
+    case 'Firefox':
+    case 'Safari':
+    case 'Opera':
+        alert( 'Okay we support these browsers too' );
+        break;
+
+    default:
+        alert( 'We hope that this page looks ok!' );
+}
+
+// 替换为if写法
+if (browser === "Edge") {
+    alert( "You've got the Edge!" );
+} else if (
+    browser==='Chrome'  || 
+    browser==='Firefox' || 
+    browser==='Safari'  || 
+    browser==='Opera') {
+    alert( 'Okay we support these browsers too' );
+} else {
+    alert( 'We hope that this page looks ok!' );
+}
+```
+
+```js
+
+let a = +prompt('a?', '');
+
+switch (a) {
+    case 0:
+        alert( 0 );
+        break;
+
+    case 1:
+        alert( 1 );
+        break;
+
+    case 2:
+    case 3:
+        alert( '2,3' );
+        break;
+}
+
+// 替换为switch写法
+let a = +prompt('a?', '');
+
+switch (a) {
+    case 0:
+        alert(0);
+        break;
+    case 1:
+        alert(1);
+        break;
+    case 2:
+    case 3:
+        alert("2, 3");
+        break;
+}
+```
