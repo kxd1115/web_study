@@ -835,3 +835,115 @@ function pow(x, n) {
 一种可以将源码转移成另一种源码的特殊软件
 
 #### 垫片
+
+---
+# Object(对象): 基础知识
+
+多词属性
+```js
+let user = {
+    name = "Dennis",
+    age = 29,
+    "Like birds" = false,
+    // 需要添加引号
+}
+
+// 调用时使用中括号
+alert(user["Like birds"]); // false
+```
+
+#### 计算属性
+```js
+let fruit = prompt("Which fruit to buy?", "apple");
+
+let bag = {
+    [fruit]: 5, // 属性名从变量fruit中得到的
+};
+
+// 如果输入的是apple，则该属性的名字是apple
+alert(bag.apple);
+```
+
+### 属性值简写
+```js
+let user = {
+    name, // 等同于name: name
+    age,  // 等同于age: age
+};
+```
+
+### 属性名称限制
+不能使用编程语言的某个保留字，如`for`、`let`等
+
+### 属性存在性测试，`in`操作符
+```js
+let user = { 
+    name:'Dennis', 
+    age:29, 
+};
+
+alert( "name" in user); // true
+```
+
+### `for...in 循环`
+```js
+for (key in object) {
+    //遍历存在的所有的key
+}
+```
+#### 像对象一样排序
+如果是整数属性，则按照数字大小进行排序，如果不是，则按照创建时的顺序排序
+
+
+> 作业
+```js
+// 作业
+let user = {};
+
+user.name = "John";
+user.surname = "Smith";
+user.name = "Pete";
+delete user.name;
+
+// 作业：检查对象中是否有属性，有则返回false，否则返回true
+function isEmpty(key, obj) {
+    for (key in obj) {
+        // 进入循环，说明有属性，直接返回false
+        return false;
+    }
+    return true;
+}
+
+let schedule = {};
+alert(isEmpty(schedule));
+
+// 作业：对象属性求和
+let salaries = {
+    John: 100,
+    Ann: 160,
+    Pete: 130
+};
+
+let sum = 0;
+for (key in salaries) {
+    sum += salaries[key];
+}
+alert(sum);
+
+// 将所有是number的属性值*2
+let menu = {
+    width: 200,
+    height: 300,
+    title: "My menu"
+};
+
+multiplyNumeric(menu);
+
+function multiplyNumeric(obj) {
+    for (key in obj) {
+        if (+obj[key]) {
+            obj[key] = obj[key]*2;
+        }
+    }
+}
+```
