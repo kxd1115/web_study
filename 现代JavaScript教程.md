@@ -214,7 +214,7 @@ alert( !!"Dennis" ); // true
 // 类似于 Boolean(0)的效果
 ```
 
-!!! ! 作业
+> 作业
 ```js
 let person = prompt("Who is there?", "");
 
@@ -341,7 +341,7 @@ alert('Done!');
 使用标签跳出当前循环的外部
 
 
-!!! ! 作业
+> 作业
 ```js
 outer: for (let input = prompt("请输入一个大于等于100的数字", ""); input; ) {
     if (!input || input > 100) {
@@ -428,7 +428,7 @@ switch (age) {
 }
 ```
 
-!!! ! 作业
+> 作业
 ```js
 switch (browser) {
     case 'Edge':
@@ -533,4 +533,126 @@ showMessage();
 * "check..." 检查某些内容并返回boolean值
 * "show..." 显示某些内容
 
-> 一个函数尽量仅只包含一个功能（1个行为）
+> 一个函数尽量只包含一个功能（1个行为） 
+
+
+
+## 函数表达式
+```js
+let sayHi = function() {
+    alert("Hello");
+};
+```
+> 函数表达式允许省略函数名
+
+
+### 函数是一个值
+### 回调函数
+```js
+function ask(question, yes, no) {
+    if (confirm(question)) {
+        yes(); // 回调函数
+    } else {
+        no();  // 回调函数
+    }
+}
+
+function showOk() {
+    alert("You argeed.");
+}
+
+function showCancel() {
+    alert("You canceled the execution.");
+}
+
+ask("Do you agree?", showOk, showCancel);
+
+// 更简洁的写法
+function ask(question, yes, no) {
+    if (confirm(question)) {
+        yes(); // 回调函数
+    } else {
+        no();  // 回调函数
+    }
+}
+
+ask(
+    "Do you agree?", 
+    // 使用匿名函数
+    function() {alert("You argeed.");},
+    function() {alert("You canceled the execution.");}
+);
+```
+
+### 函数声明 VS 函数表达式
+
+* 函数表达式从创建那一刻开始，可以使用
+* 函数声明在未被定义之前，就可以被调用
+
+日常工作中优先使用函数声明
+
+## 箭头函数，基础知识
+```js
+let func = (arg1, arg2, arg3, ..., argN) => expression;
+
+// 等价于
+let func = function(arg1, arg2, arg3, ..., argN) {
+    return expression;   
+};
+```
+多行使用时需要添加`{}`，并需要return
+```js
+let sum = (a, b) => {
+    let result = a + b;
+    return result;
+};
+
+alert(sum(2, 3)); // 5
+```
+
+> 作业
+```js
+function ask(question, yes, no) {
+  if (confirm(question)) yes();
+  else no();
+}
+
+ask(
+  "Do you agree?",
+  () => alert("You agreed."),
+  () => alert("You canceled the execution.")
+);
+
+// 用箭头函数重写
+let ask = (question, yes, no) => confirm(question) ? yes() : no();
+
+ask(
+    "Do you agree?",
+    () => { alert("You agreed."); },
+    () => { alert("You canceled the execution."); }
+);
+
+```
+
+## JavaScript特性回顾
+
+---
+
+# 代码质量
+
+### `Sources`面板
+包含文件导航，代码编辑和JavaScript调试 3个板块
+
+### 控制台
+
+#### `debugger`命令
+使用`debugger`命令来暂停代码
+```js
+function hello(name) {
+    let phrase = `hello, ${name}!`;
+
+    debugger; // 调试器会在这里停止
+
+    say(phrase);
+}
+```
