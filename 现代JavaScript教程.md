@@ -656,3 +656,182 @@ function hello(name) {
     say(phrase);
 }
 ```
+
+### 使用Mocha进行自动化测试
+#### 行为驱动开发BDD
+* 测试
+* 文档
+* 示例
+
+#### 规范
+```js
+describe("title", function() {...})
+```
+```js
+describe("pow", function() {
+    it("raises to n-th power", function() {
+        assert.equal(pow(2, 3), 8);
+        // 检查2**3是否=8
+    })
+})
+```
+
+#### 行为规范
+* Mocha 核心框架，提供了包括通用型测试函数`describe`和`it`，以及用于运行测试的主函数
+* Chai 提供很多断言支持的库
+* Sinon 用于监视函数、模拟内建函数的其他函数的库
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- add mocha css, to show results -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.css">
+  <!-- add mocha framework code -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.js"></script>
+  <script>
+    mocha.setup('bdd'); // minimal setup
+  </script>
+  <!-- add chai -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.js"></script>
+  <script>
+   // chai has a lot of stuff, let's make assert global
+    let assert = chai.assert; 
+  </script>
+</head>
+
+<body>
+  <script>
+    function pow(x, n) {
+      /* function code is to be written, empty now */
+      let result = x**n;
+      return result;
+    }
+  </script>
+
+  <!-- the script with tests (describe, it...) -->
+  <script>
+    describe("pow", function() {
+        it("raises to n-th power", function() {
+            assert.equal(pow(2, 3), 8);
+            assert.equal(pow(3, 4), 81);
+        });
+
+        /*
+        第二种写法，2个测试
+        it("2 raises to power 3 is 8", function() {
+            assert.equal(pow(2, 3), 8);
+        });
+        it("3 raises to power 4 is 81", function() {
+            assert.equal(pow(3, 4), 81);
+        });
+        */
+    })
+  </script>
+
+  <!-- the element with id="mocha" will contain test results -->
+  <div id="mocha"></div>
+
+  <!-- run tests! -->
+  <script>
+    mocha.run();
+  </script>
+</body>
+
+</html>
+```
+#### 改进实现
+```js
+describe("pow", function() {
+    
+    function makeTest(x) {
+        let expected = x * x * x;
+        it(`${x} in the power 3 is ${expected}`, function() {
+            assert.equal(pow(x, 3), expected);
+        });
+    }
+
+    for (let x = 1; x <= 5; x++) {
+        makeTest(x);
+    }
+
+})
+```
+
+
+
+#### 嵌套描述
+```js
+describe("pow", function() {
+        
+    describe("raises x to power 3", function() {
+
+        function makeTest(x) {
+            let expected = x * x * x;
+            it(`${x} in the power 3 is ${expected}`, function() {
+                assert.equal(pow(x, 3), expected);
+            });
+        }
+
+        for (let x = 1; x <= 5; x++) {
+            makeTest(x);
+        }
+
+    });
+
+    // 在此处添加更多的测试代码，describe和it都可以添加在这
+
+})
+```
+
+> `before/after`
+设置对应函数，在运行测试之前/之后执行。
+> `beforeEach/afterEach`
+设置对应函数在执行**每一个**`it`之前/之后执行
+
+```js
+describe("test", function() {
+
+    before( () => alert("Testing started - before all tests") );
+    after( () => alert("Testing finished - before all tests") );
+
+    beforeEach( () => alert("Before a test - enter a test") );
+    afterEach( () => alert("After a test - enter a test") );
+
+    it("test 1", () => alert(1));
+    it("test 2", () => alert(2));
+
+})
+```
+
+#### 延伸规范
+```js
+it("for negative n the result is NaN", function() {
+    assert.isNaN(pow(2, -1));
+});
+
+it("for non-integer n the result is NaN", function() {
+    assert.isNaN(pow(2, 1.5));
+});
+```
+此时需要修改pow函数
+```js
+function pow(x, n) {
+    /* function code is to be written, empty now */
+      
+    if (n<0) return NaN;
+    if (Math.round(n) != n) return NaN;
+
+    let result = x**n;
+    return result;
+    
+}
+```
+
+### Polyfill转译器
+使用转译器/垫片让代码在还不支持最新特性的旧引擎上工作
+
+#### 转译器
+一种可以将源码转移成另一种源码的特殊软件
+
+#### 垫片
