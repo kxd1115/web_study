@@ -1327,3 +1327,76 @@ alert( Symbol.keyFor(sym1) ); // name
 
 ### 系统symbol
 JS内部自带的
+
+## 对象 —— 原始值转换
+JS中`obj1+obj2`得到的结果不可能是另一个对象，而是先将`obj`自动转换为原始值，然后对原始值进行运算，得到的结果也是原始值！
+
+### 转换规则
+1. 所有对象都是true，所以不存在布尔值转换。只有数字和字符串转换
+
+### hint
+类型转换在各种情况下有三种变体，称为`hint`
+* string
+* number
+* default
+  * 少数情况下发生
+
+#### `Symbol.toPrimitive`
+```js
+let user = {
+    name: "John",
+    money: 1000,
+
+    [Symbol.toPrimitive](hint) {
+        alert(`hint: ${hint}`);
+        return hint == "string" ? `{name: ${this.name}}` : this.money;
+    }
+};
+
+alert(user); // hint: string -> {name: John}
+alert(+user); // hint: number -> 1000
+alert(user + 500); // hint: default -> 1500
+```
+#### `toString/valueOf`
+```js
+let user = {
+    name: "John",
+};
+
+alert(user); // [object Object]
+alert(user.valueOf() === user); // true
+```
+```js
+let user = {
+    name: "John",
+    money: 1000,
+
+    toString() {
+        return `{name: ${this.name}}`;
+    },
+
+    valueOf() {
+        return this.money;
+    }
+
+};
+
+alert(user); // {name: John}
+alert(+user); // 1000
+alert(user + 500); // 1500
+```
+如果没有`Symbol.toPrimitive`和`valueOf`, `toString`将会处理所有原始转换
+```js
+let user = {
+    name: "John",
+
+    toString() {
+        return this.name;
+    },
+
+};
+
+alert(user); // John
+alert(user + 500); // John500
+```
+实际运用中，通常只实现`obj.toString()`作为字符串转换的**全能**方法就足够了。
