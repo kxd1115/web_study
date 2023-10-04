@@ -947,3 +947,81 @@ function multiplyNumeric(obj) {
     }
 }
 ```
+
+## 对象引用和复制
+
+* 当一个对象变量被复制——引用被复制，而对象自身并没有被复制
+
+
+### 克隆与合并, `Object.assign`
+```js
+// Object.assign(dest, [src1, src2...])
+```
+* dest 目标对象
+* src 源对象
+* 该方法将所有源对象的属性拷贝到目标对象`dest`中
+
+```js
+let user = { name: "Dennis" };
+
+let permission1 = { canView: true };
+let permission2 = { canEdit: true };
+
+Object.assign(user, permission1, permission2);
+
+console.log(user);
+// 目标对象中和源对象相同的属性会被覆盖
+```
+
+### 深层克隆
+```js
+let user = {
+    name: "John",
+    sizes: {
+        height: 182,
+        width: 50,
+    },
+};
+
+//alert(user.sizes.height); // 182
+
+let clone = Object.assign({}, user);
+console.log(clone);
+
+//alert(clone.sizes === user.sizes); 
+// true, 同一个对象
+
+user.sizes.height++;
+alert(clone.sizes.height);  // 183
+
+user.name = "Dennis";
+alert(clone.name); // "John"
+```
+此时，`clone`和`user`共用一个sizes（因为user.sizes是一个对象，会以引用形式拷贝）
+
+
+### 垃圾回收
+
+#### 可达性
+**可达**值是那些以某种方式可访问或可用的值。它们一定是存储在内存中的。
+1. 举例(这些值明显不可能被释放)：
+* 当前执行的函数，它的局部变量和参数
+* 当前嵌套调用链上的其他函数、它们的局部变量和函数
+* 全局变量
+这些值被称作**根(roots)**
+
+2. 如果一个值可以通过引用链从根访问任何其他值，则该值是可达的
+
+`JavaScript`引擎中有一个被称作**垃圾回收器**的东西在后台执行。监视所有对象的状态，并删掉那些已经不可达的对象
+
+
+* 对外引用不重要，只有传入引用才可以使对象可达
+
+##### 无法到达的岛屿
+几个对象相互引用，但外呼没有对其任意对象的引用，这些对象也可能是不可达的，并被从内存中删除
+
+#### 内部算法
+垃圾回收的基本算法`mark-and-sweep`
+
+垃圾回收的过程类
+* 就好像从根溢出一大桶油漆，它流经所有引用并标记所有可到达的对象。然后移除未标记的
