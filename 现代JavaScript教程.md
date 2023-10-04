@@ -1025,3 +1025,305 @@ alert(clone.name); // "John"
 
 垃圾回收的过程类
 * 就好像从根溢出一大桶油漆，它流经所有引用并标记所有可到达的对象。然后移除未标记的
+
+## 对象方法, `this`
+
+```js
+let user = {
+    name: "John",
+    age: 30,
+};
+
+user.sayHi = function() {
+    alert("Hello!");
+}
+
+user.sayHi();
+
+// 作为对象属性的函数被称为方法
+```
+
+#### 方法简写
+```js
+let user = {
+    name: "John",
+    age: 30,
+    sayHi() {
+        alert("Hello!");
+    }
+};
+
+user.sayHi();
+```
+
+### 方法中的`this`
+```js
+let user = {
+    name: "John",
+    age: 30,
+    sayHi() {
+        // this 指的是"当前的对象"
+        alert(this.name);
+    }
+};
+
+user.sayHi(); 
+```
+
+#### `this`不受限制
+`this`可以用于任何函数，即使它不是对象的方法
+```js
+function sayHi() {
+    alert(this.name);
+}
+
+let user = {
+    name: "John",
+};
+
+user.f = sayHi;
+
+user.f(); // John（this == user）
+```
+
+#### 箭头函数没有自己的`this`
+如果在箭头函数中引用this，这个值会取决于外部"正常的"函数
+```js
+let user = {
+    name: "John",
+    sayHi() {
+        let arrow = () => alert(this.name);
+        arrow();
+    }
+};
+
+user.sayHi(); // John
+```
+
+> 作业
+```js
+
+// 作业
+let calculator = {
+    read() {
+        this.a = +prompt("请输入第一个值", 0);
+        this.b = +prompt("请输入第二个值", 0);
+    },
+    sum() {
+        return this.a + this.b;
+    },
+    mul() {
+        return this.a * this.b
+    }
+};
+
+calculator.read();
+
+alert(calculator.sum());
+alert(calculator.mul());
+
+// 作业
+let ladder = {
+    step: 0,
+    up() {
+        this.step++;
+        return this
+    },
+    down() {
+        this.step--;
+        return this
+    },
+    showStep: function() { // 显示当前的 step
+        alert( this.step );
+        return this
+    }
+};
+
+ladder.up().up().down().showStep().down().showStep();
+```
+
+## 构造器和操作符`new`
+
+### 构造函数
+两个约定
+1. 命名以大写字母开头
+2. 只能由`new`操作符来执行
+
+#### 构造器中的方法
+```js
+function User(name) {
+    this.name = name;
+
+    this.sayHi = function() {
+        alert( "My name is: " + this.name );
+    };
+}
+
+let john = new User("John");
+john.sayHi(); // My name is John
+```
+
+> 作业
+```js
+
+// 让 a == b
+let obj = {};
+
+function A() {
+    return obj
+};
+function B() {
+    return obj
+};
+
+let a = new A;
+let b = new B;
+
+alert( a == b ); // true
+
+// 作业：创建 new Calculator
+function Calculator() {
+
+    this.read = function() {
+        this.a = +prompt("请输入第一个值", 0);
+        this.b = +prompt("请输入第二个值", 0);
+    }
+
+    this.sum = function() {
+        return this.a + this.b;
+    }
+
+    this.mul = function() {
+        return this.a * this.b
+    }
+}
+
+let calculator = new Calculator();
+
+calculator.read();
+
+alert(calculator.sum());
+alert(calculator.mul());
+
+
+// 作业：创建new Accumulator
+function Accumulator(startingValue=1) {
+    this.value = startingValue;
+
+    this.read = function() {
+        return this.value += +prompt("请输入一个数字", 0);
+    };
+}
+
+let accumulator = new Accumulator(11); // 初始值 1
+
+accumulator.read(); // 添加用户输入的 value
+accumulator.read(); // 添加用户输入的 value
+
+alert(accumulator.value); // 显示这些值的总和
+```
+
+## 可选链`?.`
+如果可选链`?.`**前面的值**为`undefined`或者`null`，它会停止运算并返回`undefined`
+
+```js
+let user = {};
+alert(user?.address?.street); // undefined
+```
+> 不要过渡使用可选链
+只将`?.`使用在一些东西可以不存在的地方
+
+> `?.`前的变量必须已经声明
+否则会报错
+
+### 其他变体`?.()`, `?.[]`
+* `?.()` 用于调用一个可能不存在的函数
+* `?.[]` 用于访问可能不存在的属性
+
+```js
+let user = {};
+
+let key = "firstname";
+
+alert(user.read?.()); // undefined
+alert(user?.[key]);   // undefined
+```
+
+## `Symbol`类型
+只有2种类型可以作为对象的属性键(key):
+* 字符串
+* symbol
+
+```js
+let id1 = Symbol("id");
+let id2 = Symbol("id");
+
+alert(id1 == id2); // false
+```
+symbol是带有可选描述的"原始唯一值"
+> symbol不会被自动转换为字符串
+```js
+alert(id1); // 类型错误
+
+// 使用toString()
+alert(id1.toString()); // Symbol("id")
+
+// 使用symbol.description属性
+alert(id1.description); // id
+```
+
+### 隐藏属性
+symbol允许我们创建对象的隐藏属性，代码的任何其他部分都不能意外访问或重写这些属性。
+
+```js
+let user = {
+    name: "John",
+};
+
+let id = Symbol("id");
+
+user[id] = 1;
+
+alert(user[id]); // 1
+```
+
+#### 对象字面量中的`symbol`
+需要使用方括号
+```js
+let id = Symbol("id");
+
+let user = {
+    name: "John",
+    [id]: 123,
+};
+```
+
+#### symbol会被`for...in`跳过
+```js
+for (let key in user) alert(key); // name
+```
+
+### 全局symbol
+从**全局symbol注册表**中读取symbol，可以保证每次访问相同名字的symbol时，返回的都是相同的symbol。
+```js
+// 从全局注册表中读取。如果该symbol不存在，则创建
+let id = Symbol.for("id");
+
+// 再次读取
+let idAgain = Symbol.for("id");
+
+alert(id === idAgain); // true
+```
+
+#### `Symbol.keyFor`
+在全局注册表中查找symbol的键（只适用于全局symbol）
+```js
+let sym1 = Symbol.for("name");
+let sym2 = Symbol.for("age");
+
+alert( Symbol.keyFor(sym1) ); // name
+```
+* 不管是不是全局symbol，都有`description`属性
+
+### 系统symbol
+JS内部自带的
