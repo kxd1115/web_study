@@ -214,7 +214,7 @@ alert( !!"Dennis" ); // true
 // 类似于 Boolean(0)的效果
 ```
 
-> 作业
+### 作业
 ```js
 let person = prompt("Who is there?", "");
 
@@ -341,7 +341,7 @@ alert('Done!');
 使用标签跳出当前循环的外部
 
 
-> 作业
+### 作业
 ```js
 outer: for (let input = prompt("请输入一个大于等于100的数字", ""); input; ) {
     if (!input || input > 100) {
@@ -428,7 +428,7 @@ switch (age) {
 }
 ```
 
-> 作业
+### 作业
 ```js
 switch (browser) {
     case 'Edge':
@@ -610,7 +610,7 @@ let sum = (a, b) => {
 alert(sum(2, 3)); // 5
 ```
 
-> 作业
+### 作业
 ```js
 function ask(question, yes, no) {
   if (confirm(question)) yes();
@@ -895,7 +895,7 @@ for (key in object) {
 如果是整数属性，则按照数字大小进行排序，如果不是，则按照创建时的顺序排序
 
 
-> 作业
+### 作业
 ```js
 // 作业
 let user = {};
@@ -1100,7 +1100,7 @@ let user = {
 user.sayHi(); // John
 ```
 
-> 作业
+### 作业
 ```js
 
 // 作业
@@ -1163,7 +1163,7 @@ let john = new User("John");
 john.sayHi(); // My name is John
 ```
 
-> 作业
+### 作业
 ```js
 
 // 让 a == b
@@ -1400,3 +1400,181 @@ alert(user); // John
 alert(user + 500); // John500
 ```
 实际运用中，通常只实现`obj.toString()`作为字符串转换的**全能**方法就足够了。
+
+---
+# 数据类型
+
+原始类型不是对象
+
+## 数字类型
+1. 常规数字以`IEEE-754`存储（双精度浮点数）
+2. BigInt，用于表示任意长度的整数
+
+
+### 编写数字的更多方法
+```js
+let billion = 1000000000;
+
+// 可行, _扮演语法糖的角色，使数字具有更强的可读性
+let billion = 1_000_000_000;
+
+// 10亿，e9表示 1000000000
+let billion = 1e9;
+```
+
+### 十六进制，二进制，八进制
+
+十六进制数字被广泛用于表示颜色，编码字符以及其他一些东西
+```js
+alert( 0xff ); // 255
+alert( 0xFF ); // 255
+```
+二进制和八进制很少使用
+
+### toString(base)
+`num.toString(base)`返回在给定base进制数字系统中num的字符串表示形式
+```js
+let num = 255;
+
+// 十六进制
+alert( num.toString(16) ); // ff
+
+// 2进制
+alert( num.toString(2) );  // 11111111
+```
+> 如果想直接在数字上调用该方法，使用两个..
+```js
+alert(123..toString(2));
+```
+
+### 舍入
+* `Math.floor` 向下舍入
+* `Math.ceil` 向上舍入
+* `Math.round` 四舍五入
+* `Math.trunc` 取整
+
+保留小数点后N位
+* 乘除法
+```js
+let num = 1.234546;
+
+alert(Math.round((num*100))/100); // 123
+
+```
+* `toFixed(n)`
+```js
+let num = 1.234546;
+
+alert(num.toFixed(1)); // 1.2
+```
+
+### 不精确的计算
+```js
+alert( 0.1 + 0.2 == 0.3); // false
+
+alert( 0.1 + 0.2 ); // 0.30000000000000004
+```
+使用二进制数字系统无法精确存储0.1或0.2，`IEEE-754`数字格式通过将数字舍入到接近的可能数字。
+
+### 测试: `isFinite`和`isNaN`
+
+* ±Infinity是一个特殊的值，比任何值都大（小）
+* NaN代表error
+都属于Number类型，但不是普通数字
+
+* `isNaN(value)` 将其参数转换为数字，测试它是否是`NaN`
+```JS
+alert( isNaN(NaN) );   // true
+alert( isNaN("str") ); // true
+```
+* `isFinite(value)` 将其参数转换为数字
+  * `NaN/Infintity/-Infinity`会返回`false`
+  * 常规数字返回`true`
+```js
+console.log( isFinite("15") );     // true
+console.log( isFinite("str") );    // false
+console.log( isFinite(Infinity) ); // false
+```
+> 空字符串和仅有空格的字符串被所有数字函数视为0
+
+### `parseInt`和`parseFloat`
+从字符串中读取数字，直到无法读取为止，并返回已经收集到的数字。
+```js
+console.log( parseInt("100px") );      // 100
+console.log( parseInt("111as11sd") );  // 111
+console.log( parseInt("as11sd") );     // NaN 
+// 如果字符串的开头不是数字，则直接返回NaN
+
+console.log( parseFloat("1.111as11sd") );   // 1.111
+console.log( parseFloat("1.1.2.3") );       // 1.1
+```
+
+### 其他数学函数
+内建的`Math`对象包含了小型的数学函数和常量库
+举例:
+1. `Math.random()` 返回一个`[0, 1)`的随机数
+2. `Math.max(a, b ,c...)`和`Math.min(a, b ,c...)` 返回最大值和最小值
+3. `Math.pow(n, power)` 返回n的给定`power`
+
+
+### 作业
+```js
+
+// 作业1: 返回两次输入的总和
+alert(
+    +prompt("输入一个数字", 0) + +prompt("输入一个数字", 0)
+);
+
+// 作业2: 为什么6.35.toFixed(1) == 6.3 ?
+console.log( 1.35.toFixed(1) ); // 1.4
+console.log( 6.35.toFixed(1) ); // 6.3
+
+// 修正
+console.log( 6.35.toFixed(20) );         // 6.34999999999999964473
+
+// 6.35 * 10 = 63.5
+// 63.5 -> 64 -> 6.4
+console.log( Math.round((6.35*10))/10 ); // 6.4
+
+// 作业3: 重复，直到输入一个数字
+function readNumber() {
+    let num = prompt("请输入一个数字", 0);
+
+    if (num===null || num==="") {
+        alert(null);
+    } else if (isFinite(num)) {
+        alert(+num);
+    } else {
+        readNumber();
+    }
+}
+
+readNumber()
+
+// 作业4: 从min到max的随机数
+// -> 我做的
+function random(min, max) {
+    let num = Math.random()*10;
+    if ( num >= max ) {
+        return num - max;
+    } else if (num < min) {
+        return num + min;
+    } else {
+        return num;
+    }
+}
+
+console.log(random(1,6));
+
+// 答案
+function random(min, max) {
+    return min + Math.random() * (max - min);
+}
+
+
+```
+
+
+
+
+
