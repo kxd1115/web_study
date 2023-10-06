@@ -1743,4 +1743,170 @@ function extractCurrencyValue(str) {
 alert(extractCurrencyValue("$120"));
 ```
 
+## 数组
 
+```js
+let arr = new Array();
+let arr = [];
+```
+元素从0开始编号。
+元素可替换。
+可以添加新元素。
+`length`属性表示数组中的元素总个数
+```js
+let fruits = ["Apple", "Orange", "Plum"];
+
+alert( fruits[0] ); // Apple
+alert( fruits[1] ); // Orange
+alert( fruits[2] ); // Plum
+
+fruits[2] = 'banana';
+alert( fruits[2] );
+
+fruits[3] = 'Lemon';
+
+alert( fruits.length ); // 4
+```
+
+### 使用`at`获取最后一个元素
+```js
+// JS中无法使用以下方法来获取最后一个元素
+// fruits[-1]
+
+fruits.at(-1); // Lemon
+```
+
+### pop/push, shift/unshift方法
+
+#### 队列方法(先进先出)
+* push 在末端添加一个元素
+* shift 取出队列首端的一个元素
+
+#### 栈方法(后进先出)
+* push 在末端添加一个元素
+* pop 从末端取出一个元素
+
+
+##### 作用于数组末端
+* push
+* pop
+
+#### 作用于数组首端
+* shift 在首端取出元素
+* unshift 在首端添加元素
+
+`push`和`unshift`都能一次添加多个元素
+
+### 内部
+数组是一种特殊的对象
+```js
+let fruits = ["Apple", "Orange", "Plum"];
+
+// 通过引用负值
+let arr = fruits;
+
+// 指向同一个数组
+alert(arr === fruits); // true
+```
+> 要将数组视为作用于**有序数据**的特殊结构
+
+### 性能
+pop/push的速度比较快，shift/unshift比较慢
+
+### 循环
+```js 
+for (let fruit of fruits) {
+    alert(fruit);
+}
+// 数组是对象，理论上也可以用for...in，但不推荐，速度会更慢
+```
+
+### `length`
+length其实是最大数字索引值+1。
+如果手动减少length的长度，数组会被截断。
+```js
+let fruits = ["Apple", "Orange", "Plum"];
+
+fruits.length = 2;
+
+alert(fruits); // Apple,Orange
+```
+
+### 多维数组
+数组的项也可以是数组。
+```js
+let matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+];
+
+alert( matrix[1][1] ); // 5
+```
+
+### 不要使用 == 比较数组
+
+### 作业
+```js
+
+// 作业1: 操作数组
+let styles = ["Jazz", "Blues"];
+console.log(styles);        // ["Jazz", "Blues"]
+
+styles.push("Rokc-n-Roll");
+console.log(styles);        // ['Jazz', 'Blues', 'Rokc-n-Roll']
+
+function findMiddleIndex(arr) {
+    let index = Math.round(arr.length/2)-1;
+    return index;
+}
+
+styles[findMiddleIndex(styles)] = "Classics";
+console.log(styles);         // ['Jazz', 'Classics', 'Rokc-n-Roll']
+
+console.log(styles.shift()); // Jazz
+console.log(styles);         // ['Classics', 'Rokc-n-Roll']
+
+styles.unshift("Rap", "Reggae");
+console.log(styles);         // ['Rap', 'Reggae', 'Classics', 'Rokc-n-Roll']
+
+
+// 作业2: 输入数字求和
+function sumInput() {
+    let arr = [];
+    let num = 0;
+
+    while(true) {
+
+        let input = prompt("请输入一个数字", 0);
+
+        if (input===null || input==="" || !isFinite(input)) break;
+
+        arr.push(input);
+        num += isFinite(input);
+
+    }
+
+    return num;
+}
+
+alert(sumInput());
+
+// 作业3(还没搞懂)
+function getMaxSubSum(arr) {
+
+    let maxSum = 0;
+    let partialSum = 0;
+
+    for (let item of arr) {
+        partialSum += item;
+        maxSum = Math.max(maxSum, partialSum);
+        if (partialSum<0) partialSum=0;
+    }
+
+    return maxSum
+    
+}
+
+console.log(getMaxSubSum([1,1,-3,4]));
+```
