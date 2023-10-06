@@ -1571,10 +1571,176 @@ function random(min, max) {
     return min + Math.random() * (max - min);
 }
 
-
 ```
 
+## 字符串
+
+### 访问字符
+使用方括号或者`cahtAt()`方法
+```js
+let str = "Hello";
+
+// 如果没有找到字符，返回undefined
+console.log(str[1]); // e
+
+// 如果没有找到字符，返回空字符串
+console.log(str.charAt(1)); // e
+```
+### 字符串是不可变的
+字符串不可更改
+
+### 改变大小写
+* `toLowerCase()`
+* `toUpperCase()`
+
+### 查找子字符串
+* `str.indexOf`
+```js
+let str = "Widget with id";
+
+console.log( str.indexOf("id") ); // 1
+
+// 第二个可选参数，从第n个位置开始查找
+console.log( str.indexOf("id", 3) ); // 12
+```
+
+```js
+let str = 'As sly as a fox, as strong as an ox';
+
+let target = "as";
+
+let pos = 0;
+while(true) {
+    let foundPos = str.indexOf(target, pos);
+    if (foundPos == -1) break;
+
+    alert(foundPos);
+
+    pos = foundPos + 1;
+}
+```
+
+* `str.lastIndexOf(substr, pos)`
+  * 从字符串的末尾开始搜索
+
+#### 按位(bitwise) NOT技巧
+* `bitwise NOT` ~ 运算符
+  * 将数字转换为32-bit整数
+    * ~n = ~(n+1)
+```js
+alert(~2); // -3
+alert(~1); // -2
+alert(~0); // -1
+alert(~-1); // 0
+```
+简写indexOf检查
+```js
+let str = "Widget";
+
+if (~str.indexOf("Widget")) {
+  alert( 'Found it!' ); // 正常运行
+}
+```
+
+#### includes, startsWith, endsWith
+* `includes` str是否包含某个子字符串
+* `startsWith` str是否是以某个子字符串开头
+* `endsWith` str是否是以某个子字符串结尾
+```js
+let str = "Widget";
+
+console.log(str.includes("id"));    // true
+console.log(str.includes("id", 3)); // false
+
+console.log(str.startsWith("Wi")); // true 
+console.log(str.endsWith("et"));   // true
+```
+
+### 获取子字符串
+* `substring`
+* `substr` 
+* `slice`
+```js
+let str = "Widget";
+
+// 允许负值
+console.log(str.slice(1, 2));   // i
+console.log(str.slice(1));      // idget
+
+console.log(str.substring(1));  // idget
+
+// 允许前大后小
+console.log(str.substring(1, 4));  // idg
+console.log(str.substring(4, 1));  // idg
+
+// 从索引4开始，长度为1
+console.log(str.substr(4, 1));  // e
+// 从索引4开始，长度为2
+console.log(str.substr(4, 2));  // et
+```
+
+### 比较字符串
+按照字母顺序逐字比较
+1. 小写字母总是大于大写字母
+2. 带变音符号的总目存在"乱序"情况
+所有字符串都是用UTF-16编码。
+* `str.codePointAt(pos)` 返回pos位置的字符代码
+```js
+alert("z".codePointAt(0)); // 122
+alert("Z".codePointAt(0)); // 90
+```
+* `String.fromCodePoint(code)` 通过code创建字符
+```js
+alert(String.fromCodePoint(90));  // Z
+```
+字符通过数字代码进行比较。越大的代码意味着字符越大。
+
+### 作业
+```js
+
+// 作业1: 一个返回首字母大写的函数
+function ucFirst(str) {
+    return str[0].toUpperCase() + str.slice(1);
+}
+
+alert(ucFirst("dennis"));
+
+// 作业2: 检查spam
+function checkSpam(str) {
+
+    let str1 = str.toLowerCase();
+
+    return str1.includes("viagra") || str1.includes("xxx")
+}
+
+alert( checkSpam("buy ViAgRA now") );
+alert( checkSpam("free XxxX") );
+
+// 作业3: 截断文本
+function truncate(str, maxlength) {
+
+    let strLength = str.length;
+
+    if (strLength > maxlength) {
+        return str.slice( 0, (maxlength-3) ) + "...";
+    } else {
+        return str;
+    }
+    // 简写
+    // return (strLength > maxlength) ? str.slice( 0, (maxlength-3) ) + "..." : str;
+}
+
+alert(truncate("What I'd like to tell on this topic is:", 20));
+alert(truncate("Hi everyone!", 20)); 
 
 
+// 提取货币
+function extractCurrencyValue(str) {
+    const regex = /\d+/i;
+    return str.match(regex);
+}
+
+alert(extractCurrencyValue("$120"));
+```
 
 
