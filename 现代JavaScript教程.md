@@ -1892,21 +1892,200 @@ function sumInput() {
 
 alert(sumInput());
 
-// 作业3(还没搞懂)
+// 作业3
 function getMaxSubSum(arr) {
 
     let maxSum = 0;
     let partialSum = 0;
 
     for (let item of arr) {
-        partialSum += item;
+        // 一项一项按顺序加
+        partialSum += item; 
+        // 每次按顺序加一项之后，都比下大小，留下当前最大值
         maxSum = Math.max(maxSum, partialSum);
+        // 如果始终＜0，就等于0
         if (partialSum<0) partialSum=0;
     }
-
+    // 遍历完成后，返回最大连续子数组的和
     return maxSum
     
 }
 
 console.log(getMaxSubSum([1,1,-3,4]));
+```
+
+## 数组方法
+
+#### `splice`
+`arr.splice`可以处理数组的添加，删除和插入
+```js
+let arr = ["I", "go", "home"];
+
+arr.splice(1, 1); // 从索引1开始删除1个元素
+
+console.log(arr); // ["I", "home"]
+
+arr.splice(0, 2, "Let's", "dance");
+// 从索引0开始，删除2个元素，并使用后面的元素替代
+
+console.log(arr);
+```
+
+#### `slice`
+```js
+arr.slice([start], [end]);
+// 会返回一个新数组
+
+let arr = ["I", "go", "home"];
+
+// 将[0,1)的元素切片
+console.log(arr.slice(0, 1)); // ["I"]
+```
+
+#### `concat`
+```js
+let arr = [1, 2];
+
+// 连接并生成一个新数组
+console.log( arr.concat([3, 4], 5, 6) );
+// [1, 2, 3, 4, 5, 6]
+```
+通常只复制数组中的元素。其他对象会被当做一个整体被添加，但如果类数组对象有`Symbol.isConcatSpreadable`属性，那么它就会被concat当做数组来处理，对象中的元素会被添加进数组。
+```js
+let arr = [1, 2];
+
+let arrayLike = {
+    0: "somthing",
+    1: "else",
+    [Symbol.isConcatSpreadable]: true,
+    length: 2,
+};
+
+console.log(arr.concat(arrayLike));
+// something, else
+```
+
+### 遍历: `forEach`
+允许为数组的每个元素都运行一个函数
+```js
+let arr = [1, 2];
+
+arr.forEach(alert);
+// 1
+// 2
+
+arr.forEach((item, index, array) => {
+    alert(`${item} is at index ${index} in ${array} `)
+});
+// 1 is at index 0 in [1, 2];
+// 2 is at index 1 in [1, 2];
+```
+
+### 在数组中搜索
+* `indexOf(item, from)` 从左向右查找，从from开始搜索item，找到则返回索引，否则返回-1
+* `lastIndexOf(item, from)` 从右向左查找，从from开始搜索item，找到则返回索引，否则返回-1
+* `includes(item, from)` 从from开始搜索item，找到则返回true，否则返回false
+```js
+
+let arr = [1, 2, false, 2];
+
+console.log( arr.includes(2, 2) ); // false
+console.log( arr.includes(2) );    // true
+console.log( arr.indexOf(2) );     // 1
+console.log( arr.lastIndexOf(2) ); // 3
+```
+
+> includes可以处理NaN
+```js
+const arr = [NaN];
+
+alert( arr.includes(NaN) );  // true
+alert( arr.indexOf(NaN) );   // -1
+```
+* `find`
+* `findIndex`
+* `findLastIndex`
+```js
+let users = [
+    {id:1, name: "John",},
+    {id:2, name: "Pete",},
+    {id:3, name: "Mary",},
+    {id:4, name: "John",},
+];
+
+let user = users.find(item => item.id == 1);
+
+alert(user.name); // John
+
+// findIndex、findLastIndex 语法和find的相同
+// 寻找John的索引，从前往后查找
+alert( users.findIndex( item => item.name == 'John' ) ); // 0
+
+// 寻找John的索引，从后往前查找
+alert( users.findLastIndex( item => item.name == 'John' ) ); // 3
+
+```
+
+* `filter`
+搜索使函数返回true的元素
+```js
+let users = [
+    {id:1, name: "John",},
+    {id:2, name: "Pete",},
+    {id:3, name: "Mary",},
+    {id:4, name: "John",},
+];
+
+// 返回一个符合条件的新数组
+let user = users.filter(item => item.id > 2);
+
+console.log( user.length );  // 2
+```
+
+### 转换数组
+
+#### `map`
+`arr.map`对数组的每个元素都调用函数，并返回结果数组
+```js
+let users = ["aaa", "22", "ccccc"].map(item => item.length) ;
+
+alert(users); // 3, 2, 5
+```
+
+#### `sort(fn)`
+对数组进行**原位**排序（原位：在原数组内排序，不生成新数组）
+
+```js
+let users = [1, 15, 3, 2];
+
+// 默认按照字符串进行排序
+alert(users.sort()); // 1, 15, 2, 3
+
+// 可以使用函数参数
+// 当元素都是数字时
+alert( users.sort( (a, b) => a - b ) ); // 1, 2, 3, 15
+```
+
+#### `reverse`
+颠倒`arr`中元素的顺序
+```js
+let users = [1, 15, 3, 2];
+
+alert(users.reverse()); // 2, 3, 15, 1
+```
+
+#### `split`和`join`
+```js
+// 这是一个字符串
+let names = 'Bilbo, Gandalf, Nazgul';
+
+// 使用", "分割，并获得一个数组
+let arr = names.split(", ");
+
+console.log(arr);
+// ['Bilbo', 'Gandalf', 'Nazgul']
+
+// 存在第二个可选参数，对数组长度的限制
+
+
 ```
