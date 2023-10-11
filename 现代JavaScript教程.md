@@ -2002,9 +2002,9 @@ const arr = [NaN];
 alert( arr.includes(NaN) );  // true
 alert( arr.indexOf(NaN) );   // -1
 ```
-* `find`
-* `findIndex`
-* `findLastIndex`
+#### `find`
+#### `findIndex`
+#### `findLastIndex`
 ```js
 let users = [
     {id:1, name: "John",},
@@ -2086,6 +2086,81 @@ console.log(arr);
 // ['Bilbo', 'Gandalf', 'Nazgul']
 
 // 存在第二个可选参数，对数组长度的限制
+let arr1 = names.split(", ", 1);
+console.log(arr1); // ['Bilbo']
 
+
+```
+
+* `arr.join(glue)` 
+  * 与join相反
+创建一串由`glue`粘合的`arr`项
+```js
+// 这是一个数组
+let names = ['Bilbo', 'Gandalf', 'Nazgul'];
+
+// 使用", "粘合，并获得一个字符串
+let str = names.join(", ");
+// 这是一个字符串
+console.log(str); // Bilbo, Gandalf, Nazgul
+```
+
+#### `reduce`/`reduceRight`
+遍历数组，并计算（两个方法的区别在于计算的顺序）
+
+```js
+let value = arr.value(function(accumulator, item, index, array) {
+    // ...
+}, [initial])
+```
+* `accumulator` 上一个函数调用的结果，第一次等于`initial`（如果提供initial的话）
+* `item` 当前数组的元素
+* `index` 当前索引
+* `array` 数组本身
+```js
+let arr = [1, 2, 3, 4, 5];
+
+let result = arr.reduce((sum, current) => sum +current, 0);
+// 从数组的第一个元素开始计算
+// 第一次时，sum = 0, sum + current => 0 + 1 ; 因为传递了initial=0
+// 第二次时，sum = 1, sum + current => 1 + 2 ; 没有传递initial，所以sum是上一次调用的结果
+// 第三次时，sum = 3, sum + current => 3 + 3 ; 以此类推...直到遍历完整个数组的元素
+
+alert(result);  // 15
+```
+
+### `Array.isArray`
+数组是基于对象的，不构成单独的语言类型。
+该方法用于判断`Array.isArray(value)`中的value是否是一个数组
+```js
+console.log( Array.isArray({}) ); // false
+console.log( Array.isArray([]) ); // true
+
+// typeof无法区分
+console.log( typeof {} ); // object
+console.log( typeof [] ); // object
+```
+
+### `thisArg`
+几乎所有调用函数的数组方法都支持接收一个可选参数`thisArg`（sort除外）
+
+
+> 注意 sort, reverse和splice方法修改的是数组本身
+
+
+### 作业
+```js
+// 作业1
+function camelize(size) {
+    let arr = size.split("-");
+    let arr1 = arr.map(
+        (item, index) => index == 0 ? item : item[0].toUpperCase() + item.slice(1)
+    );
+    return arr1.join("");
+}
+
+let str1 = '-background-color';
+
+console.log( camelize(str1) );
 
 ```
