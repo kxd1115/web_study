@@ -2154,10 +2154,26 @@ console.log( typeof [] ); // object
 function camelize(size) {
     let arr = size.split("-");
     let arr1 = arr.map(
-        (item, index) => index == 0 ? item : item[0].toUpperCase() + item.slice(1)
+        // 这里因为如果开头是-, 那么就是一个空字符串, 空字符串没有字符，所以没有index（我的理解）
+        (item, index) => index == false ? item : item[0].toUpperCase() + item.slice(1)
     );
     return arr1.join("");
 }
+
+/*我的回答
+function camelize(size) {
+    let arr = size.split("-");
+    let arr1 = arr.map(
+        item => item.length == 0 ? item : item[0].toUpperCase() + item.slice(1)
+    );
+    return arr1.join("");
+}
+
+let str1 = '-background-color';
+
+console.log( camelize(str1) );
+*/
+
 
 let str1 = '-background-color';
 
