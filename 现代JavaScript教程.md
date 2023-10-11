@@ -2154,7 +2154,8 @@ console.log( typeof [] ); // object
 function camelize(size) {
     let arr = size.split("-");
     let arr1 = arr.map(
-        // 这里因为如果开头是-, 那么就是一个空字符串, 空字符串没有字符，所以没有index（我的理解）
+        // 这里因为如果开头是-, 那么替换后就是一个空字符串""
+        // 空字符串没有字符，所以没有index（我的理解）
         (item, index) => index == false ? item : item[0].toUpperCase() + item.slice(1)
     );
     return arr1.join("");
