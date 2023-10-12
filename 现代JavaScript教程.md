@@ -2180,4 +2180,57 @@ let str1 = '-background-color';
 
 console.log( camelize(str1) );
 
+// 作业：映射到names
+let john = { name: "John", age: 25 };
+let pete = { name: "Pete", age: 30 };
+let mary = { name: "Mary", age: 28 };
+
+let users = [ john, pete, mary ];
+
+let names = users.map(item => item.name)
+
+alert( names ); // John, Pete, Mary
+
+
+// 作业：映射到对象
+let john = { name: "John", surname: "Smith", id: 1 };
+let pete = { name: "Pete", surname: "Hunt", id: 2 };
+let mary = { name: "Mary", surname: "Key", id: 3 };
+
+let users = [ john, pete, mary ];
+
+let usersMapped = users.map( 
+    item => item = {id: item.id, fullName: item.name+" "+item.surname}
+)
+
+console.log(usersMapped)
+
+// 作业：过滤范围
+let arr = [5, 3, 8, 1];
+
+let filtered = filterRange(arr, 1, 4);
+
+alert( filtered ); // 3,1（匹配值）
+
+alert( arr ); // 5,3,8,1（未修改）
+
+function filterRange(arr, a, b) {
+    return arr.filter( item => item>=a && item<=b );
+}
+
+// 作业：原位过滤
+let arr = [5, 3, 8, 1];
+
+filterRangeInPlace(arr, 1, 4); // 删除了范围在 1 到 4 之外的所有值
+
+alert( arr ); // [3, 1]
+
+function filterRangeInPlace(arr, a, b) {
+    for (let i = 0; i<arr.length; i++) {
+        if (arr[i]<a || arr[i]>b) {
+            arr.splice(i, 1);
+            i--; // 删除元素后，需要把索引减一位，因为此时原数组索引已经发生了改变
+        }
+    }
+}
 ```
