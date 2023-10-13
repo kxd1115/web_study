@@ -2233,4 +2233,70 @@ function filterRangeInPlace(arr, a, b) {
         }
     }
 }
+
+// 作业: 降序
+let arr = [5, 2, 1, -10, 8];
+
+// ……你的代码以降序对其进行排序
+arr.sort((a, b) => b - a);
+
+alert( arr ); // 8, 5, 2, 1, -10
+
+// 作业: 复制和排序数组
+let arr = ["HTML", "JavaScript", "CSS"];
+
+let sorted = copySorted(arr);
+
+alert( sorted ); // CSS, HTML, JavaScript
+alert( arr ); // HTML, JavaScript, CSS (no changes)
+
+function copySorted(arr) {
+    let newArr = arr.map(item => item);
+
+    return newArr.sort()
+
+    // 更简洁的方法
+    // return arr.sort().sort()
+}
+
+// 作业: 创建一个可扩展的calculator（还需要再次理解）
+function Calculator() {
+
+    this.methods = {
+        "-": (a, b) => a - b,
+        "+": (a, b) => a + b,
+    }
+
+    this.calculate = function(str) {
+
+        let arr = str.split(" ");
+        let a = +arr[0];
+        let b = +arr[2];
+        let m = arr[1];
+
+        if (!this.methods[m] || isNaN(a) || isNaN(b)) {
+            return NaN;
+        }
+
+        return this.methods[m](a, b);
+    }
+
+    this.addMethod = function(name, func) {
+        this.methods[name] = func;
+    }
+}
+
+let calc = new Calculator;
+
+console.log( calc.calculate("3 - 7") ); // 10
+
+let powerCalc = new Calculator;
+powerCalc.addMethod("*", (a, b) => a * b);
+powerCalc.addMethod("/", (a, b) => a / b);
+powerCalc.addMethod("**", (a, b) => a ** b);
+
+let result = powerCalc.calculate("2 ** 3");
+alert( result ); // 8
+
+
 ```
