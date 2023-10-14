@@ -2298,5 +2298,98 @@ powerCalc.addMethod("**", (a, b) => a ** b);
 let result = powerCalc.calculate("2 ** 3");
 alert( result ); // 8
 
+// 作业: 按年龄对用户排序
+let john = { name: "John", age: 25 };
+let pete = { name: "Pete", age: 30 };
+let mary = { name: "Mary", age: 28 };
 
+let arr = [ pete, john, mary ];
+
+sortByAge(arr);
+
+// now: [john, mary, pete]
+alert(arr[0].name); // John
+alert(arr[1].name); // Mary
+alert(arr[2].name); // Pete
+
+function sortByAge(arr) {
+    return arr.sort( (a,b) => a.age - b.age );
+}
+
+// 作业: 随机排列数组
+let arr = [1, 2, 3];
+        
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+        return array;
+    }
+}
+
+console.log(shuffle(arr));
+
+// 作业: 获取平均年龄
+let john = { name: "John", age: 25 };
+let pete = { name: "Pete", age: 30 };
+let mary = { name: "Mary", age: 29 };
+
+let arr = [ john, pete, mary ];
+
+alert( getAverageAge(arr) ); // (25 + 30 + 29) / 3 = 28
+
+// 我的回答
+function getAverageAge(arr) {
+    let ageSum = 0;
+    for (let a of arr) {
+        ageSum += a.age;
+    }
+
+    return ageSum / arr.length;
+}
+
+// 答案
+function getAverageAge(users) {
+    // 将数组所有项求和，使用reduce方法 
+    return users.reduce((prev, user) => prev + user.age, 0) / users.length;
+}
+
+// 作业: 数组去重
+function unique(arr) {
+    /* your code */
+
+    let result = [];
+
+    for (let str of arr) {// 遍历数组
+        if (!result.includes(str)) {
+            // 如果不包含该元素，则推进新数组
+            result.push(str);
+        }
+    }
+    return result;
+}
+
+let strings = ["Hare", "Krishna", "Hare", "Krishna",
+"Krishna", "Krishna", "Hare", "Hare", ":-O"
+];
+
+console.log( unique(strings) ); // Hare, Krishna, :-O
+
+// 从数组创建键(值)对象
+let users = [
+    {id: 'john', name: "John Smith", age: 20},
+    {id: 'ann', name: "Ann Smith", age: 24},
+    {id: 'pete', name: "Pete Peterson", age: 31},
+];
+
+let usersById = groupById(users);
+
+function groupById(arr) {
+    return arr.reduce((obj, value) => {
+        obj[value.id] = value;
+        return obj;
+    }, {});
+}
+
+console.log(usersById);
 ```
