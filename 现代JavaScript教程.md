@@ -2375,7 +2375,7 @@ let strings = ["Hare", "Krishna", "Hare", "Krishna",
 
 console.log( unique(strings) ); // Hare, Krishna, :-O
 
-// 从数组创建键(值)对象
+// 作业: 从数组创建键(值)对象
 let users = [
     {id: 'john', name: "John Smith", age: 20},
     {id: 'ann', name: "Ann Smith", age: 24},
@@ -2392,4 +2392,128 @@ function groupById(arr) {
 }
 
 console.log(usersById);
+```
+
+## `Iterable object`(可迭代对象)
+可迭代对象是数组的泛化（任何对象都可以被定制为可在`for...of`循环中使用的对象）
+
+### `Symbol.iterator`
+```js
+let range = {
+    from: 1,
+    to: 5,
+};
+// 希望能使用for...of循环
+```
+在对象内部添加该方法`Symbol.iterator`，使对象可迭代
+1. 该方法必须返回一个**迭代器**iterator（一个有next()方法的对象）
+2. 此时for..of仅适用于这个被返回的对象(迭代器)
+3. next()方法返回的结果格式必须是`{done: Boolean, value: any}`，当`{done: true}`时，表示循环结束
+
+```js
+let range = {
+    from: 1,
+    to: 5,
+};
+
+// 1. for..of调用首先调用这个
+range[Symbol.iterator] = function() {
+
+    // ....它返回迭代器对象 iterator object
+    // 2. 接下来for..of要求下面的迭代器对象返回下一个值
+    return {
+        current: this.from,
+        last: this.to,
+
+        // 3. next()在for..of的每一轮循环迭代中被调用
+        next() {
+            // 4. 它会返回 {done:.., value:...}格式的对象
+            if (this.current <= this.last) {
+                return { done: false, value: this.current++ };
+            } else {
+                return { done: true };
+            }
+        }
+    };
+};
+
+// 现在它可以运行了
+for (let num of range) {
+    alert(num);
+}
+```
+> range自身没有next()方法
+> 仅仅是调用了通过调用range[Symbol.iterator]()创建了另一个对象（所谓的迭代器对象）
+
+合并之后的简化版本
+```js
+let range = {
+    from: 1,
+    to: 5,
+
+    [Symbol.iterator]() {
+        this.current = this.from;
+        return this;
+    },
+
+    next() {
+        if (this.current <= this.to) {
+            return { done: false, value: this.current++ };
+        } else {
+            return { done: true };
+        }
+    }
+};
+
+// 现在它可以运行了
+for (let num of range) {
+    alert(num);
+}
+```
+
+### 字符串是可迭代的
+
+### 可迭代(iterable)和类数组(array-like)
+* `iterable`是实现了`Symbol.iterator`方法的对象
+* `Array-like`是有索引和`length`属性的对象，看起来很像数组
+
+可迭代对象和类数组对象通常都**不是数组**，不能使用`push`和`pop`等方法。
+
+#### `Array.from`
+接收一个可迭代对象或类数组，并获取一个真正的数组
+```js
+let arrayLike = {
+    0: "Hello",
+    1: "World",
+    length: 2,
+};
+
+let arr = Array.from(arrayLike); // (*)
+alert(arr.pop()); // World（pop 方法有效）
+```
+```js
+Array.from(obj[, mapFn, thisArg]);
+
+// 可选参数
+// mapFn可以是一个函数，该函数在元素被添加到数组之前应用到每个元素
+```
+```js
+let range = "12345"
+let arr = Array.from(range, num => num * num);
+
+console.log(arr); // [1, 4, 9, 16, 25]
+```
+
+使用Array.from创建代理感知的slice方法(能够处理UTF-16扩展字符)
+```js
+function slice(str, start, end) {
+    return Array.from(str).slice(start, end).join("");
+}
+
+let str = '𝒳😂𩷶';
+
+alert( slice(str, 1, 3) );
+
+// 原生方法不支持识别UTF-16扩展字符
+alert( str.slice(1, 3) ); // 乱码
 ```
