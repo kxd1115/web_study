@@ -2517,3 +2517,208 @@ alert( slice(str, 1, 3) );
 // 原生方法不支持识别UTF-16扩展字符
 alert( str.slice(1, 3) ); // 乱码
 ```
+
+## Map and Set(映射和集合)
+
+### Map
+带键的数据项的集合，允许任何类型的键(key)
+方法和属性：
+* new Map(): 创建map
+* map.set(key, value): 根据键存储值
+* map.get(key): 根据键返回值
+* map.has(key): 判断是否包含某个键
+* map.delete(key): 删除指定键的值
+* map.clear(): 清空map
+* map.size: 返回当前map的元素个数
+```js
+let map = new Map();
+
+map.set(1, "str1");
+map.set("1", "num1");
+map.set(true, "bool1"); 
+
+console.log(map.get(1)); // str1
+console.log(map.get("1")); // num1
+
+console.log(map.size); // 3
+```
+**Map还可以使用对象作为键**
+```js
+let john = { name: "Jhon" };
+
+map.set(john, 123);
+console.log(map.get(john)); // 123
+```
+
+### Map迭代
+* map.keys(): 用来遍历键
+* map.values(): 用来遍历值
+* map.entries(): 用来遍历键值对[key, value]
+```js
+// 遍历所有的键
+for (let k of map.keys()) {
+    //alert(k);
+}
+// 遍历所有的值
+for (let v of map.values()) {
+    //alert(v);
+}
+// 遍历所有的键值对
+// 也可以直接 let e of map
+for (let e of map.entries()) {
+    alert(e);
+}
+```
+除此之外，`Map`有内建的`forEach`方法，与`Array`类似
+```js
+map.forEach((value, key, map) => {
+    alert(`${key}: ${value}`);
+})
+```
+### Object.entries: 从对象创建Map
+```js
+let obj = {
+    name: "John",
+    age: 30,
+}
+
+let map = new Map(Object.entries(obj));
+
+console.log(map.get('name')); // John
+```
+### Object.fromEntries: 从Map创建对象
+
+```js
+let price = Object.fromEntries([
+    ['banana', 1],
+    ['orange', 2],
+    ['meat', 3],
+])
+
+console.log(price.meat); // 3
+```
+
+### Set
+一个特殊的类型集合，值的集合(没有键)，每一个值只会出现一次。
+主要方法如下:
+* new Set(iterable): 创建一个set
+* set.add(value): 添加一个值，返回set本身
+* set.delete: 删除值，删除成功会返回true
+* set.has(value): 是否包含某个值
+* set,clear(): 清空set
+* set.size: 返回元素个数
+```js
+let set = new Set();
+
+let john = { name: "John" };
+let pete = { name: "Pete" };
+let mary = { name: "Mary" };
+
+set.add(john);
+set.add(pete);
+set.add(mary);
+set.add(john); // john已经存在，这次添加不会影响set长度
+
+console.log(set.size); // 3
+```
+
+### Set迭代(iteration)
+可以使用`for...of`或`forEach`
+
+### 作业
+```js
+// 作业1: 过滤数组中唯一的元素
+function unique(arr) {
+    // Array.from将可迭代对象为真正的数组
+    return Array.from(new Set(arr));
+}
+
+let values = ["Hare", "Krishna", "Hare", "Krishna",
+    "Krishna", "Krishna", "Hare", "Hare", ":-O"
+];
+
+console.log( unique(values) ); // Hare, Krishna, :-O
+
+// 作业2: 迭代键
+let map = new Map();
+
+map.set("name", "John");
+
+// 这里要使用Array.from将可迭代对象转换为真正的数组
+let keys = Array.from(map.keys());
+
+// Error: keys.push is not a function
+keys.push("more");
+
+console.log(keys);
+```
+
+## WeakMap and WeakSet(弱映射和弱集合)
+
+### WeakMap
+`WeakMap`和`Map`的区别：键必须是对象，不能是原始值
+WeakMap只有以下方法
+* weakMap.get(key)
+* weakMap.set(key, value)
+* weakMap.delete(key)
+* weakMap.has(key)
+```js
+let john = { name: 'john' };
+
+let weakMap = new WeakMap();
+
+weakMap.set(john, "...");
+
+console.log(weakMap)
+
+john = null;  // 覆盖引用
+
+// john被清除后，weakMap中的引用被清理掉了
+console.log(weakMap.john); // undefined
+```
+
+### WeakSet
+1. WeakSet只能被添加对象
+2. 对象只有在某个地方被访问的时候，才存在于`WeakSet`中（和WeakMap类似）
+3. 只支持add(), has(), delete()方法
+
+
+## Object.keys, values, entries
+
+以下方法对普通对象也适用
+* Object.keys(obj)
+* Object.valuse(obj)
+* Object.entries(obj)
+> 不同之处在于，普通对象使用这些方法返回的是"真正的"数组
+
+### 作业
+```js
+// 作业: 属性求和
+let salaries = {
+    "John": 100,
+    "Pete": 300,
+    "Mary": 250
+};
+
+alert( sumSalaries(salaries) ); // 650
+
+function sumSalaries(arr) {
+    let num = 0;
+    for (value of Object.values(arr)) {
+    num += value;
+    }
+    return num;
+}
+
+// 作业: 计算属性数量
+let user = {
+    name: 'John',
+    age: 30
+};
+
+alert( count(user) ); // 2
+
+function count(obj) {
+    return Object.keys(obj).length;
+}
+```
