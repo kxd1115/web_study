@@ -2722,3 +2722,96 @@ function count(obj) {
     return Object.keys(obj).length;
 }
 ```
+
+## 解构赋值
+
+### 数组解构
+```js
+let arr = ["John", "Smith"];
+
+let [firstName, surname] = arr;
+
+console.log(firstName); // John
+console.log(surname);   // Smith
+```
+可以和split函数(或者其他返回值为数组的函数)结合使用
+```js
+let [firstName, surname] = "John Smith".split(" ");
+
+console.log(firstName); // John
+console.log(surname);   // Smith
+```
+> 注意细节
+1. 解构并不意味着破坏（原来的数组或对象并不会被改变）
+2. 忽略使用逗号的元素
+```js
+// 不需要第二个元素
+let [firstName, , title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+
+alert( title ); // Consul
+```
+3. 等号右侧可以是任何可迭代对象（数组或者Map，Set等都可以）
+4. 复制给等号左侧的任何内容
+```js
+let user = {};
+
+// 可以是对象的属性
+[user.firstName, user.surname] = "John Smith".split(" ");
+
+alert(user.firstName); // John
+alert(user.surname);   // Smith
+```
+5. 与.entries()方法进行循环操作
+```js
+let user = {
+    name: "John",
+    age: 30
+};
+
+for (let [key, value] of Object.entries(user)) {
+    alert(`${key}: ${value}`);
+}
+```
+6. 交换变量
+```js
+let guest = "Jane";
+let admin = "Pete";
+
+// 变量的值被交换
+[guest, admin] = [admin, guest];
+
+alert( `${guest} ${admin}` ); // Pete Jane
+```
+
+#### 其余的`...`
+```js
+let [name1, name2] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+
+alert(name1); // Julius
+alert(name2); // Caesar
+// 其余数组项未被分配到任何地方
+```
+可以使用`...`来收集其余项
+```js
+let [name1, name2, ...rest] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+
+// rest 是包含从第三项开始的其余数组项的数组
+alert(rest[0]); // Consul
+alert(rest[1]); // of the Roman Republic
+alert(rest.length); // 2
+```
+
+### 默认值
+当数组比左边的列表短，缺少的对应变量会被复制undefined，如果想要一个默认值给未赋值的变量，可以使用`=`
+```js
+let [name1, name2="Caesar", rest] = ["Julius",];
+
+console.log(name2); // Caesar
+console.log(rest);  // undefined
+```
+
+### 对象解构
+```js
+// 基本语法
+let {var1, var2} = {var1:..., var2:...};
+```
