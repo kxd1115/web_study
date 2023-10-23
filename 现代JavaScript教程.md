@@ -2921,3 +2921,72 @@ function topSalary(obj) {
 
 alert( topSalary(salaries) );
 ```
+
+## 日期和时间
+
+### 创建
+```js
+new Date();
+```
+* 不同的参数
+```js
+let now = new Date();
+
+alert(now);
+
+// 传入时间戳
+let Dec31_1969 = new Date(-24*3600*1000);
+alert(Dec31_1969);
+
+// 传入字符串日期
+let date = new Date("2023-10-21");
+alert(date);
+
+// new Date(year, month, date, hours, minutes, seconds, ms)
+// 只有前2个参数是必须的
+```
+
+### 访问日期组建
+* `getFullYear()` 获取年份(4位数)
+* `getMonth()` 获取月份(从0-11)
+* `getDate()` 获取当月的具体日期(从1-31)
+* `getHours(), getMinutes(), getSeconds(), getMilliseconds()`
+  * 获取小时，分钟，秒，毫秒
+* `getDay()` 获取一周中的第几天(从0-6)
+* `getTime()` 返回日期的时间戳
+* `getTimezoneOffset()` 返回UTC与本地时区之间的时间差, 以分钟为单位
+
+### 设置日期组建
+* `setFullYear(year, [month], [date])`
+* `setMonth()`
+* `setDate()`
+* `setHours()`
+* `setMinutes()`
+* `setSeconds()`
+* `setMilliseconds()`
+* `setTime()`
+
+### 自动校准
+在设置时间时，如果给了一个超出范围的数值，它会自动校准
+```js
+let date = new Date(2023, 5, 33);
+alert(date); 
+// Sun Apr 02 2023 00:00:00 GMT+0800 (香港标准时间)
+// 会直接给出5月31日之后的第二天，也就是2023-06-02
+```
+
+### 日期转化为数字，日期差值
+当`date`对象被转化为数字时，得到的是对应的时间戳
+```js
+let date = new Date();
+alert(+date); 
+// 1698071698598
+```
+
+### Date.now()
+该方法会返回当前的时间戳
+```js
+let date = Date.now();
+console.log(date); 
+// 1698071910526
+```
