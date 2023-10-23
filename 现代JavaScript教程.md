@@ -2815,3 +2815,109 @@ console.log(rest);  // undefined
 // 基本语法
 let {var1, var2} = {var1:..., var2:...};
 ```
+```js
+let options = {
+    title: "Menu",
+    width: 100,
+    height: 200,
+};
+
+let {title, width, height} = options;
+
+alert(title);  // Menu
+alert(width);  // 100
+alert(height); // 200
+```
+* 将属性赋值给另一个名字的变量
+```js
+let {title, width: w, height: h} = options;
+
+alert(title);  // Menu
+alert(w);  // 100
+alert(h); // 200
+```
+* 通过`=`设置默认值
+```js
+let options = {
+    title: "Menu",
+    width: 100,
+};
+
+let {title, width: w=100, height: h=100} = options;
+// let {title, width=100, height=100} = options;
+
+alert(title);  // Menu
+alert(w);  // 100
+alert(h); // 100
+```
+* 默认值可以是任意表达式，甚至是函数调用。但只会在未提供对应的值时才会被计算/调用
+
+* 也可以仅提取我们所需要的内容
+```js
+let options = {
+    title: "Menu",
+    width: 100,
+};
+
+// 只提取title
+let {title} = options;
+
+alert(title);  // Menu
+```
+#### 剩余模式`...`
+与数组的结构赋值一样，也可以使用`...`来存储剩余对象
+```js
+let options = {
+    title: "Menu",
+    width: 100,
+};
+
+let {title, ...rest} = options;
+
+alert(title);  // Menu
+alert(rest.width);   // 100
+```
+
+### 嵌套解构
+如果一个对象或数组嵌套了其他的对象和数组，可以使用嵌套解构来提取更深层的数据
+
+#### 智能函数参数
+通过解构赋值，用一个对象来传递所有参数，而函数负责把这个对象解构乘各个参数
+
+
+### 作业
+```js
+
+// 作业1 解构赋值
+let user = { name: "John", years: 30 };
+let {name, years: age, isAdmin=false} = user
+
+
+alert( name ); // John
+alert( age ); // 30
+alert( isAdmin ); // false
+
+// 作业2 最高薪资
+
+let salaries = {
+    "John": 100,
+    "Pete": 300,
+    "Mary": 250
+};
+
+function topSalary(obj) {
+
+    let maxSum = 0;
+    let maxKey = '';
+
+    for (let [key, value] of Object.entries(obj)) {
+        if (value>maxSum) {
+            maxSum = value;
+            maxKey = key;
+        }
+    }
+    return `${maxKey}: ${maxSum}`;
+}
+
+alert( topSalary(salaries) );
+```
