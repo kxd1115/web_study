@@ -2990,3 +2990,59 @@ let date = Date.now();
 console.log(date); 
 // 1698071910526
 ```
+LPFK-NQGL
+
+### 基准测试
+
+### 对字符串调用Date.parse
+`Date.parse(str)`方法从一个字符串中读取日期
+```js
+let ms = Date.parse("2023-10-22");
+
+// 返回一个时间戳
+console.log(ms); // 1697932800000
+```
+
+### 作业
+```js
+// 作业1 显示星期
+let date = new Date(2023, 10, 24);  
+alert( getWeekDay(date) );        
+
+function getWeekDay(date) {
+    let weekArr = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+    return weekArr[date.getDay()];
+}
+
+//N天之前的日期
+let date = new Date(2015, 0, 2);
+
+alert( getDateAgo(date, 1) ); // 1, (1 Jan 2015)
+alert( getDateAgo(date, 2) ); // 31, (31 Dec 2014)
+alert( getDateAgo(date, 365) ); // 2, (2 Jan 2014)
+
+function getDateAgo(date, days) {
+    let dateCopy = new Date(date);
+    dateCopy.setDate(date.getDate()-days); 
+    return dateCopy.getDate()
+}
+
+// 获取某个月的最后一天
+function getLastDayOfMonth(year, month) {
+    let date = new Date(year, month, 0);
+    return date.getDate();
+}
+
+alert( getLastDayOfMonth(2023,2) );
+
+// 今天过去多少秒
+alert( getSecondsToday() );
+
+function getSecondsToday() {
+    let start = new Date();
+
+    let end = Date.now();
+
+    return (end - start.setHours(0,0,0,0))/1000;
+}
+```
