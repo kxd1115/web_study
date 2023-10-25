@@ -3045,4 +3045,41 @@ function getSecondsToday() {
 
     return (end - start.setHours(0,0,0,0))/1000;
 }
+
+// 距离明天还有多少秒
+alert( getSecondsToTomorrow() );
+
+function getSecondsToTomorrow() {
+    let start = new Date();
+    let end = new Date(start.getFullYear(), start.getMonth(), start.getDate()+1)
+
+    return (end-start)/1000;
+}
+// 格式化相对日期
+alert( formatDate(new Date(new Date - 1)) ); // "right now"
+
+alert( formatDate(new Date(new Date - 30 * 1000)) ); // "30 sec. ago"
+
+alert( formatDate(new Date(new Date - 5 * 60 * 1000)) ); // "5 min. ago"
+
+// 昨天的日期，例如 31.12.16 20:00
+alert( formatDate(new Date(new Date - 86400 * 1000)) );
+
+function formatDate(date) {
+    let now = new Date();
+    let start = new Date(date);
+
+    let timeGap = start - now;
+
+    if (timeGap<=1000 && timeGap>=(0-1000)) {
+        return "right now";
+    } else if (timeGap<=(1000*60) && timeGap>=(0-(1000*60))) {
+        return "n sec. ago";
+    } else if (timeGap<=(1000*60*60) && timeGap>=(0-(1000*60*60))) {
+        return "m min. ago";
+    } else {
+        return `${start.getDate()}.${start.getMonth()}.${start.getFullYear()} ${start.getHours()}:${start.getMinutes()}`
+    }
+    
+}
 ```
