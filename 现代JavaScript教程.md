@@ -3080,6 +3080,98 @@ function formatDate(date) {
     } else {
         return `${start.getDate()}.${start.getMonth()}.${start.getFullYear()} ${start.getHours()}:${start.getMinutes()}`
     }
-    
 }
+```
+
+## JSON方法, toJSON
+
+### JSON.stringify
+* `JSON.stringify` 将对象转换为JSON
+* `JSON.parse` 将JSON转换回对象
+
+```js
+let student = {
+    name: 'John',
+    age: 30,
+    isAdmin: false,
+    courses: ['html', 'css', 'js'],
+    spouse: null
+};
+
+let json = JSON.stringify(student);
+
+alert(typeof json); // string
+console.log(json);
+```
+方法`JSON.stringify()`得到的`json`字符串是一个被称为`JSON编码`或`序列化`或`字符串化`或`编组化`的对象
+* JSON中的字符串使用双引号，JSON中没有单引号或者反引号。
+* 对象属性名称也是双引号
+`JSON.stringify()`也可以应用于原始数据类型
+> 支持的数据类型:
+> Objects, Arrays
+> strings, numbers, boolean values`true/false`, null
+
+无法识别: 
+> 函数属性, Symbol类型的键值, 存储undefined的属性
+
+### 排除和转换: replacer
+```js
+// JSON.stringify的完整语法
+let json = JSON.stringify(value[, replacer, space])
+```
+* `value` 要编码的值
+* `replacer` 要编码的属性数组或映射函数`function(key, value)`
+  * 
+* `space` 用于格式化的空格数量
+  * 这个参数主要应用于日志记录和美化输出
+
+### 自定义`toJSON`
+
+### JSON.parse
+```js
+let value = JSON.parse(str, [reviver]);
+```
+* `str` 要解析的JSON字符串
+* `reviver` 可选函数`function(key, value)`, 该函数将为每个(key, value)调用, 并可以对值进行转换
+
+```js
+let str = '{"title":"Conference","date":"2017-11-30T12:00:00.000Z"}';
+
+// 使用第二个参数，将字符串date转换为Date对象
+let meetup = JSON.parse(str, function(key, value) {
+    if (key == 'date') return new Date(value);
+    return value;
+});
+
+alert( meetup.date.getDate() );
+```
+
+### 作业
+```js
+let room = {
+    number: 23
+};
+
+let meetup = {
+    title: "Conference",
+    occupiedBy: [{name: "John"}, {name: "Alice"}],
+    place: room
+};
+
+// 循环引用
+room.occupiedBy = meetup;
+meetup.self = meetup;
+
+alert( JSON.stringify(meetup, function replacer(key, value) {
+    /* your code */
+    /*
+    我做的
+    if (key=='self') return undefined;
+    if (key=='occupiedBy') return meetup.occupiedBy
+    if (key=='place') return room.number
+    return value;
+    */
+    // 答案
+    return (key != "" && value == meetup) ? undefined : value;
+}));
 ```
