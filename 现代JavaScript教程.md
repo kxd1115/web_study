@@ -3172,6 +3172,7 @@ alert( JSON.stringify(meetup, function replacer(key, value) {
     return value;
     */
     // 答案
+    // 排除value=meetup的情况
     return (key != "" && value == meetup) ? undefined : value;
 }));
 ```
