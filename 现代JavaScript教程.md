@@ -3176,3 +3176,69 @@ alert( JSON.stringify(meetup, function replacer(key, value) {
     return (key != "" && value == meetup) ? undefined : value;
 }));
 ```
+---
+# 函数进阶内容
+## 递归和堆栈
+
+### 递归遍历
+```js
+let company = { // 是同一个对象，简洁起见被压缩了
+    sales: [{name: 'John', salary: 1000}, {name: 'Alice', salary: 1600 }],
+    development: {
+        sites: [{name: 'Peter', salary: 2000}, {name: 'Alex', salary: 1800 }],
+        internals: [{name: 'Jack', salary: 1300}]
+    }
+};
+
+function sumSalaries(dep) {
+    if (Array.isArray(dep)) {
+        return dep.reduce((pre, result) => pre+result.salary, 0);
+    } else {
+        let sum = 0;
+        for (let salar of Object.values(dep)) {
+            sum += sumSalaries(salar);
+        }
+        return sum;
+    }
+}
+
+alert(sumSalaries(company)); // 7700
+```
+
+### 递归解构
+
+#### 链表
+链表元素是一个使用以下元素通过递归定义的对象
+* value
+* next 属性引用下一个链表元素，或者代表末尾的null
+```js
+let list = {
+  value: 1,
+  next: {
+    value: 2,
+    next: {
+      value: 3,
+      next: {
+        value: 4,
+        next: null
+      }
+    }
+  }
+};
+```
+
+
+### 作业
+```js
+// 对正整数求和到给定值
+// 递归方法
+function sumTo(num) {
+    if (num<=1) {
+        return num;
+    } else {
+        return num + sumTo(num-1);
+    }
+}
+
+alert(sumTo(100));
+```
