@@ -3330,3 +3330,36 @@ sayHi(); // hello, Guest
 
 ```
 
+## `new Function`语法
+
+### 语法
+```js
+let func = new Function([arg1, arg2, ...argN], functionBody);
+```
+
+### 闭包
+通常是指一个特殊的属性`[[Enviroment]]`，用来记录函数自身的创建时的环境的函数
+* 使用`new Function`创建的函数，无法访问外部变量，只能访问全局变量
+```js
+function getFunc() {
+    let value = "test";
+
+    let func = new Function('alert(value)');
+
+    return func;
+}
+
+getFunc()(); // value is not defined
+
+// 2
+var value = "test";
+
+function getFunc() {
+
+    let func = new Function('alert(value)');
+
+    return func;
+}
+
+getFunc()(); // test
+```
