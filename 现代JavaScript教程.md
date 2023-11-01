@@ -3363,3 +3363,13 @@ function getFunc() {
 
 getFunc()(); // test
 ```
+
+## 调度: `setTimeout`和`setInterval`
+有的时候我们想等待特定一段时间之后再执行一个函数（计划调用）
+目前有2种实现方式
+1. `setTimeout`
+    * 将函数推迟到一段时间间隔之后再执行
+2. `setInterval`
+    * 允许我们重复运行一个函数，从一段时间间隔之后开始运行，之后以该间隔时间重复运行该函数
+
+### `setTimeout`
