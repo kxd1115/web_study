@@ -3243,6 +3243,119 @@ function sumTo(num) {
 alert(sumTo(100));
 ```
 
+## Rest参数与Spread语法
+
+### Rest参数...
+在JS中，函数可以传入任意数量的参数
+```js
+function sum(a, b) {
+    return a+b;
+}
+
+// 虽然能接收，但是只有前2个起作用
+alert(sum(1,2,3,4,5)); // 3
+```
+在函数定义中声明一个数组来收集参数。语法: `...变量名`
+```js
+function sumAll(...args) { // args是一个数组
+    let sum = 0;
+
+    for (let a of args) sum += a;
+    return sum;
+}
+
+alert(sumAll(1,2,3,4,5)); // 15
+alert(sumAll(1,2,3));     // 6
+```
+* Rest参数必须放到参数列表的末尾
+
+### `arguments`变量
+这是一种特殊类数组对象，可以在函数中被访问。
+```js
+function showName() {
+    alert(arguments.length);
+    alert(arguments[0]);
+    alert(arguments[1]);
+}
+
+showName("Julius", "Dennis");
+// 2 Julius Dennis
+
+showName("Ilya");
+// 1 Ilya undefined
+
+```
+> 建议优先使用Rest参数
+
+### `Spread`语法
+看起来和`rest`参数很像，也使用`...`，但二者用途完全相反
+```js
+let arr = [3, 5, 1];
+
+alert(Math.max(...arr)); // 5
+```
+在函数调用中使用`...spread`，可以把可迭代对象**展开**到参数列表中
+
+```js
+let str = "hello";
+
+// 变成了一个数组
+alert([...str]); // h,e,l,l,o
+```
+该语法与Array.from存在细微差别
+* Array.from适用于类数组对象和可迭代对象
+* Spread只适用于可迭代对象
+
+### 复制`array/object`
+spread可以浅复制对象或数组
+```js
+let arr = [1, 2, 3, 5];
+
+let arrCopy = [...arr];
+
+alert( arr === arrCopy ); // false
+// 可以通过相同的方式复制对象
+```
+
+## 变量作用域, 闭包
+
+### 代码块
+在代码块`{...}`内声明的变量，只在该代码块内可见
+```js
+{
+    let message = "hello";
+    alert( message ); // hello
+}
+
+alert(message); // 无法找到该变量
+```
+对于`if`, `for`, `while`等`{...}`内部的变量，依然是仅在内部可见。
+
+### 嵌套函数
+在一个函数内部创建另一个函数，该函数被称为**嵌套**函数。
+```js
+function makeCounter() {
+    let count = 0;
+
+    return function() {
+        return count++;
+    };
+}
+
+let counter = makeCounter();
+
+alert(counter(0)); // 0
+alert(counter(1)); // 1
+alert(counter(2)); // 2
+```
+嵌套函数可以直接作为结果返回，之后可以在其他地方使用，并能够随时使用外部变量。
+
+### 语法环境
+
+#### Step 1. 变量
+每个运行的函数，代码块以及整个脚本，都被称为**词法环境**
+
+
 ## 全局对象
 * 全局对象的所有属性都可以被直接访问
 * 使用`var`进行声明
