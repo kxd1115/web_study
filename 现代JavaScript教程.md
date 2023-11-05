@@ -3588,6 +3588,52 @@ sayHi(); // hello, Guest
 
 ### 作业
 ```js
+// 作业1 修改makeCounter函数
+function makeCounter() {
+
+    let count = 0;
+
+    function counter() {
+        return count++;
+    };
+
+
+    counter.set = function(value) {
+        return count = value;
+    }
+    counter.decrease = function() {
+        return count--;
+    }
+
+    return counter;
+
+}
+
+let counter = makeCounter();
+
+alert(counter.set(2)); // 0
+
+// 作业2 任意数量的括号求和
+alert( sum(1)(2) ) == 3; // 1 + 2
+alert( sum(1)(2)(3) ) == 6; // 1 + 2 + 3
+sum(5)(-1)(2) == 6
+sum(6)(-1)(-2)(-3) == 0
+sum(0)(1)(2)(3)(4)(5) == 15
+
+function sum(a) {
+    let count = a;
+
+    function func(b) {
+        count += b;
+        return func;
+    };
+
+    func.toString = function() {
+        return count;
+    };
+
+    return func;
+}
 
 ```
 
