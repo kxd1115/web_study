@@ -3354,6 +3354,30 @@ alert(counter(2)); // 2
 
 #### Step 1. 变量
 每个运行的函数，代码块以及整个脚本，都被称为**词法环境**
+词法环境由2个部分组成:
+1. 环境记录: 存储所有局部变量作为其属性的对象
+2. 对外部词法环境的引用
+
+#### Step 2. 函数声明
+函数也是一个值，但函数声明的初始化会被立即完成。
+
+#### Step 3. 内部和外部的词法环境
+
+#### Step 4. 返回函数
+
+> 在JS中，所有的函数都是天生的闭包
+
+### 垃圾收集
+通常情况，函数调用完成后，会将词法环境和其中的所有变量从内存中删除。
+但是，如果有一个嵌套函数在函数结束后仍可达，则该嵌套的函数不会从变量中被删除。
+
+#### 实际开发中的优化
+V8的副作用，V8会尝试优化删除一些可达的函数（嵌套的函数）
+
+### 作业
+```js
+// 作业1 
+```
 
 
 ## 全局对象
@@ -3439,7 +3463,102 @@ sayHi(); // hello, Guest
 ### 作业
 ```js
 // 作业1 
+alert(sum(1)(2));
+alert(sum(5)(-1));
 
+function sum(num) {
+    return function(value) {
+        return num + value;
+    }
+}
+
+// 作业2
+function func() {
+    // 引擎从函数开始就知道局部变量 x，
+    // 但是变量 x 一直处于“未初始化”（无法使用）的状态，直到遇到 let，此时“死区”结束
+    // 因此答案是 error
+
+    console.log(x); // ReferenceError: Cannot access 'x' before initialization
+
+    let x = 2;
+}
+
+// 作业3
+let arr = [1, 2, 3, 4, 5, 6, 7];
+
+alert( arr.filter(inBetween(3, 6)) ); // 3,4,5,6
+
+alert( arr.filter(inArray([1, 2, 10])) ); // 1,2
+
+arr.filter((item, arr) => item >=3 && item <= 6);
+arr.filter((item, arr) => item===1 || item===2 || item===10);
+
+function inBetween(a, b) {
+    // 我的答案
+    return function(x) {
+        if (x>=a && x<=b) return x;
+    }
+    // 简单写法
+    // return x>=a && x<=b;
+}
+
+function inArray(arr) {
+    return function(x) {
+        for (let a of arr) {
+            if (x===a) return x;
+        }
+    }
+    // 简单写法，使用arr.includes()方法
+    return function(x) {
+        return arr.includes(x);
+    }
+}
+
+// 作业4
+let users = [
+    { name: "Pete", age: 18, surname: "Peterson" },
+    { name: "John", age: 20, surname: "Johnson" },
+    { name: "Ann", age: 19, surname: "Hathaway" }
+];
+
+console.log( users.sort(byField('name')) );
+console.log( users.sort(byField('age')) );
+
+function byField(value) {
+    return function() {
+        let num = -1;
+        if (this.value>num) return 1;
+    }
+    // 答案
+    // return (a, b) => a[value] > b[value] ? 1 : -1;
+}
+
+// 作业5
+function makeArmy() {
+    let shooters = [];
+
+    let i = 0;
+    while (i < 10) {
+        let shooter = function() { // 创建一个 shooter 函数，
+            // 应该显示其编号
+            // 原错误：alert(i)
+            alert(shooters.indexOf(shooter));  // 修改后
+        };
+        shooters.push(shooter); // 将此 shooter 函数添加到数组中
+        i++;
+    }
+
+    // ……返回 shooters 数组
+    return shooters;
+}
+
+let army = makeArmy();
+console.log(army);
+
+// ……所有的 shooter 显示的都是 10，而不是它们的编号 0, 1, 2, 3...
+army[0](); // 编号为 0 的 shooter 显示的是 10
+army[1](); // 编号为 1 的 shooter 显示的是 10
+army[5](); // 10，其他的也是这样。
 
 ```
 
