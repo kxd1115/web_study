@@ -3377,92 +3377,6 @@ V8的副作用，V8会尝试优化删除一些可达的函数（嵌套的函数�
 ### 作业
 ```js
 // 作业1 
-```
-
-
-## 全局对象
-* 全局对象的所有属性都可以被直接访问
-* 使用`var`进行声明
-* 一般使用直接的方式访问全局对象的属性，如`window.x`。
-> 一般不建议使用全局变量
-
-### 使用polyfills
-
-## 函数对象，NFE
-在JS中，函数的类型是对象
-把函数想象成可被调用的**行为对象**(action object)。
-除了直接调用，也支持把它们当做对象来处理：增/删属性，按引用传递等。
-
-### 属性name
-函数对象包含一些便于使用的属性
-* `name` 用来访问函数的名字
-```js
-function sayHi() {
-    alert("Hi!")
-}
-
-alert(sayHi.name); // sayHi
-```
-
-### 属性length
-返回函数参数的个数
-```js
-function sayHi() {
-    alert("Hi!")
-}
-
-alert(sayHi.length); // 0
-```
-
-### 自定义属性
-可以添加自定义属性
-```js
-function sayHi() {
-    alert("Hi!");
-
-    sayHi.counter++;
-}
-sayHi.counter = 0;
-
-sayHi();
-sayHi();
-sayHi();
-
-alert(sayHi.counter); // 3
-```
-和闭包的区别：当变量绑定到函数上时，可以在外部访问到该自定义属性；处于函数内的变量，在外部无法访问
-
-### 命名函数表达式 NFE
-```JS
-// 普通函数表达式
-let sayHi = function(who) {
-    alert(`hello! ${who}`);
-}
-
-// 加个名字
-let sayHi = function func(who) {
-    alert(`hello! ${who}`);
-}
-```
-区别:
-1. 添加名字后，它允许函数在内部引用自己
-2. 在函数外是不可见的
-
-```js
-let sayHi = function func(who) {
-    if (who) {
-        alert(`hello, ${who}`);
-    } else {
-        func("Guest");
-    }
-};
-
-sayHi(); // hello, Guest
-```
-
-### 作业
-```js
-// 作业1 
 alert(sum(1)(2));
 alert(sum(5)(-1));
 
@@ -3559,6 +3473,121 @@ console.log(army);
 army[0](); // 编号为 0 的 shooter 显示的是 10
 army[1](); // 编号为 1 的 shooter 显示的是 10
 army[5](); // 10，其他的也是这样。
+
+```
+## 老旧的`var`
+var声明与let类似，但现在版本一般不适用它
+
+### `var`没有块级作用域
+* `var`声明的变了只有函数作用域和全局作用域
+### `var`允许重新声明
+### `var`声明的变量，可以在其声明语句前被使用
+* 声明会被提升，但赋值不会
+```js
+function sayHi() {
+  alert(phrase);
+
+  var phrase = "Hello";
+}
+
+sayHi();
+```
+
+### IIFE
+在只有var的时代，程序员发明的一种模仿块级作用域的方法。
+```js
+// 像这样
+(function() {
+    // 使该变量变为私有变量
+    var message = "Hello";
+
+    alert(message); // Hello
+
+})();
+```
+
+## 全局对象
+* 全局对象的所有属性都可以被直接访问
+* 使用`var`进行声明
+* 一般使用直接的方式访问全局对象的属性，如`window.x`。
+> 一般不建议使用全局变量
+
+### 使用polyfills
+
+## 函数对象，NFE
+在JS中，函数的类型是对象
+把函数想象成可被调用的**行为对象**(action object)。
+除了直接调用，也支持把它们当做对象来处理：增/删属性，按引用传递等。
+
+### 属性name
+函数对象包含一些便于使用的属性
+* `name` 用来访问函数的名字
+```js
+function sayHi() {
+    alert("Hi!")
+}
+
+alert(sayHi.name); // sayHi
+```
+
+### 属性length
+返回函数参数的个数
+```js
+function sayHi() {
+    alert("Hi!")
+}
+
+alert(sayHi.length); // 0
+```
+
+### 自定义属性
+可以添加自定义属性
+```js
+function sayHi() {
+    alert("Hi!");
+
+    sayHi.counter++;
+}
+sayHi.counter = 0;
+
+sayHi();
+sayHi();
+sayHi();
+
+alert(sayHi.counter); // 3
+```
+和闭包的区别：当变量绑定到函数上时，可以在外部访问到该自定义属性；处于函数内的变量，在外部无法访问
+
+### 命名函数表达式 NFE
+```JS
+// 普通函数表达式
+let sayHi = function(who) {
+    alert(`hello! ${who}`);
+}
+
+// 加个名字
+let sayHi = function func(who) {
+    alert(`hello! ${who}`);
+}
+```
+区别:
+1. 添加名字后，它允许函数在内部引用自己
+2. 在函数外是不可见的
+
+```js
+let sayHi = function func(who) {
+    if (who) {
+        alert(`hello, ${who}`);
+    } else {
+        func("Guest");
+    }
+};
+
+sayHi(); // hello, Guest
+```
+
+### 作业
+```js
 
 ```
 
