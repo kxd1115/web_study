@@ -3680,3 +3680,90 @@ getFunc()(); // test
     * 允许我们重复运行一个函数，从一段时间间隔之后开始运行，之后以该间隔时间重复运行该函数
 
 ### `setTimeout`
+```js
+let timerId = setTimeout(func|code, [delay], [arg1], [arg2]...,[argN])
+
+// 示例
+function sayHi() {
+    alert("hello!");
+}
+
+setTimeout(sayHi, 1000); // 函数会在1秒之后执行
+
+// 带参数的情况
+function sayHi(name) {
+    alert(`hello! ${name}`);
+}
+
+setTimeout(sayHi, 1000, 'dennis'); // 函数会在1秒之后执行 hello! dennis
+```
+> 注意，传入的是一个函数名，不要带括号
+
+#### 用clearTimeout来取消调度
+使用`clearTimeout()`取消某个待执行的调度
+```js
+let timerId = setTimeout(() => {}, 1000);
+clearTimeout(timerId);
+```
+
+### `setInterval`
+与`setTimeout`的语法一致，不同的是，会按照间隔时长，定期执行。
+```js
+let timerId = setTimeout( () => { alert("hello!") }, 1000 );
+
+// 每秒钟显示
+let timerId = setInterval( () => { alert("hello!") }, 1000 );
+
+// 5秒钟后停止
+setTimeout(() => {
+    clearInterval(timerId);
+    alert("stop!");
+}, 5000);
+```
+
+### 嵌套的`setTimeout`
+这种方式也可以实现周期性调度，这种方式比`setInterval`更灵活
+```js
+let timerId = setTimeout(function tick() {
+    alert("tick");
+    timerId = setTimeout(tick, 2000); // 调用tick函数，形成嵌套
+}, 2000);
+// 灵活之处在于，可以嵌套方式可以根据实际情况调整后续的执行间隔
+```
+嵌套的`setTimeout`能够更加精确的设置两次执行之间的延时。
+
+### 零延时的setTimeout
+```js
+setTimeout(() => alert("World"));
+// 这个调度会在当前脚本执行完成"之后"立即执行
+
+alert("Hello");
+
+// 先显示Hello, 再显示World
+```
+> 在浏览器中，零延时实际上并不为零
+> HTML5的标准中，经过5重嵌套后，时间间隔被强制设定为至少4毫秒
+
+### 作业
+```js
+// 作业1
+function printNumbers(from, to) {
+    let num = from;
+    let timerId = setTimeout(function func() {
+        alert(num);
+        if (num < to) {
+            setTimeout(func, 1000);
+        }
+        num++;
+    }, 1000);
+}
+
+function printNumbers1(from, to) {
+    let num = from;
+    let timerId = setInterval(function func() {
+        alert(num);
+        if (num === to) clearTimeout(timerId);
+        num++;
+    }, 1000);
+}
+```
