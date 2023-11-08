@@ -2093,7 +2093,7 @@ console.log(arr1); // ['Bilbo']
 ```
 
 * `arr.join(glue)` 
-  * 与join相反
+  * 与split相反
 创建一串由`glue`粘合的`arr`项
 ```js
 // 这是一个数组
@@ -3766,4 +3766,207 @@ function printNumbers1(from, to) {
         num++;
     }, 1000);
 }
+```
+
+## 装饰器模式和转发, call/apply
+
+### 透明缓存
+```js
+function slow(x) {
+    alert(`Called with ${x}`);
+    return x;
+}
+// cachingDecorator 是一个装饰器
+function cachingDecorator(func) {
+    let cache = new Map();
+
+    return function(x) {
+        if (cache.has(x)) {       // 判断缓存中是否有对应的结果
+            return cache.get(x);  // 从缓存中读取结果
+        } else {
+            let result = func(x); // 否则调用func 
+            cache.set(x, result); // 并将结果缓存下来
+            return result;
+        }
+    }
+}
+
+slow = cachingDecorator(slow);
+
+alert( slow(1) );
+alert( "Again" + slow(1) );
+```
+分离`cachingDecorator`的好处
+* `cachingDecorator`可以重用。可以应用于其他函数
+* 缓存的逻辑独立于主函数
+* 如果需要，可以组合多个装饰器
+
+### 使用`func.call`设定上下文
+让其可以适用于对象
+```js
+function sayHi() {
+    alert(this.name);
+}
+
+let user = { name: "John" };
+
+sayHi(user); // 
+sayHi.call(user); // John
+```
+* `func.call(context, arg1, arg2...)`
+  * 第一个参数作为`this`
+```js
+// 对worker.slow的结果进行缓存
+let worker = {
+    someMethod() {
+        return 1;
+    },
+
+    slow(x) {
+        alert("Called with " + x);
+        return x * this.someMethod();
+    }
+};
+
+function cachingDecorator(func) {
+    let cache = new Map();
+    return function(x) {
+        if (cache.has(x)) {
+            return cache.get(x);
+        } else {
+            let result = func.call(this, x); // 指定this
+            cache.set(x, result);
+            return result;
+        }
+    }
+}
+
+alert( worker.slow(1) );
+
+worker.slow = cachingDecorator(worker.slow);
+
+alert( worker.slow(2) );
+```
+
+### 传递多个参数
+使用`...arguments`
+```js
+let worker = {
+    slow(min, max) {
+        alert(`Called with ${min}, ${max}`);
+        return min + max;
+    }
+};
+
+function cachingDecorator(func, hash) {
+    let cache = new Map();
+    return function() {
+        // 调整
+        let key = hash(arguments);
+        if (cache.has(key)) {
+            return cache.get(key);
+        } else {
+            // 调整
+            let result = func.call(this, ...arguments);
+            cache.set(key, result);
+            return result;
+        }
+    }
+}
+
+function hash(args) {
+    return args[0] + "," + args[1];
+}
+
+worker.slow = cachingDecorator(worker.slow, hash);
+
+alert( worker.slow(2, 3) );
+alert( "Again " + worker.slow(2, 3) );
+```
+
+### func.apply
+使用`func.apply(this, ...arguments)`替代`func.call(call, ...arguments)`
+```js
+func.apply(context, args);
+// this = context
+
+
+func.apply(context, args); 
+// 等同于
+func.call(context, ...args); 
+
+```
+与call的区别是apply, apply期望的是一个包含这些参数的类数组对象`args`
+* Spread语法`...`允许将**可迭代对象**`args`作为列表传递给call
+* `apply`只接受**类数组**`args`
+  * 对于真正的数组，apply可能更快
+将所有参数连同上下文一起传递给另一个函数被称为"呼叫转移"
+```js
+// 最简形式
+let wrapper = function() {
+    return func.apply(this, arguments);
+}
+```
+
+### 借用一种方法
+对前面的`hash`函数进行改进 
+```js
+function hash() {
+    alert([].join.apply(arguments));
+}
+
+hash(1, 2);
+```
+> 这个技巧叫做方法借用
+
+### 装饰器和函数属性
+如果原始函数有属性，则在装饰后不再提供这些属性
+
+### 作业
+```js
+// 作业1 间谍装饰器
+function work(a, b) {
+    alert( a + b ); // work 是一个任意的函数或方法
+}
+
+work = spy(work);
+
+work(1, 2); // 3
+work(4, 5); // 9
+
+for (let args of work.calls) {
+    alert( 'call:' + args.join() ); // "call:1,2", "call:4,5"
+}
+
+function spy(func) {
+
+    function wrapper(...args) {
+        wrapper.calls.push(args);
+        return func.apply(this, args);
+    }
+    
+    wrapper.calls = [];
+    
+    return wrapper;
+}
+
+// 延时装饰器
+function f(x) {
+    alert(x);
+}
+
+// create wrappers
+let f1000 = delay(f, 1000);
+let f1500 = delay(f, 1500);
+
+f1000("test"); // 在 1000ms 后显示 "test"
+f1500("test"); // 在 1500ms 后显示 "test"
+
+function delay(func, ms) {
+    return function() {
+        setTimeout(() => func.apply(this, arguments), ms);
+    }
+}
+
+
 ```
