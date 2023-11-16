@@ -3968,5 +3968,168 @@ function delay(func, ms) {
     }
 }
 
+// 防抖装饰器（没理解）
+let f = debounce(alert, 1000);
 
+f("a");
+setTimeout( () => f("b"), 200);
+setTimeout( () => f("c"), 500);
+
+function debounce(func, ms) {
+    
+    let timeout;
+    return function() {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(this, arguments);
+        }, ms);
+    };
+}
+
+// 节流装饰器
+function throttle(func, ms) {
+            
+    // 设置一个打开的开关
+    let flag = true;
+
+    function wrapper() {
+        
+        // 开关一直处于关闭状态 
+        flag = false;
+        if (!flag) {
+            return;
+        }
+
+        // 定时器到时间之后
+        setTimeout(function() {
+            // 再把开关打开，然后运行
+            flag = true;
+            func.apply(savedThis, savedArgs);
+        }, ms)
+    }
+    return wrapper;
+}
 ```
+
+## 函数绑定
+
+### 丢失`this`
+一旦方法被传递到与对象分开的某个地方，this就会丢失。
+```js
+let user = {
+    firstName: "John",
+    sayHi() {
+        alert(`Hello, ${this.firstName}`);
+    }
+};
+
+setTimeout(user.sayHi, 1000); // Hello, undefined
+// 这里其实试图获取的是window.fitstName，但该变量并不存在，因此会返回undefined
+```
+### 解决方案1: 包装器
+使用一个包装函数
+```js
+setTimeout(function() {
+    user.sayHi();
+}, 1000); // Hello, John
+
+// 使用箭头函数
+setTimeout(() => user.sayHi(), 1000);
+```
+但当user的值在定时器触发之前进行了修改，那么会调用修改后的内容
+
+### 解决方案2: bind
+函数内建方法`bind`，可以绑定this
+```js
+// 基本语法
+let boundFunc = func.bind(context);
+```
+`func.bind(context)`返回的结果是一个特属的类似于函数的**外来对象**，可以像函数一样被调用
+```js
+let user = {
+    firstName: "John",
+};
+
+function func() {
+    alert(this.firstName);
+}
+
+let funcUser = func.bind(user);
+
+funcUser();
+```
+```js
+let user = {
+    firstName: "John",
+    sayHi() {
+        alert(`Hello, ${this.firstName}`);
+    }
+};
+
+// 可以在没有对象的情况下运行
+let sayHi = user.sayHi.bind(user);
+
+setTimeout(sayHi, 1000); // Hello, John
+
+// 即使user的值在定时器触发之前发生了修改
+// sayHi还是会使用预先绑定的值
+user = {
+    sayHi() { alert("Another user in setTimeout!"); }
+};
+```
+> 如果一个对象有多个方法
+```js
+// 通过循环可以将所有方法都传递进去
+for ( let key of obj) {
+    if (typeof obj[key] === 'function') {
+        obj[key] = obj[key].bind(obj);
+    }
+}
+```
+
+### 部分应用函数
+bind不仅可以绑定`this`，还可以绑定参数
+```js
+let bound = func.bind(context, [arg1]...[argN]);
+```
+
+```js
+function mul(a, b) {
+    return a * b;
+}
+
+let doubule = mul.bind(null, 2);
+// 将null 绑定为上下文
+// 将2作为函数的第一个参数
+
+alert(doubule(3)); // = mul(2, 3) = 6
+```
+### 在没有上下文情况下的partial
+绑定参数，但不想绑定`this`的情况
+```js
+// 我理解这就是一个装饰器
+function partial(func, ...argsBound) {
+    return function(...args) {
+        return func.call(this, ...argsBound, ...args);
+    }
+}
+
+// 用法
+let user = {
+    firstName: "John",
+    say(time, phrase) {
+        alert(`[${time}] ${this.firstName}: ${phrase}`);
+    }
+};
+
+// 绑定第一个参数time
+user.sayNow = partial(user.say, new Date().getHours() + ":" + new Date().getMinutes());
+
+// 输入第二个参数
+user.sayNow("hello"); // [22:45] John: hello
+```
+
+### 作业
+
+
+
