@@ -4131,5 +4131,61 @@ user.sayNow("hello"); // [22:45] John: hello
 
 ### 作业
 
+```js
+
+// 作业2
+function f() {
+  alert(this.name);
+}
+
+f = f.bind( {name: "John"} ).bind( {name: "Pete"} );
+
+f(); // John
+// 绑定函数对象仅在创建的时候记忆上下文
+// 一个函数不能够被重复绑定
+
+// 作业3
+function askPassword(ok, fail) {
+    let password = prompt("Password?", '');
+    if (password == "rockstar") ok();
+    else fail();
+}
+
+let user = {
+    name: 'John',
+    loginOk() {
+        alert(`${this.name} logged in`);
+    },
+    loginFail() {
+        alert(`${this.name} failed to log in`);
+    },
+};
+
+// askPassword(user.loginOk, user.loginFail);
+// 错误中无法定位到this，需要添加bind方法进行定位
+askPassword(user.loginOk.bind(user), user.loginFail.bind(user));
+
+// 作业4
+function askPassword(ok, fail) {
+    let password = prompt("Password?", '');
+    if (password == "rockstar") ok();
+    else fail();
+}
+
+let user = {
+    name: 'John',
+    login(result) {
+        alert( this.name + (result ? ' logged in' : ' failed to log in') );
+    }
+};
+
+// 我的回答
+askPassword(user.login.bind(user, 1), user.login.bind(user, 0));
+
+// 答案
+askPassword(() => user.login(true), () => user.login(false));
+askPassword(user.login.bind(user, true), user.login.bind(user, false));
+```
+
 
 
