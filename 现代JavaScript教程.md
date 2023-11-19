@@ -4187,5 +4187,222 @@ askPassword(() => user.login(true), () => user.login(false));
 askPassword(user.login.bind(user, true), user.login.bind(user, false));
 ```
 
+## 深入理解箭头函数
+
+### 箭头函数没有`this`
+
+### 箭头函数没有`arguments`
 
 
+---
+# 对象属性配置
+
+## 属性标志和属性描述符
+
+### 属性标志
+除了`value`之外，还有三个特殊的特性，这些特性在常规情况下均默认为true
+* `writable` - 如果为true，则值可以被修改，否则就只是可读的
+* `enumerable` - 如果为true，则会被在循环中列出
+* `configurable` - 如果为true，则属性可以被删除
+```js
+// 允许查询有关属性的完整信息
+let descriptor = Object.getOwnProjectDescriptor(obj, propertyName)
+// obj 需要查询的对象
+// proertyName 属性的名称
+// 返回属性的完整信息，一个对象
+```
+```JS
+let user = {
+    name: "John"
+}
+
+let descriptor = Object.getOwnPropertyDescriptor(user, "name");
+
+alert(JSON.stringify(descriptor, null, 2));
+/* 属性描述符：
+{
+  "value": "John",
+  "writable": true,
+  "enumerable": true,
+  "configurable": true
+}
+*/
+```
+#### 修改标志
+```js
+object.defineProperty(obj, propertyName, descriptor)
+```
+`obj`, `propertyName`
+需要修改的对象及其属性
+
+`descriptor`
+要修改的属性描述符对象
+```js
+let user = {
+    name: "John"
+}
+
+Object.defineProperty(user, "name", {
+    value: "John",
+    writable: false,
+});
+
+let descriptor = Object.getOwnPropertyDescriptor(user, "name");
+
+console.log(JSON.stringify(descriptor, null, 4));
+/*
+{
+    "value": "John",
+    "writable": false,
+    "enumerable": true,
+    "configurable": true
+}
+*/
+```
+
+### 只读
+通过将`writable`设置为false来实现
+
+### 不可枚举
+```js
+let user = {
+    name: "John",
+    toString() {
+        return this.name;
+    },
+};
+
+// 默认情况下，两个属性均会被列出
+//for (let key in user) alert(key); 
+// name toString
+
+// 使用Object.defineProperty
+Object.defineProperty(user, "toString", {
+    enumerable: false,
+});
+
+for (let key in user) alert(key); // name
+
+// 也会被排除在外 
+alert(Object.keys(user)); // name
+```
+
+### 不可配置
+`configurable: false`, 对应的属性不能被删除，对应的特性不能被修改
+> 意味着开发者无法再次通过defineProperty进行特性修改
+> 但不妨碍我们对对象的值的修改
+```js
+let user = {
+    name: "John",
+    age: 28,
+};
+
+Object.defineProperty(user, "age", {
+    configurable:false,
+});
+
+// 无法删除
+delete user.age;
+
+alert(user.age); // 28
+
+//还是可以修改该属性的值
+//user.age = 29;
+```
+
+### `Object.defineProperties`
+允许一次定义多个属性的特性
+```js
+Object.defineProperties(obj, {
+    pro1: descriptor1,
+    pro2: descriptor2,
+    //...罗列需要修改特性的属性
+}, {
+    //...需要修改的特性
+})
+```
+
+### `Object.getOwnPropertyDescriptors`
+一次获取所有属性的特性描述
+```js
+let user = {
+    name: "John",
+    age: 28,
+};
+
+let descriptor = Object.getOwnPropertyDescriptors(user);
+
+console.log(JSON.stringify(descriptor, null, 4));
+/*
+{
+    "name": {
+        "value": "John",
+        "writable": true,
+        "enumerable": true,
+        "configurable": true
+    },
+    "age": {
+        "value": 28,
+        "writable": true,
+        "enumerable": true,
+        "configurable": true
+    }
+}
+*/
+```
+
+### 设定一个全局的密封对象
+一些限制访问整个对象的方法（很少使用）
+* `Object.preventExtensions(obj)` 禁止向对象添加新属性
+* `Object.seal(obj)` 禁止添加/删除属性
+* `Object.freeze(obj)` 禁止添加/删除/更改属性
+* `Object.isExtensible(obj)` 如果添加属性被禁止，则返回 false，否则返回 true。
+* `Object.isSealed(obj)` 如果添加/删除属性被禁止，并且所有现有的属性都具有 configurable: false则返回 true。
+* `Object.isFrozen(obj)` 如果添加/删除/更改属性被禁止，并且所有当前属性都是 configurable: false, writable: false，则返回 true。
+
+## 属性的getter和setter
+对象属性分两种
+* 数据属性
+* 访问器属性
+
+### getter和setter
+```js
+let user = {
+    name: "John",
+    surname: "Smith",
+    age: 28,
+
+    // getter
+    get fullname() {
+        return `${this.name} ${this.surname}`;
+    },
+    
+};
+
+alert(user.fullname); // John Smith
+
+// 没有setter时，赋值操作会报错
+user.fullname = "Alice Cooper" // 不会生效
+```
+添加setter
+```js
+let user = {
+    name: "John",
+    surname: "Smith",
+    age: 28,
+
+    // getter
+    get fullname() {
+        return `${this.name} ${this.surname}`;
+    },
+
+    // setter
+    set fullname(value) {
+        [this.name, this.surname] = value.split(" ");
+    }
+};
+
+user.fullname = "Alice Cooper"
+alert(user.name);    // Alice
+alert(user.surname); // Cooper
+```
