@@ -4364,6 +4364,7 @@ console.log(JSON.stringify(descriptor, null, 4));
 对象属性分两种
 * 数据属性
 * 访问器属性
+  * getter, setter
 
 ### getter和setter
 ```js
@@ -4405,4 +4406,56 @@ let user = {
 user.fullname = "Alice Cooper"
 alert(user.name);    // Alice
 alert(user.surname); // Cooper
+```
+
+### 访问器描述符
+访问器属性没有`value`和`writable`，只有`get`和`set`
+* get
+* set
+* enumerable
+* configurable
+
+### 更聪明的getter/setter
+可以用作属性的包装器，从而对对象属性做出更多的限制或者要求
+```js
+let user = {
+
+    // getter
+    get name() {
+        return this.name;
+    },
+
+    // setter
+    set name(value) {
+        if (value.length < 4) {
+            alert("名字太短了");
+            return;
+        }
+        this.name = value;
+    }
+};
+
+user.name = 'jon' // 名字太短了
+```
+
+### 兼容性
+访问器允许随时通过使用`getter`和`setter`替换**正常的**数据属性
+```js
+function User(name, birthday) {
+    this.name = name;
+    this.birthday = birthday;
+
+    // 在不修改对象原有属性的情况下，通过这个方法来控制和调整
+    Object.defineProperty(this, "age", {
+        get() {
+            let todayYear = new Date().getUTCFullYear();
+            return todayYear - this.birthday.getUTCFullYear();
+        }
+    });
+}
+
+let john = new User("John", new Date(2021,2,1)); 
+
+alert(john.birthday);
+alert(john.age);     // 2
 ```
