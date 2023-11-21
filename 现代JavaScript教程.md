@@ -4605,6 +4605,51 @@ alert(Object.keys(rabbit)); // jumps
 
 ### 作业
 ```js
+// 作业1
+let head = {
+    glasses: 1
+};
 
+let table = {
+    pen: 3,
+    __proto__: head,
+};
 
+let bed = {
+    sheet: 1,
+    pillow: 2,
+    __proto__: table,
+};
+
+let pockets = {
+    money: 2000,
+    __proto__: bed,
+};
+
+alert( pockets.glasses );
+
+// 作业2
+let hamster = {
+    stomach: [],
+    eat(food) {
+        this.stomach.push(food);
+    },
+};
+
+let speedy = {
+    stomach: [],
+    __proto__: hamster
+};
+
+let lazy = {
+    stomach: [],
+    __proto__: hamster
+};
+
+// 这只仓鼠找到了食物
+speedy.eat("apple");
+alert( speedy.stomach ); // apple
+
+// 这只仓鼠也找到了食物，为什么？请修复它。
+alert( lazy.stomach ); // apple
 ```
