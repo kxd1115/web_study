@@ -4459,3 +4459,152 @@ let john = new User("John", new Date(2021,2,1));
 alert(john.birthday);
 alert(john.age);     // 2
 ```
+
+---
+
+# 原型，继承
+
+## 原型继承
+* 这里我理解有点像子类继承父类的属性
+
+### [[Prototype]]
+对象的特殊隐藏属性`Prototype`，该属性是内部的且隐藏的
+```js
+// 通过__proto__调用该属性
+let animal = {
+    eats: true
+};
+let rabbit = {
+    jumps: true
+};
+
+// 将raabit的原型设置为animal
+rabbit.__proto__ = animal;
+
+alert(rabbit.eats);  // true
+alert(rabbit.jumps); // true
+```
+```js
+let animal = {
+    eats: true,
+    walk() {
+        alert("Animal walk");
+    },
+};
+let rabbit = {
+    jumps: true,
+    __proto__: animal,
+};
+
+// 通过原型获得了一个walk方法
+rabbit.walk(); // Animal walk
+```
+原型链可以很长
+```js
+let animal = {
+    eats: true,
+    walk() {
+        alert("Animal walk");
+    },
+};
+let rabbit = {
+    jumps: true,
+    __proto__: animal,
+};
+
+let longEar = {
+    earlenght: 10,
+    __proto__:rabbit,
+};
+
+// 先在rabbit中寻找，然后再在animal中寻找
+alert(longEar.eats); // true
+```
+> __proto__是Prototype因历史原因留下来的getter/setter
+
+
+### 写入不使用原型
+原型仅用于读取属性
+```js
+let animal = {
+  eats: true,
+  walk() {
+    /* rabbit 不会使用此方法 */
+  }
+};
+
+let rabbit = {
+  __proto__: animal
+};
+
+// 相当于为rabbit创建了一个walk方法，之后再调用时，不需要再从原型中寻找
+rabbit.walk = function() {
+  alert("Rabbit! Bounce-bounce!");
+};
+
+rabbit.walk(); // Rabbit! Bounce-bounce!
+```
+访问器属性例外，访问器属性能够被读取使用，且能够被修改
+```js
+let user = {
+    name: "John",
+    sureName: "Smith",
+
+    set fullName(value) {
+        [this.name, this.sureName] = value.split(" ");
+    },
+
+    get fullName() {
+        return `${this.name} ${this.sureName}`;
+    },
+}
+
+let admin = {
+    __proto__: user,
+    isAmind: true,
+};
+
+admin.fullName = "Alice Cooper";
+
+// 原型的fullName被保护了
+alert(user.fullName);  // John Smith
+
+// admin的fullName可以被单独修改，不会影响到原型
+alert(admin.fullName); // Alice Cooper
+```
+### `this`的值
+this值不受原型的影响
+在一个方法调用中，`this`始终是点符号`.`前面的对象。
+
+### for...in循环
+`for...in`循环会迭代继承的属性
+```js
+let animal = {
+    eats: true,
+    walk() {
+        /* rabbit 不会使用此方法 */
+    }
+};
+
+let rabbit = {
+    jumps: true,
+    __proto__: animal
+};
+
+// 会遍历继承的key
+for(let prop in rabbit) {
+    alert(prop); // jumps eats walk
+}
+// 可以通过内建方法`obj.hasOwnProperty(key)`进行过滤；
+// 根据obj是否包含名为key的属性，返回值是true/false
+
+// 只会返回自己的key
+alert(Object.keys(rabbit)); // jumps
+```
+> 几乎所有键值获取方法都忽略继承的属性
+
+### 作业
+```js
+
+
+```
