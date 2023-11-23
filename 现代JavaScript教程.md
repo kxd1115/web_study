@@ -4653,3 +4653,101 @@ alert( speedy.stomach ); // apple
 // 这只仓鼠也找到了食物，为什么？请修复它。
 alert( lazy.stomach ); // apple
 ```
+
+## F.prototype
+```js
+let animal = {
+    eats: true,
+}
+
+let animal1 = {
+    eats: false,
+}
+
+function Rabbit(name) {
+    this.name = name;
+}
+
+Rabbit.prototype = animal; // 表示继承animal
+
+
+let rabbit = new Rabbit("White Rabbit");
+
+// 仅在使用了new F时，prototype才会生效
+alert(rabbit.eats); // true
+
+// 不会影响旧的值
+Rabbit.prototype = animal1; // 表示继承animal1
+let rabbit1 = new Rabbit("White Rabbit");
+alert(rabbit1.eats); // false
+```
+
+### 默认的F.prototype，构造器属性
+每个函数都有`prototype`属性，是一个只有属性`constructor`的对象，指向函数自身。
+```js
+function Rabbit() {}
+
+// 默认的prototype
+// Rabbit.prototype = { constructor: Rabbit };
+alert( Rabbit.prototype.constructor === Rabbit ); // true
+
+// 可以继承给所有rabbits
+let rabbit = new Rabbit();
+alert( rabbit.constructor === Rabbit ); // true
+```
+可以使用`constructor`来创建一个新对象
+```js
+let rabbit2 = new rabbit.constructor("Black Rabbit");
+```
+```js
+function Rabbit() {}
+
+// 不要将 Rabbit.prototype 整个覆盖
+// 可以向其中添加内容
+Rabbit.prototype.jumps = true
+// 默认的 Rabbit.prototype.constructor 被保留了下来
+```
+
+### 作业
+```js
+// 作业1
+function Rabbit() {}
+Rabbit.prototype = {
+    eats: true
+};
+
+let rabbit = new Rabbit();
+
+// 情况1
+Rabbit.prototype = {};
+alert( rabbit.eats );  // true 原有值不受影响
+
+// 情况2
+Rabbit.prototype.eats = false;
+alert( rabbit.eats );  // false
+// 这里直接通过prototype修改了eats的值，会影响到其他的rabbit
+
+// 情况3
+delete rabbit.eats;
+alert( rabbit.eats );  // true
+
+// 情况4
+delete Rabbit.prototype.eats;
+alert( rabbit.eats );  // undefined
+// 这里直接在prototype中删除eats属性
+
+// 作业2
+function User(name) {
+    this.name = name;
+}
+
+let user1 = new User("John");
+
+let user2 = new user1.constructor("Pete");
+
+alert(user2.name); // Pete
+
+// 如果这里重写了
+// User.prototype = {};
+// alert( user2.name ) // undefined 
+```
