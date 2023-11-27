@@ -4004,7 +4004,7 @@ function throttle(func, ms) {
         setTimeout(function() {
             // 再把开关打开，然后运行
             flag = true;
-            func.apply(savedThis, savedArgs);
+            func.apply(this, arguments);
         }, ms)
     }
     return wrapper;
@@ -4750,4 +4750,64 @@ alert(user2.name); // Pete
 // 如果这里重写了
 // User.prototype = {};
 // alert( user2.name ) // undefined 
+```
+
+## 原生的原型
+
+### Object.prototype
+```js
+let obj = {};
+alert( obj ) // [object Object]
+```
+此时该对象的[[prototype]]指向`Object.prototype`
+
+### 其他内建原型
+`Array`/`Date`/`Function`等，都有prototype
+```js
+let arr = [1,2,3];
+alert( arr.__proto__ === Array.prototype ); // true
+alert( arr.__proto__.__proto__ === Object.prototype ); // true
+
+let date = new Date();
+alert( date.__proto__ === Date.prototype ); // true
+
+function func() {}
+alert( func.__proto__ === Function.prototype ); // true
+```
+
+### 基本数据类型
+它们并不是对象，但如果我们试图操作它们的属性，那么临时包装器对象将会通过内建的构造器被创建（`String`, `Number`等）。提供方法然后消失。
+
+### 更改原生原型
+原生的原型可以被修改，但不建议。
+
+### 作业
+```js
+// 作业1 给函数添加一个 "f.defer(ms)" 方法
+function f() {
+    alert("Hello!");
+}
+
+Function.prototype.defer = function(ms) {
+    setTimeout(this,ms)
+}
+
+f.defer(1000); // 1 秒后显示 "Hello!"
+
+
+// 作业2 将装饰器 "defer()" 添加到函数
+function f(a, b) {
+    alert( a + b );
+}
+
+Function.prototype.defer = function(ms) {
+    let f = this;
+    return function(...args) {
+        setTimeout(() => {
+            f.apply(this, args)
+        }, ms);
+    }
+}
+
+f.defer(1000)(1,2);
 ```
