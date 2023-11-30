@@ -4811,3 +4811,87 @@ Function.prototype.defer = function(ms) {
 
 f.defer(1000)(1,2);
 ```
+
+## 原型方法，没有__proto__的对象
+使用`obj.__proto__`设置或读取原型被认为已经过时且不推荐使用
+现代获取/设置原型的方法：
+* `Object.getPrototypeOf(obj)` - 返回对象的原型
+* Object.setPrototypeOf(obj, proto) - 设置对象的原型为`proto`
+
+* 另外一种强大的特殊方法
+  * Object.create(proto, [descriptors]) - 利用给定的`proto`作为原型[[Prototype]]和可选的属性描述来创建一个空对象
+```js
+let animal = {
+    eats: true,
+};
+
+// 创建一个以animal为原型的新对象
+let rabbit = Object.create(animal);
+alert(rabbit.eats); // true
+
+alert(Object.getPrototypeOf(rabbit) === animal); // true
+
+// 将rabbit的原型修改为{}
+Object.setPrototypeOf(rabbit, {});
+
+let rabbit1 = Object.create(animal, {
+    jumps: {
+        value:true,
+    }
+});
+
+alert(rabbit1.jumps); // true
+```
+
+### 原型简史
+> 如果速度很重要，就请不要修改已存在的对象的[[Prototype]]
+
+### `Very plain` objects
+通过创建一个没有原型的对象解决用户输入`__proto__`的问题
+* 原型为null时，对象才真正是空的
+```js
+let obj = Object.create(null);
+// 或者obj = {__proto__:null}
+```
+
+### 作业
+```js
+// 作业1 为 dictionary 添加 toString 方法
+let dictionary = Object.create(null, {
+    // 你的添加 dictionary.toString 方法的代码
+    toString: {
+        value() {
+            return Object.keys(this).join();
+        }
+    }
+});
+
+// 添加一些数据
+dictionary.apple = "Apple";
+dictionary.__proto__ = "test"; // 这里 __proto__ 是一个常规的属性键
+
+// 在循环中只有 apple 和 __proto__
+for(let key in dictionary) {
+    alert(key); // "apple", then "__proto__"
+}
+
+// 你的 toString 方法在发挥作用
+alert(dictionary); // "apple,__proto__"
+
+
+// 作业2 调用方式的差异
+function Rabbit(name) {
+    this.name = name;
+}
+
+Rabbit.prototype.sayHi = function() {
+    alert(this.name);
+};
+
+let rabbit = new Rabbit("Rabbit");
+
+// alert( rabbit.sayHi() ); // Rabbit
+// alert( Rabbit.prototype.sayHi() ); // undefined
+// alert( Object.getPrototypeOf(rabbit).sayHi() ); // undefined
+alert( rabbit.__proto__.sayHi() ); // undefined
+```
