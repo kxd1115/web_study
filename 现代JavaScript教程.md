@@ -4895,3 +4895,178 @@ let rabbit = new Rabbit("Rabbit");
 // alert( Object.getPrototypeOf(rabbit).sayHi() ); // undefined
 alert( rabbit.__proto__.sayHi() ); // undefined
 ```
+---
+# 类
+
+## Class基本语法
+
+### `class`语法
+```js
+// 基本语法
+class MyClass {
+    // class方法
+    constructor() {...}
+    method1() {...}
+    method2() {...}
+    method3() {...}
+    ...
+}
+
+// 使用new MyClass() 来创建具有上述列出方法的新对象
+let user = new MyClass();
+```
+> 注意：类方法之间没有逗号
+
+### 什么是class
+```js
+class User {
+    constructor(name) { this.name = name; }
+    sayHi() { alert(this.name); }
+}
+
+// User是一个函数
+alert(typeof User); // function
+
+// 更确切的说，是User的原型的constructor方法
+alert(User === User.prototype.constructor); // true
+
+
+alert(User.prototype.sayHi); // sayHi() { alert(this.name); }
+
+// 获取原型中的方法
+alert(Object.getOwnPropertyNames(User.prototype)); // constructor,sayHi
+```
+
+### 不仅仅是语法糖
+1. 通过`class`创建的函数具有特殊的内部标记
+   * `IsClassConstructor: true`
+   * 必须使用`new`来进行调用
+2. 类方法不可枚举
+3. 类总是使用`use strict`。类构造中的所有代码都自动进入严格模式
+
+## 类表达式
+类可以在另外一个表达式中被定义，传递，返回，赋值等
+如果类表达式有名字，那么改名字仅在内部可见
+
+### Getter/setters
+```js
+class User {
+
+    constructor(name) {
+        this.name = name;
+    }
+
+    get name() {
+        return this._name;
+    }
+
+    set name(value) {
+        if (value.length <4) {
+            alert("Name is to short!");
+            return;
+        } 
+        this._name = value;
+    }
+}
+
+let user = new User("John");
+
+alert(user.name);
+
+user1 = new User("Jon"); // Name is to short!
+```
+### 计算属性名称[...]
+```js
+class User {
+
+    constructor(name) {
+        this.name = name;
+    }
+
+    ['say' + 'Hi']() {
+        alert("Hello!");
+    }
+}
+
+new User().sayHi();  // sayHi
+```
+### Class字段
+`类字段`是一种允许添加任何属性的语法
+```js
+class User() {
+    name = "John";
+
+    sayHi() {
+        alert(`Hello ${this.name}!`);
+    }
+}
+
+alert(User.prototype.name); //undefined
+
+let user = new User();
+alert(user.name); // John
+```
+类字段会在每个独立对象中被设定好，而不是在原型中`User.prototype`。
+
+#### 使用类字段制作绑定方法
+```js
+class Button {
+    constructor(value) {
+        this.value = value;
+    }
+
+    // 修改这里，防止this在其他作用域中被调用时丢失
+    click = () => {
+        alert(this.value);
+    }
+    // click = () => {...}
+}
+
+let button = new Button("hello");
+
+// this丢失
+setTimeout(button.click, 1000); 
+```
+
+### 作业
+```js
+// 作业 重写为class
+class Clock {
+constructor({ template }) {
+    this.template = template;
+}
+
+render() {
+    let date = new Date();
+
+    let hours = date.getHours();
+    if (hours < 10) hours = "0" + hours; 
+
+    let mins = date.getMinutes();
+    if (mins < 10) mins = "0" + mins; 
+
+    let secs = date.getSeconds();
+    if (secs < 10) secs = "0" + secs;
+
+    let output = this.template
+        .replace('h', hours)
+        .replace('m', mins)
+        .replace('s', secs);
+    
+    console.log(output);
+}
+
+stop() {
+    clearInterval(this.timer);
+}
+
+start() {
+    this.render();
+    this.timer = setInterval(() => this.render(), 1000);
+}
+
+}
+
+let clock = new Clock({template: 'h:m:s'});
+clock.start();
+```
