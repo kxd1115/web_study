@@ -5070,3 +5070,84 @@ start() {
 let clock = new Clock({template: 'h:m:s'});
 clock.start();
 ```
+
+## 类继承
+
+### `extends`关键字
+扩展另一个类的语法`class Child extends Parent`
+```js
+class Animal {
+    constructor(name) {
+        this.speed = 0;
+        this.name = name;
+    }
+    run(speed) {
+        this.speed = speed;
+        alert(`${this.name} runs with speed ${this.speed}.`);
+    }
+    stop() {
+        this.speed = 0;
+        alert(`${this.name} stands still.`);
+    }
+}
+
+class Rabbit extends Animal {
+    hide() {
+        alert(`${this.name} hides!`);
+    }
+}
+
+let rabbit = new Rabbit("White Rabbit");
+
+// JS会首先在rabbit上查找对应的方法，如果没招到，则再从原型上查找
+rabbit.run(5); // White Rabbit runs with speed 5.
+rabbit.stop(); // White Rabbit stands still.
+rabbit.hide(); // White Rabbit hides!
+```
+> extends后面允许任意表达式
+
+### 重写方法
+如果我们在`Rabbit`中指定了我们自己的方法，如`stop()`，则会优先使用它。
+```js
+class Rabbit extends Animal {
+    stop() {
+        // 这个方法会被rabbit.stop()优先使用
+    }
+}
+```
+Class还提供了`super`关键字
+* 执行`super.method(...)`来调用一个父类方法
+* 执行`super(...)`来调用一个父类constructor(仅在当前constructor中)
+```js
+class Animal {
+    constructor(name) {
+        this.speed = 0;
+        this.name = name;
+    }
+    run(speed) {
+        this.speed = speed;
+        alert(`${this.name} runs with speed ${this.speed}.`);
+    }
+    stop() {
+        this.speed = 0;
+        alert(`${this.name} stands still.`);
+    }
+}
+
+class Rabbit extends Animal {
+    hide() {
+        alert(`${this.name} hides!`);
+    }
+
+    stop() {
+        super.stop(); // 调用父类的stop
+        this.hide();
+    }
+}
+
+let rabbit = new Rabbit("White Rabbit");
+
+rabbit.run(5); // White Rabbit runs with speed 5.
+rabbit.stop(); // White Rabbit stands still.  White Rabbit hides!.
+```
+> 箭头函数没有`super`
