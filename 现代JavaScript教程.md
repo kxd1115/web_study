@@ -5151,3 +5151,160 @@ rabbit.run(5); // White Rabbit runs with speed 5.
 rabbit.stop(); // White Rabbit stands still.  White Rabbit hides!.
 ```
 > 箭头函数没有`super`
+
+### 作业
+```js
+class Clock {
+    constructor({ template }) {
+        this.template = template;
+    }
+
+    render() {
+        let date = new Date();
+
+        let hours = date.getHours();
+        if (hours < 10) hours = '0' + hours;
+
+        let mins = date.getMinutes();
+        if (mins < 10) mins = '0' + mins;
+
+        let secs = date.getSeconds();
+        if (secs < 10) secs = '0' + secs;
+
+        let output = this.template
+        .replace('h', hours)
+        .replace('m', mins)
+        .replace('s', secs);
+
+        console.log(output);
+    }
+
+    stop() {
+        clearInterval(this.timer);
+    }
+
+    start() {
+        this.render();
+        this.timer = setInterval(() => this.render(), 1000);
+    }
+}
+
+class ExtendClock extends Clock {
+    constructor(options) {
+        super(options);
+        let {precision = 1000} = options;
+        this.precision = precision;
+    }
+
+    start() {
+        this.render();
+        this.timer = setInterval(() => this.render(), this.precision);
+    }
+
+}
+
+let clock = new Clock({template: 'h:m:s'});
+clock.start();
+```
+
+## 静态属性和静态方法
+把一个方法作为一个整体赋值给类，这样的方法被称为`静态的static`。
+```js
+// 在声明中以static开通
+class User {
+    static staticMethod() {
+        alert(this === User);
+    }
+}
+User.staticMethod(); // true
+```
+> 静态方法属于整个类，不属于单独某个特定对象
+```js
+class Article {
+    constructor(title, date) {
+        this.title = title;
+        this.date = date;
+    }
+
+    static compare(articleA, articleB) {
+        return articleA.date - articleB.date;
+    }
+}
+
+let articles = [
+    new Article("HTML", new Date(2019, 1, 1)),
+    new Article("CSS", new Date(2019, 0, 1)),
+    new Article("JavaScript", new Date(2019, 11, 1))
+];
+
+// 静态方法只能在类上面调用
+articles.sort(Article.compare);
+
+alert(articles[0].title); // CSS
+```
+> 静态方法只能在类上面调用，而不是单个对象上
+
+
+### 静态属性
+```js
+class Article {
+    static publisher = "Levi Ding";
+}
+alert( Article.publisher ); // Levi Ding
+// 等同意给Article赋值
+Article.publisher = "Levi Ding";
+```
+### 继承静态属性和方法
+```js
+class Animal {
+    // 静态属性
+    static planet = "Earth";
+
+    constructor(name, speed) {
+        this.name = name;
+        this.speed = speed;
+    }
+
+    run(speed = 0) {
+        this.speed += speed;
+        alert(`${this.name} runs with speed ${this.speed}`);
+    }
+
+    // 静态方法
+    static compare(animalA, animalB) {
+        return animalA.speed - animalB.speed;
+    }
+}
+
+// 继承自Animal
+class Rabbit extends Animal {
+    hide() {
+        alert(`${this.name} hides!`);
+    }
+}
+
+let rabbits = [
+    new Rabbit("White Rabbit", 10),
+    new Rabbit("Black Rabbit", 4),
+]
+
+rabbits.sort(Rabbit.compare);
+alert(rabbits[0].name); // Black Rabbit
+
+alert(Rabbit.__proto__ === Animal);                     // true
+alert(Rabbit.prototype.__proto__ === Animal.prototype); // true
+```
+
+### 作业
+```js
+class Rabbit extends Object {
+    constructor(name) {
+        super(name); // 需要添加该行代码
+        this.name = name;
+    }
+}
+
+let rabbit = new Rabbit("Rab");
+
+alert( rabbit.hasOwnProperty('name') ); // Error
+```
