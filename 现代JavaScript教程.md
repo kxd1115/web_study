@@ -5308,3 +5308,139 @@ let rabbit = new Rabbit("Rab");
 
 alert( rabbit.hasOwnProperty('name') ); // Error
 ```
+
+## 私有的和受保护的属性和方法
+
+### 内部接口和外部接口
+
+* 内部接口：可以通过该类的其他方法访问，但不能从外部访问的方法和属性
+* 外部接口：可以从外部访问的方法和属性
+
+JS中，分为两种类型的对象字段（属性和方法）
+* 公共的：可以从任何地方访问
+* 私有的：只能从类的内部访问
+
+### 受保护的`waterAmount`
+```js
+class CoffeeMachine {
+    waterAmount = 0;
+
+    constructor(power) {
+        this.power = power;
+        alert(`Created a coffee-machine, poewr: ${power}`);
+    }
+
+}
+
+let coffeeMachine = new CoffeeMachine(100);
+
+// 加水
+coffeeMachine.waterAmount = 200;
+```
+#### 受保护的属性通常以下划线`_`作为前缀
+```js
+class CoffeeMachine {
+    _waterAmount = 0;
+
+    set waterAmount(value) {
+        if (value<0) {
+            value = 0;
+        }
+        this._waterAmount = value;
+    }
+
+    get waterAmount() {
+        return this._waterAmount;
+    }
+
+    constructor(power) {
+        this._power = power;
+    }
+
+}
+
+let coffeeMachine = new CoffeeMachine(100);
+
+// 加水
+coffeeMachine.waterAmount = -10;
+alert(coffeeMachine._waterAmount); // 0
+```
+
+### 只读的`power`
+通过只设置power而不设置setter来实现
+```js
+class CoffeeMachine {
+    _waterAmount = 0;
+
+    set waterAmount(value) {
+        if (value<0) {
+            value = 0;
+        }
+        this._waterAmount = value;
+    }
+
+    get waterAmount() {
+        return this._waterAmount;
+    }
+
+    constructor(power) {
+        this._power = power;
+    }
+
+    get power() {
+        return this._power;
+    }
+
+}
+
+let coffeeMachine = new CoffeeMachine(100);
+
+// 加水
+coffeeMachine.waterAmount = -10;
+coffeeMachine.power = 25;
+alert(coffeeMachine.power); // 100
+```
+> getter/setter
+大多时候使用`get.../set...`函数
+```js
+class CoffeeMachine {
+  _waterAmount = 0;
+
+  setWaterAmount(value) {
+    if (value < 0) value = 0;
+    this._waterAmount = value;
+  }
+
+  getWaterAmount() {
+    return this._waterAmount;
+  }
+}
+
+new CoffeeMachine().setWaterAmount(100);
+```
+> 受保护的字段是可以被继承的
+
+### 私有的`#waterLimit`
+私有属性和方法以`#`开头，只可以在类的内部被访问。
+```js
+class CoffeeMachine {
+    #wtaerLimit = 200;
+
+    #fixWaterAmount(value) {
+        if (value < 0) value = 0;
+        if (value > this.#wtaerLimit) return this.#wtaerLimit;
+    }
+
+    setWaterAmount(value) {
+        this.#wtaerLimit = this.#fixWaterAmount(value);
+    }
+
+}
+
+let coffeeMachine = new CoffeeMachine();
+
+// 无法访问
+coffeeMachine.#fixWterAmount(123);
+```
+私有字段与公共一段不会发生冲突（可以重名）
+> 私有字段不能通过this[name]访问
