@@ -5444,3 +5444,47 @@ coffeeMachine.#fixWterAmount(123);
 ```
 私有字段与公共一段不会发生冲突（可以重名）
 > 私有字段不能通过this[name]访问
+
+## 扩展内建类
+内建的类都可以扩展
+```js
+class PowerArray extends Array {
+    isEmpty() {
+        return this.length === 0;
+    }
+}
+
+let arr = new PowerArray(1,2,4,5,9);
+alert(arr.isEmpty()); // false
+
+// 返回一个由≥10的元素组成的新数组
+let filteredArr = arr.filter(item => item >= 10);
+alert(filteredArr);             // 
+alert(filteredArr.isEmpty());   // true
+```
+```js
+class PowerArray extends Array {
+    isEmpty() {
+        return this.length === 0;
+    }
+
+    // 使用的静态getter`Symbol.species`返回Array
+    static get [Symbol.species]() {
+        return Array;
+    }
+}
+
+let arr = new PowerArray(1,2,4,5,11);
+alert(arr.isEmpty()); // false
+
+// 返回一个由≥10的元素组成的新数组
+let filteredArr = arr.filter(item => item >= 10);
+
+// filteredArr此时是一个Array，不是PowerArray
+alert(filteredArr);             // 
+alert(filteredArr.isEmpty());   // Error: filteredArr.isEmpty is not a function
+```
+> Symbol.species也适用于其他集合，如Map、Set
+
+#### 内建类没有静态方法继承
+内建类相互间不继承静态方法
