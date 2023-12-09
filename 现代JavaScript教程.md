@@ -5545,3 +5545,132 @@ let user = {
 
 alert( {}.toString.call(user) ); // [object User]
 ```
+
+## Mixin模式
+
+### 一个Mixin实例
+```js
+// mixin
+let sayHiMixin = {
+    sayHi() {
+        alert(`hello ${this.name}`);
+    },
+    sayBye() {
+        alert(`Bye ${this.name}`);
+    },
+};
+
+// 用法
+class User {
+    constructor(name) {
+        this.name = name;
+    }
+}
+
+// 拷贝方法
+Object.assign(User.prototype, sayHiMixin);
+
+// 可以打招呼了
+let user = new User("John");
+user.sayHi(); // hello, John
+```
+这里只是一个简单的方法拷贝。所以`User`可以从另一个类继承。
+Mixin可以在自己内部使用继承
+```js
+let sayMixin = {
+    say(phrase) {
+        alert(phrase);
+    }
+};
+
+let sayHiMixin = {
+
+    __proto__: sayMixin,
+
+    sayHi() {
+        // 调用父类方法
+        super.say(`hello ${this.name}`);
+    },
+    sayBye() {
+        super.say(`Bye ${this.name}`);
+    },
+};
+
+// 用法
+class User {
+    constructor(name) {
+        this.name = name;
+    }
+}
+
+// 拷贝方法
+Object.assign(User.prototype, sayHiMixin);
+
+// 可以打招呼了
+let user = new User("John");
+user.sayHi(); // hello, John
+```
+
+### EventMixin
+```js
+let eventMixin = {
+/*
+* 订阅事件，用法:
+* meneu.on('select', function(item) {...})
+*/
+on(eventName, handler) {
+if (!this._eventHandlers) this._eventHandlers = {};
+if (!this._eventHandlers[eventName]) {
+    this._eventHandlers[eventName] = [];
+}
+this._eventHandlers[eventName].push(handler);
+},
+
+/*
+* 取消订阅，用法
+* menu.off('select', handler)
+*/
+off(eventName, handler) {
+let handlers = this._eventHandlers?.[eventName];
+if (!handlers) return;
+for( let i = 0; i < handlers.length; i++) {
+    if (handlers[i] === handler) {
+        handlers.splice(i--, 1);
+    }
+}
+},
+
+/*
+* 生成具有给定名称和数据的事件
+* this.trigger('select', data1, data2);
+*/
+trigger(eventName, ...args) {
+if (!this._eventHandlers?.[eventName]) {
+    // 该事件名称没有对应的事件处理程序
+    return;
+}
+
+// 调用事件处理程序
+this._eventHandlers[eventName].forEach(
+    handler => handler.apply(this, args)
+);
+}
+};
+
+// 用法
+// 创建一个class
+class Menu {
+choose(value) {
+    this.trigger("select", value);
+}
+}
+
+// 添加带有事件方法的mixin
+Object.assign(Menu.prototype, eventMixin);
+
+let menu = new Menu();
+menu.on("select", value => alert(`Value selected: ${value}`));
+
+menu.choose("123"); // Value selected: 123
+// 暂时没搞懂
+```
