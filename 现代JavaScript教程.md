@@ -5488,3 +5488,60 @@ alert(filteredArr.isEmpty());   // Error: filteredArr.isEmpty is not a function
 
 #### 内建类没有静态方法继承
 内建类相互间不继承静态方法
+
+## 类检查:`instanceof`
+`instanceof`用于检查一个对象是否属于某个特定的class。同时会考虑到继承
+
+### `instanceof`操作符
+```js
+// 语法
+obj instanceof Class;
+```
+```js
+// 示例
+class Rabbit {}
+let rabbit = new Rabbit();
+
+alert(rabbit instanceof Rabbit); // true
+
+// 可以和构造函数一起使用
+function Rabbit() {}
+alert(new Rabbit() instanceof Rabbit); // true
+
+// 可以和Array之类的内建Class一起使用
+let arr = [1,2,3];
+alert(arr instanceof Array); // true
+alert(arr instanceof Object); // true
+// 因为从原型上来讲，Array是继承自Object
+```
+静态方法`Symbol.hasInstance`用来检查是某个对象否包含某个方法或属性
+```js
+// 设置 instanceOf 检查
+// 并假设具有 canEat 属性的都是 animal
+class Animal {
+  static [Symbol.hasInstance](obj) {
+    if (obj.canEat) return true;
+  }
+}
+
+let obj = { canEat: true };
+
+alert(obj instanceof Animal); // true：Animal[Symbol.hasInstance](obj) 被调用
+```
+### 使用Objcet.prototype.toString来揭示类型
+```js
+let objectToString = Object.prototype.toString;
+
+let arr = [];
+alert(objectToString.call(arr)); // [object Array]
+// call方法会在上下文中执行函数objectToString
+```
+#### Symbol.toStringTag
+使用特殊的对象属性`Symbol.toStringTag`自定义对象的toString方法行为结果
+```js
+let user = {
+    [Symbol.toStringTag]: "User"
+};
+
+alert( {}.toString.call(user) ); // [object User]
+```
