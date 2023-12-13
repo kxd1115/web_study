@@ -5674,3 +5674,148 @@ menu.on("select", value => alert(`Value selected: ${value}`));
 menu.choose("123"); // Value selected: 123
 // 暂时没搞懂
 ```
+
+## 错误处理, `try...catch`
+通过`try...catch`，捕获错误
+
+### `try...catch`语法
+```js
+try {
+    // 代码...
+} catch(error) {
+    // 错误捕获
+}
+```
+> 仅对运行时的error有效
+
+### Error对象
+* `name` 错误名称
+* `message` 关于错误的文字描述
+* `stack` 当前的调用栈
+```js
+try {
+    test;
+} catch(err) {
+    alert(err.name);    // ReferenceError
+    alert(err.message); // test is not defined
+    alert(err.stack);   // ReferenceError: test is not defined
+
+    // 直接显示error整体
+    alert(err);         // ReferenceError: test is not defined
+}
+```
+### 可选的`catch`绑定
+!!! - 最近新增的特性
+如果我们不需要error的详细信息，则可以忽略`catch`
+```js
+try {
+    //...
+} catch {
+    //...
+}
+```
+### 使用`try...catch`
+```js
+let json = '{"bad json}';
+
+try {
+    let user = JSON.parse(json);
+    alert(user.name);
+} catch(err) {
+    alert("很抱歉，数据有错误，我们会尝试再请求一次");
+    alert(err.name);    // SyntaxError
+    alert(err.message); // Unterminated string in JSON at position 11 (line 1 column 12)
+}
+```
+### 抛出我们自定义的error
+
+#### `throw`操作符
+```js
+throw <error object>
+```
+```js
+let json = '{"name": "John"}';
+
+try {
+    let user = JSON.parse(json);
+    
+    if (!user.age) {
+        // 自定义error
+        throw new SyntaxError("数据不全: 没有age");
+    }
+
+    alert(user.age);
+
+} catch(err) {
+    alert("JSON Error: " + err.message);
+    // JSON Error: 数据不全: 没有age
+}
+```
+
+### 再次抛出`Rethrowing`
+catch应该只出炉它知道的error，并抛出所有其他error
+```js
+let json = '{"name": "John"}';
+
+try {
+    let user = JSON.parse(json);
+    
+    if (!user.age) {
+        throw new SyntaxError("数据不全: 没有age");
+    }
+
+    blabla(); // 意料之外的error
+
+    alert(user.age);
+
+} catch(err) {
+        // 检查err是否在此类错误中
+        if (err instanceof SyntaxError) {
+        alert("JSON Error: " + err.message);
+        } else {
+        throw err; // 再次抛出
+        }
+}
+// 这种情况下只抛出它知道如何处理的error，跳过了其他所有error
+```
+
+### try...catch...finally
+```js
+try {
+    // 尝试执行的代码
+} catch(err) {
+    // 处理error
+} finally {
+    // 总是会执行的代码
+}
+```
+```js
+let num = +prompt("输入一个正整数?", 35);
+
+let diff, result;
+
+function fib(n) {
+    if (n < 0 || Math.trunc(n) != n) {
+        throw new Error("不能是负数，并且必须是整数。");
+    }
+    return n <= 1 ? n : fib(n - 1) + fib(n - 2);
+}
+
+let start = Date.now();
+
+try {
+    result = fib(num);
+} catch (err) {
+    result = 0;
+} finally {
+    diff = Date.now() - start;
+}
+
+alert(result || "出现了 error");
+alert(`执行花费了${diff}ms`);
+```
+### 作业
+```js
+
+```
+## 自定义Error, 扩展Error
