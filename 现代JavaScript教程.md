@@ -5819,3 +5819,373 @@ alert(`执行花费了${diff}ms`);
 
 ```
 ## 自定义Error, 扩展Error
+
+```js
+class ValidationError extends Error {
+    constructor(message) {
+        super(message); // 在子类中调用super
+        this.name = "ValidationError";
+    }
+}
+
+function test() {
+    throw new ValidationError("Whoops!");
+}
+
+try {
+    test();
+} catch(err) {
+    alert(err.name);    // ValidationError
+    alert(err.message); // Whoops!
+    alert(err.stack);   // 
+
+    alert(err); // ValidationError: Whoops!
+}
+```
+
+```js
+class ValidationError extends Error {
+    constructor(message) {
+        super(message); // 在子类中调用super
+        this.name = "ValidationError";
+    }
+}
+
+function readUser(json) {
+    let user = JSON.parse(json);
+
+    if (!user.name) {
+        throw new ValidationError (`No filed: name`);
+    }
+    if (!user.age) {
+        throw new ValidationError (`No filed: age`);
+    }
+
+    return user;
+
+}
+
+try {
+    let user = readUser('{"age": 25}');
+} catch(err) {
+    if (err instanceof ValidationError) {
+        alert("Invalid data: " + err.message);
+    } else if (err instanceof SyntaxError) {
+        alert("JSON Syntax Error: " + err.message);
+    } else {
+        throw err; // 未知的error
+    }
+}
+```
+
+### 深入继承
+
+```js
+class ValidationError extends Error {
+    constructor(message) {
+        super(message); // 在子类中调用super
+        this.name = "ValidationError";
+    }
+}
+
+class PropertyRequiredError extends ValidationError {
+    constructor(property) {
+        super("No property: " + property);
+        // 通过该方式获取错误的名称
+        this.name = this.constructor.name;
+        this.property = property;
+    }
+}
+
+function readUser(json) {
+    let user = JSON.parse(json);
+
+    if (!user.name) {
+        throw new PropertyRequiredError (`No filed: name`);
+    }
+    if (!user.age) {
+        throw new PropertyRequiredError (`No filed: age`);
+    }
+
+    return user;
+
+}
+
+try {
+    let user = readUser('{"age": 25}');
+} catch(err) {
+    if (err instanceof ValidationError) {
+        alert("Invalid data: " + err.message); // Invalid data: No property: No filed: name
+        alert(err.name);                       // PropertyRequiredError
+        alert(err.property);                   // No filed: name
+    } else if (err instanceof SyntaxError) {
+        alert("JSON Syntax Error: " + err.message);
+    } else {
+        throw err; // 未知的error
+    }
+}
+```
+
+### 包装异常
+
+### 作业
+
+```js
+// 创建一个继承自SyntaxError的类
+class FormatError extends SyntaxError {
+    constructor(message) {
+        super(message);
+        this.name = "FormatError";
+    }
+}
+
+let err = new FormatError("formatting error");
+
+alert( err.message ); // formatting error
+alert( err.name ); // FormatError
+alert( err.stack ); // stack
+
+alert( err instanceof FormatError ); // true
+alert( err instanceof SyntaxError ); // true（因为它继承自 SyntaxError）
+```
+
+---
+
+# Promise, async/await
+
+## 简介: 回调
+
+```js
+function loadScript(src, callback) {
+    // 创建一个<script>标签，并将其附加到页面 
+    let script = document.createElement('script');
+    script.src = src;
+    
+    // callback函数在脚本加载完成时执行
+    script.onload = () => callback(script);
+
+    document.head.append(script);
+}
+
+// 在给定路径下加载并执行脚本
+// 该调用在加载函数执行完成后才会运行
+loadScript('/clock.js', function() {
+    // 在脚本加载完成后，回调函数才会执行
+    newFunction();
+});
+// 因为是"异步"调用，该调用之后的代码不会等到脚本加载完成才执行
+```
+
+### 在回调中回调
+
+### 处理Error
+
+```js
+function loadScript(src, callback) {
+    // 创建一个<script>标签，并将其附加到页面 
+    let script = document.createElement('script');
+    script.src = src;
+    
+    // callback函数在脚本加载完成时执行
+    script.onload = () => callback(script);
+
+    // 处理error
+    script.onerror = () => callback(new Error(`Script load error ${src}`))
+
+    document.head.append(script);
+}
+
+loadScript('/clock.js', function(error, script) {
+    if (error) {
+        //处理error
+    } else {
+        //脚本加载成功
+        newFunction();
+    }
+});
+// 约定速成的规则
+// callback中的第一个参数是为error保留的。一旦出现error，优先处理
+```
+
+### Promise
+
+```js
+// 构造器语法
+let promise = new Promise(function(resolve, reject) {
+    // executor(生产者代码)
+})
+```
+
+当executor获得了结果
+
+* resolve(value) —— 任务成功完成并带有结果`value`
+* reject(error) —— 如果出现了error, `error`即为error对象
+  由`new Promise`构造器构造的对象`promise`具有一些内部属性
+* `state`: `pendding`
+  * resolve调用时，变为`fulfilled`
+  * reject调用时，变为`rejected`
+* `result`: `undefined`
+  * resolve调用时，变为`value`
+  * reject调用时，变为`error`
+
+```js
+//一个简单的executor函数
+let promise = new Promise(function(resolve, reject) {
+    // 当promise被构造完成时，自动执行此函数
+
+    // 1秒后发出工作已经被完成的信号，并带有结果"done"
+    setTimeout(() => resolve("done"), 1000);
+})
+```
+
+```js
+let promise = new Promise(function(resolve, reject) {
+    // 当promise被构造完成时，自动执行此函数
+
+    // 1秒后发出工作已经被完成的信号，并带有error
+    setTimeout(() => reject(new Error("Whoops!")), 1000);
+    // 可以立即执行
+    // reject(new Error("Whoops!"))
+})
+```
+
+> executor只能有一个结果或一个error，不能同时存在
+> resolve/reject可以立即执行
+
+### 消费者: then, catch
+
+#### then
+
+```js
+// 语法如下
+promise.then(
+    function(result) {/* handle a successful result */};
+    // 在promise resolved 且收到结果后执行
+
+    function(error) {/* handle an error */};
+    // 在promise rejected 且收到error信息后执行
+)
+```
+
+```js
+let promise = new Promise(function(resolve, reject) {
+    // 当promise被构造完成时，自动执行此函数
+
+    // 1秒后发出工作已经被完成的信号，并带有结果"done"
+    setTimeout(() => resolve("done"), 1000);
+    //setTimeout(() => reject(new Error("Whoops!")), 1000);
+})
+
+promise.then(
+    result => alert(result), // 1秒钟后显示done
+    //error => alert(error)    // rejected后运行 Error: Whoops!
+)
+```
+
+#### catch
+
+如果我们只对error感兴趣，可以使用null作为第一个参数: `.then(null, errorHandlingFunction)`。
+
+```js
+let promise = new Promise(function(resolve, reject) {
+    // 当promise被构造完成时，自动执行此函数
+
+    setTimeout(() => reject(new Error("Whoops!")), 1000);
+})
+
+// .catch(f) 等同于 .then(null, f)
+promise.catch(alert); // 1秒钟后显示 Error: Whoops!
+```
+
+### 清理: finally
+
+无论promise被resolve还是reject，都会执行`.fnally(f)`。
+
+```js
+let promise = new Promise(function(resolve, reject) {
+    // 当promise被构造完成时，自动执行此函数
+
+    setTimeout(() => resolve("done"), 1000);
+})
+
+promise.then(
+    result => alert(result),
+); // 1秒钟后显示 done
+promise.finally(() => alert("Promise ready"));
+```
+
+```js
+let promise = new Promise(function(resolve, reject) {
+    // 当promise被构造完成时，自动执行此函数
+
+    setTimeout(() => reject(new Error("Whoops")), 1000);
+})
+
+// 先出发finally
+promise.finally(() => alert("Promise ready"));
+promise.catch(
+    alert
+); // 1秒钟后显示 Whoops
+```
+
+### 示例: loadScript
+
+```js
+function loadScript(src) {
+    return new Promise(function(resolve, reject) {
+        let script = document.createElement('script');
+        script.src = src;
+
+        script.onload = () => resolve(script);
+        script.onerror = () => reject(new Error(`Script load error for ${src}`));
+
+        document.head.append(script);
+    });
+}
+
+let promise = loadScript('/clock.js');
+
+promise.then(
+    script => alert(`${script.src} is loaded!`),
+    error => alert(`Error: ${error.message}`)
+);
+
+promise.then(script => alert("Another handler..."));
+```
+
+### 作业
+
+```js
+// 作业1
+let promise = new Promise(function(resolve, reject) {
+    resolve(1); 
+
+    setTimeout(() => resolve(2), 1000); // 被忽略
+});
+
+promise.then(alert);
+
+// 作业2 基于 promise 的延时
+function delay(ms) {
+    // 你的代码
+    return new Promise(function(resolve, reject) {
+        setTimeout(resolve, ms);
+    })
+    // 答案return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+delay(3000).then(() => alert('runs after 3 seconds'));
+
+// 作业3 带有 promise 的圆形动画
+// 说明：该作业在将后续章节做完后再完成
+showCircle(150, 150, 100).then(div => {
+    div.classList.add('message-ball');
+    div.append("Hello, world!");
+});
+
+function showCircle(...arguments) {
+    return new Promise(function(resolve, reject) {
+        
+    })
+}
+```
