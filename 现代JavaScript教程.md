@@ -6189,3 +6189,46 @@ function showCircle(...arguments) {
     })
 }
 ```
+## Promise链
+
+```js
+function loadScript(src) {
+    return new Promise(function(resolve, reject) {
+        let script = document.createElement("script");
+        script.src = src;
+
+        script.onload = () => resolve(script);
+        script.onerror = () => reject(new Error(`Script load error for ${src}`));
+
+        document.head.append(script);
+    });
+}
+
+loadScript("/one.js")
+.then(script => loadScript("/two.js"))
+.then(script => loadScript("/three.js"))
+.then(script => {
+    one();
+    two();
+    three();
+});
+```
+
+### 更复杂的示例: fetch
+
+## 使用promise进行错误处理
+
+### 隐式try...catch
+
+```js
+new Promise((resolve, reject) => {
+    throw new Error("Whoops!");
+}).catch(alert);
+
+// 等同于
+new Promise((resolve, reject) => {
+    reject(new Error("Whoops!"));
+}).catch(alert);
+```
+
+## Promise API
