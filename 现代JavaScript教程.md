@@ -6189,3 +6189,134 @@ function showCircle(...arguments) {
     })
 }
 ```
+## Promise链
+
+```js
+function loadScript(src) {
+    return new Promise(function(resolve, reject) {
+        let script = document.createElement("script");
+        script.src = src;
+
+        script.onload = () => resolve(script);
+        script.onerror = () => reject(new Error(`Script load error for ${src}`));
+
+        document.head.append(script);
+    });
+}
+
+loadScript("/one.js")
+.then(script => loadScript("/two.js"))
+.then(script => loadScript("/three.js"))
+.then(script => {
+    one();
+    two();
+    three();
+});
+```
+
+### 更复杂的示例: fetch
+
+## 使用promise进行错误处理
+
+### 隐式try...catch
+
+```js
+new Promise((resolve, reject) => {
+    throw new Error("Whoops!");
+}).catch(alert);
+
+// 等同于
+new Promise((resolve, reject) => {
+    reject(new Error("Whoops!"));
+}).catch(alert);
+```
+
+## Promise API
+
+### Promise All
+所有promise都准备好后执行
+```js
+Promise.all([
+    new Promise(resolve => setTimeout(() => resolve(1), 3000)),
+    new Promise(resolve => setTimeout(() => resolve(2), 2000)),
+    new Promise(resolve => setTimeout(() => resolve(3), 1000)),
+]).then(alert);
+// 1,2,3
+```
+一个比较真实的案例
+```js
+let names = ['iliakan', 'remy', 'jeresig'];
+
+let requests = names.map(name => fetch(`https://api.github.com/users/${name}`));
+
+Promise.all(requests)
+.then(responses => {
+    // 所有响应都被陈工resolved
+    for (let response of responses) {
+        // 遍历并展示
+        alert(`${response.url}: ${response.status}`);
+        // https://api.github.com/users/iliakan: 200
+        // https://api.github.com/users/remy: 200
+        // https://api.github.com/users/jeresig: 200
+    }
+
+    return responses;
+})
+// 将响应数据映射到response.json()数组中以读取它
+.then(responses => Promise.all(responses.map(r => r.json())))
+// 所有JSON结果都被解析
+.then(users => users.forEach(user => alert(user.name)));
+// Ilya Kantor
+// Remy Sharp
+// John Resig
+```
+#### 如果任意一个promise被reject，由`promise.all`返回的promise就会立即reject
+```js
+Promise.all([
+    new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+    new Promise((resolve, reject) => setTimeout(() => reject(new Error("Whoops!")), 2000)),
+    new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000))
+]).catch(alert); // Error: Whoops!
+```
+> 如果出现error，其他promise会被忽略
+
+### Promise.allSettled
+等待所有的promise都被settle，无论结果如何。都会返回结果
+* `{status: "fulfilled", value: result}`
+* `{status: "rejected", reason: error}`
+```js
+Promise.allSettled(urls.map(url => fetch(url)))
+.then(results => {// (*)
+    results.forEach((result, num) => {
+        if (result.status == "fulfilled") {
+            alert(`${urls[num]}: ${result.value.status}`);
+        }
+        if (result.status == "rejected") {
+            alert(`${urls[num]}: ${result.reason}`);
+        }
+    });
+});
+// https://api.github.com/users/iliakan: 200
+// https://api.github.com/users/remy: 200
+// https://no-such-url: TypeError: Failed to fetch
+```
+### Promise.race
+只等待第一个settled的promise，并获取结果（无论是resolve还是error）
+```js
+Promise.race([
+    new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+    new Promise((resolve, reject) => setTimeout(() => reject(new Error("Whoops!")), 2000)),
+    new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000)),
+]).then(alert); // 1
+```
+### Promise.any
+只等待第一个`status: "fulfilled"`的promise，并返回结果，如果给出的promise都rejected，则会报错`AggregateError`
+```js
+Promise.any([
+    new Promise((resolve, reject) => setTimeout(() => reject(new Error("Whoops!")), 2000)),
+    new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000)),
+]).then(alert); // 3
+// 第一个失败了，所以返回的是3
+```
+### Promise.resolve/reject
+在后续的`async/await`语法更好用，这里跳过
