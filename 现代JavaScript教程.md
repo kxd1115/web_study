@@ -6320,3 +6320,107 @@ Promise.any([
 ```
 ### Promise.resolve/reject
 在后续的`async/await`语法更好用，这里跳过
+
+## Promisification
+将一个接受回调的函数转换为一个返回promise的函数
+```js
+// 将回调一章中的例子Promise化
+function loadScript(src, callback) {
+    let script = document.createElement('script');
+    script.src = src;
+
+    script.onload = () => callback(null, script);
+    script.onerror = () => callback(new Error(`Script load error for ${src}`));
+
+    document.head.append(script);
+}
+
+let loadScriptPromise = function(src) {
+    return new Promise((resolve, reject) => {
+        loadScript(src, (err, script) => {
+            if (err) reject(err);
+            resolve(script);
+        });
+    });
+};
+
+loadScriptPromise('/clock.js')
+    .then(result => alert(result))
+    .catch(err => alert(err));
+```
+#### promisify(f)
+```js
+function promisify(f) {
+    return function(...args) {// 返回一个包装函数(wrapper-function)
+        return new Promise((resolve, reject) => {
+            function callback(err, result) { // 对f的自定义回调
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            }
+
+            args.push(callback); // 将自定义的回调附加到f参数(args)的末尾
+
+            f.call(this, ...args); // 调用原始函数
+        });
+    };
+}
+
+function loadScript(src, callback) {
+    let script = document.createElement('script');
+    script.src = src;
+
+    script.onload = () => callback(null, script);
+    script.onerror = () => callback(new Error(`Script load error for ${src}`));
+
+    document.head.append(script);
+}
+
+let loadScriptPromise = promisify(loadScript);
+
+loadScriptPromise('/clock.js')
+    .then(result => alert(result))
+    .catch(err => alert(err));
+```
+```js
+// promisify(f, true) 来获取结果数组
+function promisify(f， manyArgs = false) {
+    return function(...args) {// 返回一个包装函数(wrapper-function)
+        return new Promise((resolve, reject) => {
+            function callback(err, ...result) { // 对f的自定义回调
+                if (err) {
+                    reject(err);
+                } else {
+                    // 如果manyArgs被指定，则使用所有回调的结果resolve
+                    resolve(manyArgs ? resluts : results[0]);
+                }
+            }
+
+            args.push(callback); // 将自定义的回调附加到f参数(args)的末尾
+
+            f.call(this, ...args); // 调用原始函数
+        });
+    };
+}
+```
+> 先记录一下，promisification暂时不懂
+
+## 微任务(Microtask)
+promise的处理程序`.then`, `.catch`, `.finally`都是异步
+```js
+let promise = Promise.resolve();
+
+promise.then(() => alert("promise done!"));
+
+alert("code finished"); // 优先显示
+```
+
+### 微任务队列(Microtask queue)
+ECMA为异步任务的管理规定了一个内部队列`PromiseJobs`(微任务队列)
+* 队列先进先出
+* 在其他JS引擎中的任务运行完成后，才会开始执行微任务队列
+
+### 未处理的rejection
+
