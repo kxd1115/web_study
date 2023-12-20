@@ -6232,3 +6232,195 @@ new Promise((resolve, reject) => {
 ```
 
 ## Promise API
+
+### Promise All
+所有promise都准备好后执行
+```js
+Promise.all([
+    new Promise(resolve => setTimeout(() => resolve(1), 3000)),
+    new Promise(resolve => setTimeout(() => resolve(2), 2000)),
+    new Promise(resolve => setTimeout(() => resolve(3), 1000)),
+]).then(alert);
+// 1,2,3
+```
+一个比较真实的案例
+```js
+let names = ['iliakan', 'remy', 'jeresig'];
+
+let requests = names.map(name => fetch(`https://api.github.com/users/${name}`));
+
+Promise.all(requests)
+.then(responses => {
+    // 所有响应都被陈工resolved
+    for (let response of responses) {
+        // 遍历并展示
+        alert(`${response.url}: ${response.status}`);
+        // https://api.github.com/users/iliakan: 200
+        // https://api.github.com/users/remy: 200
+        // https://api.github.com/users/jeresig: 200
+    }
+
+    return responses;
+})
+// 将响应数据映射到response.json()数组中以读取它
+.then(responses => Promise.all(responses.map(r => r.json())))
+// 所有JSON结果都被解析
+.then(users => users.forEach(user => alert(user.name)));
+// Ilya Kantor
+// Remy Sharp
+// John Resig
+```
+#### 如果任意一个promise被reject，由`promise.all`返回的promise就会立即reject
+```js
+Promise.all([
+    new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+    new Promise((resolve, reject) => setTimeout(() => reject(new Error("Whoops!")), 2000)),
+    new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000))
+]).catch(alert); // Error: Whoops!
+```
+> 如果出现error，其他promise会被忽略
+
+### Promise.allSettled
+等待所有的promise都被settle，无论结果如何。都会返回结果
+* `{status: "fulfilled", value: result}`
+* `{status: "rejected", reason: error}`
+```js
+Promise.allSettled(urls.map(url => fetch(url)))
+.then(results => {// (*)
+    results.forEach((result, num) => {
+        if (result.status == "fulfilled") {
+            alert(`${urls[num]}: ${result.value.status}`);
+        }
+        if (result.status == "rejected") {
+            alert(`${urls[num]}: ${result.reason}`);
+        }
+    });
+});
+// https://api.github.com/users/iliakan: 200
+// https://api.github.com/users/remy: 200
+// https://no-such-url: TypeError: Failed to fetch
+```
+### Promise.race
+只等待第一个settled的promise，并获取结果（无论是resolve还是error）
+```js
+Promise.race([
+    new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+    new Promise((resolve, reject) => setTimeout(() => reject(new Error("Whoops!")), 2000)),
+    new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000)),
+]).then(alert); // 1
+```
+### Promise.any
+只等待第一个`status: "fulfilled"`的promise，并返回结果，如果给出的promise都rejected，则会报错`AggregateError`
+```js
+Promise.any([
+    new Promise((resolve, reject) => setTimeout(() => reject(new Error("Whoops!")), 2000)),
+    new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000)),
+]).then(alert); // 3
+// 第一个失败了，所以返回的是3
+```
+### Promise.resolve/reject
+在后续的`async/await`语法更好用，这里跳过
+
+## Promisification
+将一个接受回调的函数转换为一个返回promise的函数
+```js
+// 将回调一章中的例子Promise化
+function loadScript(src, callback) {
+    let script = document.createElement('script');
+    script.src = src;
+
+    script.onload = () => callback(null, script);
+    script.onerror = () => callback(new Error(`Script load error for ${src}`));
+
+    document.head.append(script);
+}
+
+let loadScriptPromise = function(src) {
+    return new Promise((resolve, reject) => {
+        loadScript(src, (err, script) => {
+            if (err) reject(err);
+            resolve(script);
+        });
+    });
+};
+
+loadScriptPromise('/clock.js')
+    .then(result => alert(result))
+    .catch(err => alert(err));
+```
+#### promisify(f)
+```js
+function promisify(f) {
+    return function(...args) {// 返回一个包装函数(wrapper-function)
+        return new Promise((resolve, reject) => {
+            function callback(err, result) { // 对f的自定义回调
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            }
+
+            args.push(callback); // 将自定义的回调附加到f参数(args)的末尾
+
+            f.call(this, ...args); // 调用原始函数
+        });
+    };
+}
+
+function loadScript(src, callback) {
+    let script = document.createElement('script');
+    script.src = src;
+
+    script.onload = () => callback(null, script);
+    script.onerror = () => callback(new Error(`Script load error for ${src}`));
+
+    document.head.append(script);
+}
+
+let loadScriptPromise = promisify(loadScript);
+
+loadScriptPromise('/clock.js')
+    .then(result => alert(result))
+    .catch(err => alert(err));
+```
+```js
+// promisify(f, true) 来获取结果数组
+function promisify(f， manyArgs = false) {
+    return function(...args) {// 返回一个包装函数(wrapper-function)
+        return new Promise((resolve, reject) => {
+            function callback(err, ...result) { // 对f的自定义回调
+                if (err) {
+                    reject(err);
+                } else {
+                    // 如果manyArgs被指定，则使用所有回调的结果resolve
+                    resolve(manyArgs ? resluts : results[0]);
+                }
+            }
+
+            args.push(callback); // 将自定义的回调附加到f参数(args)的末尾
+
+            f.call(this, ...args); // 调用原始函数
+        });
+    };
+}
+```
+> 先记录一下，promisification暂时不懂
+
+## 微任务(Microtask)
+promise的处理程序`.then`, `.catch`, `.finally`都是异步
+```js
+let promise = Promise.resolve();
+
+promise.then(() => alert("promise done!"));
+
+alert("code finished"); // 优先显示
+```
+
+### 微任务队列(Microtask queue)
+ECMA为异步任务的管理规定了一个内部队列`PromiseJobs`(微任务队列)
+* 队列先进先出
+* 在其他JS引擎中的任务运行完成后，才会开始执行微任务队列
+
+### 未处理的rejection
+
