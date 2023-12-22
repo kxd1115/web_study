@@ -6424,3 +6424,169 @@ ECMA为异步任务的管理规定了一个内部队列`PromiseJobs`(微任务�
 
 ### 未处理的rejection
 
+## async/await
+使用promise的一种特殊语法
+
+### async function
+```js
+async function f() {
+    return 1;
+}
+
+f().then(alert); // 1
+```
+`async`这个单词表示这个函数总是返回一个promise。其他的值被自动包含在resolved的promise中。
+
+### await
+`await`关键词只在`async`函数内工作
+```js
+// 只在async函数内工作
+let value = await promise;
+```
+```js
+async function f() {
+
+    let promise = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve("done!")
+        }, 1000);
+    });
+
+    // 等待，直到promise resolve
+    let result = await promise;
+
+    alert(result); // done!
+
+}
+
+f();
+```
+`await`会暂停函数，直到promise状态变为`settled`
+> 不能在普通函数中使用await
+
+```js
+async function showAvatar() {
+
+    // 读取github用户信息
+    let githubResponse = await fetch(`https://api.github.com/users/`);
+    let githubUser = await githubResponse.json();
+
+    // 显示头像
+    let img = document.createElement('img');
+    img.src = githubUser.avatar_url;
+    img.className = "promise-avatar-example";
+    document.body.append(img);
+
+    // 等待3秒
+    await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+
+    img.remove();
+
+    return githubUser;
+
+}
+
+showAvatar();
+```
+
+### Error处理
+使用try...catch捕获error
+```js
+async function f() {
+    try {
+        let response = await fetch('http://no-such-url');
+    } catch(err) {
+        alert(err);
+    }
+}
+
+f(); // TypeError: Failed to fetch
+```
+没有使用try...catch时，将会返回rejected，可以通过生成的promise调用catch来处理error
+```js
+async function f() {
+    let response = await fetch('http: no-such-url');
+}
+
+f().catch(alert); // TypeError: Failed to fetch
+```
+
+### 作业
+```js
+// 用async/await重写
+async function loadJson(url) {
+
+    let response = await fetch(url);
+
+    if (response.status == 200) {
+        let responseUrl = await response.json();
+        return responseUrl;
+    }
+    throw new Error(response.status);
+}
+
+loadJson('https://javascript.info/no-such-user.json')
+    .catch(alert); // Error: 404
+
+// 使用 async/await 重写 "rethrow"
+class HttpError extends Error {
+    constructor(response) {
+        super(`${response.status} for ${response.url}`);
+        this.name = 'HttpError';
+        this.response = response;
+    }
+}
+
+async function loadJson(url) {
+
+    let response = await fetch(url);
+
+    if (response.status == 200) {
+        return response.json();
+    }
+    throw new HttpError(response.status);
+}
+
+// 询问用户名，直到 github 返回一个合法的用户
+async function demoGithubUser() {
+    let user;
+    while(true) {
+        let name = prompt("Enter a name?", "iliakan");
+
+        try {
+            user = await loadJson(`https://api.github.com/users/${name}`);
+            break; // 没有error，退出循环
+        } catch(err) {
+            if (err instanceof HttpError && err.response.status == 404) {
+                // 抛出
+                alert("No such user, please reenter.");
+                return demoGithubUser();
+            } else {
+                // 未知error，再次抛出
+                throw err;
+            }
+        };
+    }
+
+    alert(`Full name: ${user.name}`);
+    return user;
+}
+
+demoGithubUser();
+
+// 作业3
+async function wait() {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    return 10;
+}
+
+function f() {
+// ……这里你应该怎么写？
+// 我们需要调用 async wait() 并等待以拿到结果 10
+// 记住，我们不能使用 "await"
+    wait().then(result => alert(result));
+}
+
+f();
+```
