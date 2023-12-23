@@ -6590,3 +6590,152 @@ function f() {
 
 f();
 ```
+---
+# Generator，高级iteration
+
+## generator
+按需一个接一个的返回多个值
+
+### generator函数
+```js
+// 示例
+function* generatorSequence() {
+    yield 1;
+    yield 2;
+    return 3;
+}
+```
+generator在被调用时，会返回一个叫做`generator object`的特殊对象
+* 调用生成器函数会产生一个**生成器对象**
+* 生成器对象一开始处于暂停执行的状态
+* 生成器实现了`Iterator`接口，因此可以使用`next()`方法
+* 生成器在初次调用`next()`方法之后开始执行
+
+##### 通过yield中断执行
+生成器函数遇到`yield`关键字之后，执行会停止，函数作用域的状态会被保留
+* 在生成器对象上调用`next()`恢复执行
+
+### generator是可迭代的
+```js
+let range = {
+    from: 1,
+    to: 5,
+
+    *[Symbol.iterator]() {
+        for (let value = this.from; value <= this.to; value++) {
+            yield value;
+        }
+    }
+
+};
+
+alert([...range]); // 1,2,3,4,5
+```
+### generator组合
+```js
+function* generateSequence(start, end) {
+    for (let i = start; i <= end; i++) {
+        yield i;
+    }
+}
+
+function* generatePasswordCodes() {
+
+    // 0...9
+    yield* generateSequence(48, 57);
+
+    // A...Z
+    yield* generateSequence(65, 90);
+
+    // a...z
+    yield* generateSequence(97, 122);
+
+}
+
+let str = '';
+
+for (let code of generatePasswordCodes()) {
+    str += String.fromCharCode(code);
+}
+
+alert(str);
+// 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+```
+yield*指令将执行**委托**给另外一个generator
+
+### `yield`是一条双向路
+调用`generator.next(arg)`，能够将参数arg传递到generator内部
+```js
+function* gen() {
+    let result = yield "2+2=?";
+
+    alert(result);
+}
+
+let generator = gen();
+
+let question = generator.next().value;
+
+generator.next(4); // 将结果传递进去
+```
+### generator.throw
+```js
+function* gen() {
+    try {
+        let result = yield "2 + 2 = ?"; // (1)
+
+        alert(result);
+    } catch(e) {
+        alert(e); // 显示这个 error
+    }   
+}
+
+let generator = gen();
+
+let question = generator.next().value;
+// generator.next(4);
+
+generator.throw(new Error("The answer is not found in my database")); // (2)
+```
+### generator.return
+完成执行并返回给定的value
+
+```js
+function* gen() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+const g = gen();
+
+g.next();        // { value: 1, done: false }
+g.return('foo'); // { value: "foo", done: true }
+g.next();        // { value: undefined, done: true }
+```
+
+##### 提前终止生成器
+1. `return()`
+    * 所有生成器都有`return()`方法
+    * 强制生成器进入关闭状态，且无法恢复
+2. `throw()`
+    * 会在暂停的时候将一个提供的错误注入到生成器对象中，如果错误未处理，生成器就会关闭
+    * 如果生成器函数**内部**处理了这个错误，那么生成器就不会关闭，而且还可以恢复执行
+
+### 作业
+```js
+let generator = pseudoRandom(1);
+
+alert(generator.next().value); // 16807
+alert(generator.next().value); // 282475249
+alert(generator.next().value); // 1622650073
+
+function* pseudoRandom(seed) {
+    let value = seed;
+
+    while(value) {
+        value = value * 16807 % 2147483647;
+        yield value;
+    }
+};
+```
