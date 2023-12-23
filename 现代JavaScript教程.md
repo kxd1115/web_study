@@ -6739,3 +6739,162 @@ function* pseudoRandom(seed) {
     }
 };
 ```
+
+## 异步迭代和generator
+
+### 异步可迭代对象
+1. 使用`Symbol.asyncIterator`取代`Symbol.iterator`
+2. next()方法应该返回一个`promise`
+   1. 应该使用`async next()`
+3. 使用`for await (let item of iterable)`循环来迭代异步可迭代对象
+   1. 记得使用`await`
+```js
+let range = {
+    from: 1,
+    to: 5,
+
+    [Symbol.asyncIterator]() {
+        return {
+            current: this.from,
+            last: this.to,
+
+            async next() {
+
+                //使用await返回一个promise
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                if (this.current <= this.last) {
+                    return {done: false, value: this.current++};
+                } else {
+                    return {done: true};
+                }
+            }
+        };
+    }
+};
+
+async function f() {
+    for await (let value of range) {
+        alert(value);
+    }
+}
+
+f();
+```
+> Spread语法`...`无法异步工作
+
+### 回顾生成器`generator`
+```js
+function* gen(start, end) {
+    for (let i = start; i <= end; i++) {
+        yield i;
+    }
+}
+
+for (let value of gen(1, 10)) {
+    alert(value);
+}
+```
+```js
+let range = {
+    from:1,
+    to:5,
+
+    // 创建一个生成器函数，使其返回一个generator
+    *[Symbol.iterator]() {
+        for (let value = this.from; value <= this.to; value++) {
+            yield value;
+        }
+    }
+};
+
+for (let value of range) {
+    alert(value);
+}
+```
+
+### 异步generator(finally)
+```js
+async function* gen(start, end) {
+
+    for (let i = start; i <= end; i++) {
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        yield i;
+
+    }
+
+}
+
+(async () => {
+
+    let generator = gen(1, 5);
+    for await (let value of generator) {
+        alert(value);
+    }
+
+})();
+```
+#### 异步可迭代对象range
+
+```js
+let range = {
+    from: 1,
+    to: 5,
+
+    // 创建一个返回promise的生成器函数
+    // 和[Symbol.asyncIterator]: async function*() {..} 的意思一致
+    async *[Symbol.asyncIterator]() {
+        for (let value = this.from; value <= this.to; value++) {
+                //使用await返回一个promise
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                yield value;
+        }
+    }
+};
+
+async function f() {
+    for await (let value of range) {
+        alert(value);
+    }
+}
+
+f();
+```
+### 实际案例
+```js
+async function* fetchCommits(repo) {
+    let url = `https://api.github.com/repos/${repo}/commits`;
+
+    while(url) {
+        const response = await fetch(url, {
+            headers: {"User-Agent": 'Our script'},
+        });
+
+        const body = await response.json();
+
+        let nextPage = response.headers.get('Link').match(/<(.*?)>; rel="next"/);
+        nextPage = nextPage?.[1];
+
+        url = nextPage;
+
+        for (let commit of body) {
+            yield commit;
+        }
+    }
+}
+
+(async () => {
+    let count = 0;
+
+    for await (const commit of fetchCommits('javascript-tutorial/en.javascript.info')) {
+        console.log(commit.author.login);
+
+        if (++count == 100) {
+            break;
+        }
+    }
+})();
+```
