@@ -6898,3 +6898,144 @@ async function* fetchCommits(repo) {
     }
 })();
 ```
+---
+# 模块
+
+## 模块(Module)简介
+
+### 什么是模块?
+
+一个模块就是一个文件，或者一个脚本
+
+* export 关键字标记了可以从当前模块外部访问的变量和函数
+* import 关键字允许从其他模块导入功能
+
+```js
+// one.js 文件
+// export 表示该函数可以在外部被调用访问
+export function one() {
+    alert(1);
+}
+```
+
+```html
+<script type="module">
+    // 引用模块的script标签必须带有type="module"
+    import { one } from '/one.js';
+    one(); // 1
+</script>
+```
+
+### 核心功能
+
+* 始终使用`use strict`
+
+#### 模块级作用域
+
+两个`type="module"`的脚本之间，无法看到彼此的顶级变量
+
+```html
+<script type="module">
+  // 变量仅在这个 module script 内可见
+  let user = "John";
+</script>
+
+<script type="module">
+  alert(user); // Error: user is not defined
+</script>
+```
+
+#### 模块代码仅在第一次导入时被解析
+
+模块在被导入时解析，并传入到所有的导入中
+
+```js
+// admin.js
+export let admin = {
+    name: "John",
+};
+```
+
+```html
+<script type="module">
+    import { admin } from './admin.js';
+    admin.name = "Pete";
+</script>
+<script type="module">
+    import { admin } from './admin.js';
+    alert(admin.name); // admin.name
+</script>
+```
+
+在一个脚本中针对模块的修改，会同步到另外一个模块
+
+
+#### import.meta
+
+```html
+<script type="module">
+    alert(import.meta.url); // 脚本的 URL
+    // 对于内联脚本来说，则是当前 HTML 页面的 URL
+</script>
+```
+
+#### 在一个模块中, `this`是undefined
+
+### 浏览器特定功能
+
+#### 模块脚本是延迟的
+
+* 模块脚本会与其他资源并行加载
+* 模块脚本会等到HTML文档完全准备就绪然后才会运行
+* 脚本的相对顺序会影响他们的执行顺序
+
+```html
+<script type="module">
+    alert(typeof button); // object
+    // 因为模块要等HTML文档完全准备就绪才运行，所以它会看到下面的button
+</script>
+
+<script>
+    alert(typeof button); // undefined
+    // 常规脚本会立即运行
+</script>
+
+<button id="button">Button</button>
+```
+
+#### Async适用于内联脚本
+
+* 对于非模块脚本，async特性仅适用于外部脚本
+  * 异步外部脚本会在准备好后立即运行，独立于其他HTML文档
+* 对于模块脚本
+  * 内部模块脚本也可以使用async特性
+
+#### 外部脚本
+
+1. 具有相同src的外部脚本仅运行一次
+2. 从另一个源获取的外部脚本需要`CORS header`
+   * 远程服务器必须提供表示允许获取的header`Access-Control-Allow-Origin`
+
+#### 不允许裸模块
+
+`import`必须给出相对或绝对的URL路径
+
+#### 兼容性, `nomodule`
+
+旧版本浏览器不理解`type='module'`，可以使用nomodule来标识其他脚本
+
+### 构建工具
+
+通常在开发中会使用一些特殊工具，例如`webpack`，将各个模块打包到一起，然后部署到生产环境的服务器。
+
+* 构建工具做以下这些事儿：
+  1. 从一个打算放在 HTML 中的 <script type="module"> “主”模块开始。
+  2. 分析它的依赖：它的导入，以及它的导入的导入等。
+  3. 使用所有模块构建一个文件（或者多个文件，这是可调的），并用打包函数（bundler function）替代原生的 import 调用，以使其正常工作。还支持像 HTML/CSS 模块等“特殊”的模块类型。
+  4. 在处理过程中，可能会应用其他转换和优化：
+     * 删除无法访问的代码。
+     * 删除未使用的导出（“tree-shaking”）。
+     * 删除特定于开发的像 console 和 debugger 这样的语句。
+     * 可以使用 Babel 将前沿的现代的 JavaScript 语法转换为具有类似功能的旧的 JavaScript 语法。
+     * 压缩生成的文件（删除空格，用短的名字替换变量等）。
+
