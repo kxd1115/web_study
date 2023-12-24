@@ -7039,3 +7039,81 @@ export let admin = {
      * 可以使用 Babel 将前沿的现代的 JavaScript 语法转换为具有类似功能的旧的 JavaScript 语法。
      * 压缩生成的文件（删除空格，用短的名字替换变量等）。
 
+## 导入和导出
+
+### 在声明前导出
+使用`export`来标记任意声明为导出（变量，函数，类都可以）
+* 被标记的声明可以在外部引用或修改
+
+### 导出与声明分开
+```js
+function sayHi(user) {
+    alert(`hello! ${user}`);
+}
+
+function sayBye(user) {
+    alert(`Bye! ${user}`);
+}
+
+export {sayBye, sayHi};
+```
+### import *
+```js
+import * from './say.js'
+```
+* 将某个脚本中所有支持导出的内容全部导出
+
+### import as
+```js
+// 自定义名字
+import {sayHi as hi, sayBye as bye} from './say.js'
+```
+### export as
+```js
+function sayHi(user) {
+    alert(`hello! ${user}`);
+}
+
+function sayBye(user) {
+    alert(`Bye! ${user}`);
+}
+
+export {sayHi as hi, sayBye as bye};
+```
+### export default
+如果一个模块中仅有一个声明(变量，函数或者类)，可以使用默认导出
+```js
+// user.js
+export default class User {
+    constructor(name) {
+        this.name = name;
+    }
+}
+
+// main.js
+import User from './user.js' 
+// 不需要使用花括号{}
+```
+使用默认导出还是命名导出，建议团队多人协作时保持统一风格
+
+### 重新导出
+```js
+// 将sayHi从say.js中再导出一次
+export {sayHi} from './say.js'
+```
+在希望通过某个单个入口暴露包功能的场景下适用
+```js
+// 📁 auth/index.js
+
+// 导入 login/logout 然后立即导出它们
+import {login, logout} from './helpers.js';
+export {login, logout};
+
+// 将默认导出导入为 User，然后导出它
+import User from './user.js';
+export {User};
+...
+```
+这样使用该package的人可以import {login} from './auth/index.js'。
+* 默认导出的重新导出，需要明确写明`export {default as User}`才可以
+* `export * from './user.js'`只会导出命名导出的内容
