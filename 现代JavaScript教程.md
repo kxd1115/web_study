@@ -7117,3 +7117,42 @@ export {User};
 这样使用该package的人可以import {login} from './auth/index.js'。
 * 默认导出的重新导出，需要明确写明`export {default as User}`才可以
 * `export * from './user.js'`只会导出命名导出的内容
+
+## 动态导入
+之前的静态导入中，语法都比较简单且严格
+
+### import() 表达式
+`import(module)`表达式加载并返回一个promise
+```js
+// say.js
+export function sayHi(user) {
+    alert(`Hello! ${user}`);
+};
+
+export function sayBye(user) {
+    alert(`Bye! ${user}`);
+};
+
+export default class {
+    constructor(name) {
+        this.name = name;
+    }
+};
+
+export {sayHi as hi, sayBye as bye};
+```
+```html
+<script>
+// main.html
+    async function load(user) {
+        let say = await import('/say.js');
+
+        say.hi(user);
+        say.bye(user);
+        alert(say.default);
+    }
+
+    load("Dennis");
+
+</script>
+```
