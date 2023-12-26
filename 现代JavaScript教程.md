@@ -7156,3 +7156,433 @@ export {sayHi as hi, sayBye as bye};
 
 </script>
 ```
+
+---
+
+# 杂项
+
+## Proxy和Reflect
+
+### Proxy
+
+```js
+let proxy = new Proxy(target, handler);
+```
+
+* target 要包装的对象（可以是任何东西，包括函数）
+* handler 代理配置:带有捕捉器的对象。
+  * get捕捉器用于读取target的属性
+  * set捕捉器用于写入target的属性
+
+```js
+let target = {};
+let proxy = new Proxy(target, {});
+
+proxy.test = 5;
+alert(target.test); // 5
+
+alert(proxy.test);  // 5
+
+for (let key in proxy) alert(key);  // test
+for (let key in target) alert(key); // test
+```
+
+该示例没有定义捕捉器，因此proxy将所有操作都直接转发给了target对象。
+
+* 没有任何捕捉器，这种proxy被称为target的透明包装器
+
+捕捉器的内部方法除了get和set之外，还有很多，这里不一一展开，后续使用过程中查询文档
+
+* get 读取属性
+* set 写入属性
+* has in操作符
+* deletePropertoy delete操作符
+* apply 函数调用
+* construct new操作符
+  ...
+
+### 带有get捕获器的默认值
+
+```js
+let numbers = [0, 1, 2];
+
+numbers = new Proxy(numbers, {
+    // 这个案例的逻辑有点奇怪
+    // 为什么元素在数组中之后，要把该元素当做索引进行查询呢？
+    get(target, prop) {
+        if (prop in target) {
+        return target[prop];
+        } else {
+        return 0; // 默认值
+        }
+    }
+});
+
+alert( numbers[1] ); // 1
+alert( numbers[123] ); // 0（没有这个数组项）
+```
+
+```js
+let dictionary = {
+    "Hello": "Hola",
+    'Bye': 'Adios'
+}
+
+dictionary = new Proxy(dictionary, {
+    get (target, phrase) {
+        if (phrase in target) {
+            return target[phrase];
+        } else {
+            return phrase;
+        }
+    }
+});
+
+alert(dictionary["nihao"]); // nihao 未被翻译
+alert(dictionary["Hello"]); // hola
+```
+
+### 使用set捕捉器进行验证
+
+```js
+set(target, property, value, receiver)
+```
+
+* target 目标对象，该对象作为第一个参数传递给new Proxy
+* property 目标属性名称
+* value 目标属性的值
+* receiver 和get捕捉器类似，仅与setter访问器属性相关
+
+```js
+let numbers = [];
+
+numbers = new Proxy(numbers, {
+    set(target, prop, val) {
+        if (typeof val === 'number') {
+            target[prop] = val;
+            return true;
+        } 
+        return false;
+    }
+});
+
+numbers.push(1);
+numbers.push(2);
+
+alert(numbers);
+
+numbers.push("test"); // TypeError
+```
+
+> 注意: set在成功时，必须返回true
+
+### 使用`ownkeys`和`getOwnPropertyDescrptor`进行迭代
+
+使用ownkeys捕捉器拦截`for...in`对对象的遍历
+
+```js
+let user = {
+    name: 'John',
+    age: 30,
+    _password: '***'
+};
+
+user = new Proxy(user, {
+    ownKeys(target) {
+        return Object.keys(target).filter(key => !key.startsWith('_'));
+    }
+});
+
+// ownkeys过滤掉了_password
+for (let key in user) alert(key); // name, age
+
+// 对这些方法的效果相同：
+alert( Object.keys(user) ); // name,age
+alert( Object.values(user) ); // John,30
+```
+
+`Object.keys`仅返回带有`enumerable`标志的属性，`enumerable: false`的属性不会被返回。
+
+### 具有`deleteProperty`和其他捕捉器的受保护属性
+
+```js
+let user = {
+    name: 'John',
+    age: 30,
+    _password: '***'
+};
+
+user = new Proxy(user, {
+    // 拦截读取属性列表
+    ownKeys(target) {
+        return Object.keys(target).filter(key => !key.startsWith('_'));
+    },
+
+    // get 拦截属性读取
+    get(target, prop) {
+        if (prop.startsWith('_')) {
+            throw new Error("Access denied");
+        }
+        let value = target[prop];
+        return (typeof value === 'function') ? value.bind(target) : value;
+    },
+    // set 拦截属性写入
+    set(target, prop, val) {
+        if (prop.startsWith('_')) {
+            throw new Error("Access denied");
+        } else {
+            target[prop] = val;
+            return true;
+        }
+    },
+    // 拦截属性删除
+    deleteProperty(target, prop) {
+        if (prop.startsWith('_')) {
+            throw new Error("Access denied");
+        } else {
+                delete target[prop];
+            return true;
+        }
+    }
+});
+
+// ownkeys过滤掉了_password
+for (let key in user) alert(key); // name, age
+
+// get不允许读取_password
+try {
+    alert(user._password);
+} catch(e) {
+    alert(e.message);
+}
+
+// set不允许修改_password
+try {
+    user._password = '11111';
+} catch(e) {
+    alert(e.message);
+}
+
+// deleteProperty不允许删除_password
+try {
+    delete user._password;
+} catch(e) {
+    alert(e.message);
+}
+```
+
+### 带有has捕捉器的`in range`
+
+```js
+let range = {
+    from: 1,
+    to: 10
+};
+
+range = new Proxy(range, {
+    has(target, prop) {
+        return prop >= target.from && prop <= target.to;
+    }
+})
+
+alert(100 in range); // false
+alert(1 in range);   // true
+```
+
+### 包装函数`apply`
+
+* `apply(target, thisArg, args)`
+  * target 目标对象
+  * thisArg this的值
+  * args 参数列表
+    包装函数不会转发属性读取/写入操作，包装之后就失去了对原始函数属性的访问。
+    Proxy可以将所有东西转发到目标对象。
+
+```js
+function delay(f, ms) {
+    return new Proxy(f, {
+        apply(target, thisArgs, args) {
+            setTimeout(() => target.apply(thisArgs, args), ms);
+        }
+    });
+}
+
+function sayHi(user) {
+    alert(`Hello! ${user}`);
+}
+
+alert(sayHi.length); // 1 不影响对原始属性的访问
+
+sayHi("Dennis"); // Hello! Dennis
+```
+
+### Reflect
+
+一个内建对象，可以简化`Proxy`的创建
+
+* 对于每个可被 Proxy 捕获的内部方法，在 Reflect 中都有一个对应的方法，其名称和参数与 Proxy 捕捉器相同。
+
+```js
+let user = {
+  name: "John",
+};
+
+user = new Proxy(user, {
+    // 这里get和set仅显示一条消息提醒，未做任何其他操作
+    get(target, prop, receiver) {
+        alert(`GET ${prop}`);
+        return Reflect.get(target, prop, receiver); // (1)
+    },
+    set(target, prop, val, receiver) {
+        alert(`SET ${prop}=${val}`);
+        return Reflect.set(target, prop, val, receiver); // (2)
+    }
+});
+
+let name = user.name; // 显示 "GET name"
+user.name = "Pete"; // 显示 "SET name=Pete"
+```
+
+#### 代理一个getter
+
+```js
+let user = {
+    _name: "Guest",
+    get name() {
+        return this._name;
+    }
+};
+
+let userProxy = new Proxy(user, {
+    get(target, prop, receiver) { // receiver = admin
+
+        // 这种情况下，由于admin对象没有name方法，会在对象的原型中寻找，此时target = user
+        // return target[prop] 
+
+        // 这里的receiver指定了this的指向 -> admin
+        return Reflect.get(target, prop, receiver); // (*) target = admin
+
+        // 更短的呈现，依然奏效
+        return Reflect(...arguments);
+    }
+});
+
+
+let admin = {
+    __proto__: userProxy,
+    _name: "Admin"
+};
+
+alert(admin.name); // Admin
+```
+
+### Proxy的局限性
+
+#### 内建对象: 内部插槽(Internal slot)
+
+* 内建对象具有"内部插槽"，这些对象的访问无法被代理（Array除外）
+
+* 私有字段，也是通过内部插槽实现的
+
+#### Proxy != target
+
+* 代理对象和原始对象不同，不是同一个对象
+
+### 可撤销Proxy
+
+```js
+// 一个可撤销的代理，没有任何捕捉器
+let {proxy, revoke} = Proxy.revocable(target, handler);
+// 返回一个带有proxy和revoke函数的对象，以将其禁用
+// 随时通过revoke()将其禁用
+```
+
+* 示例
+
+```js
+let object = {
+    data: 'Valuable data'
+};
+
+let {proxy, revoke} = Proxy.revocable(object, {});
+
+alert(proxy.data); // Valuable data
+
+revoke(); // 撤销代理
+// 从代理中删除对目标对象的所有内部引用，因此它们之间再无连接。
+
+alert(proxy.data); // Cannot perform 'get' on a proxy that has been revoked
+```
+
+将`revoke`绑定到对应代理`proxy`
+
+```js
+// 使用WeakMap的原因是，它不阻止垃圾回收
+let revokes = new WeakMap();
+
+let object = {
+    data: 'Valuable data'
+};
+
+let {proxy, revoke} = Proxy.revocable(object, {});
+
+alert(proxy.data); // Valuable data
+
+// 通过weakmap将对应的revoke绑定到proxy
+revokes.set(proxy, revoke);
+
+// 提取revoke
+revokeProxy = revokes.get(proxy);
+
+revokeProxy(); // 撤销代理
+
+alert(proxy.data);
+```
+
+### 作业
+
+```js
+// 作业1 读取不存在的属性时出错
+let user = {
+    name: "John"
+};
+
+function wrap(target) {
+    return new Proxy(target, {
+        /* 你的代码 */
+        get(target, prop) {
+            if (prop in target) {
+                return target[prop];
+            } else {
+                throw new ReferenceError(`Property doesn't exist: ${prop}`);
+            }
+        }
+    });
+}
+
+user = wrap(user);
+
+alert(user.name); // John
+alert(user.age); // ReferenceError: Property doesn't exist: "age"
+
+// 作业2 访问 array[-1]
+let array = [1, 2, 3];
+
+array = new Proxy(array, {
+    /* 你的代码 */
+    get(target, prop, receiver) {
+        if (prop < 0) {
+            prop = target.length + +prop;
+        } 
+        return Reflect.get(...arguments);
+    }
+});
+
+alert( array[1] );  // 2
+alert( array[-2] ); // 2
+
+// 作业3 可观察的（Observable）
+
+```
+
+##
