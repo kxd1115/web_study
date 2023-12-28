@@ -7585,4 +7585,293 @@ alert( array[-2] ); // 2
 
 ```
 
-##
+## Eval: 执行代码字符串
+
+```js
+let code = "alert('hello! world!')";
+eval(code); // hello! world!
+```
+
+现在使用的比较少
+
+## 柯里化(Currying)
+
+```js
+// 执行柯里化转换
+function curry(f) {
+    return function(a) {
+        return function(b) {
+            return f(a, b);
+        };
+    };
+}
+
+// 用法
+function sum(a, b) {
+    return a +b;
+}
+
+let curriedSum = curry(sum);
+
+alert(curriedSum(1)(3)); // 4
+```
+
+#### loadsh的库`_.curry`
+
+```js
+function sum(a, b) {
+    return a +b;
+}
+
+let curriedSum = _.curry(sum); // 使用loadsh的_.curry
+
+alert(curriedSum(1, 3)); // 4
+alert(curriedSum(1)(2)); // 3
+```
+
+#### 柯里化的好处
+
+1. 柯里化之后的函数方法依然可以正常调用
+2. 可以很方便的生成部分应用函数
+
+### 高级柯里化实现
+
+```js
+function curry(func) {
+    return function curried(...args) {
+        if (args.length >= func.length) {
+            return func.apply(this, args);
+        } else {
+            return function(...args2) {
+                return curried.apply(this, args.concat(args2));
+            };
+        }
+    };
+}
+
+function sum(a, b, c) {
+    return a + b + c;
+}
+
+let curriedSum = curry(sum);
+
+alert( curriedSum(1, 2, 3) ); // 6，仍然可以被正常调用
+alert( curriedSum(1)(2,3) ); // 6，对第一个参数的柯里化
+alert( curriedSum(1)(2)(3) ); // 6，全柯里化
+```
+
+## Reference Type
+
+一种深入的语言特性，了解为主
+
+## BigInt
+
+一种特殊类型的数字，支持任意长度
+
+```js
+// 创建方式:在一个整数字面量后面加 n 或者调用 BigInt 函数
+const bigint = 1234567890123456789012345678901234567890n;
+
+const sameBigint = BigInt("1234567890123456789012345678901234567890");
+
+const bigintFromNumber = BigInt(10); // 与 10n 相同
+```
+
+### 数学运算
+
+```js
+// 大多数情况下和常规数字一样
+alert(1n + 2n); // 3
+```
+
+* 但不能和常规数字一起混合使用
+
+> 不支持一元加法
+
+```js
+alert(+1n); // Cannot convert a BigInt value to a number
+```
+
+### 比较运算
+
+* 可以和常规数字一起比较`>`和`<`
+* 但 不能严格相等
+
+```js
+alert(1n === 1); //false
+alert(1n == 1);  //true
+```
+
+### 布尔运算
+
+和常规数字一样
+
+## Unicode 字符串内幕
+
+---
+
+# 浏览器: 文档, 事件, 接口
+
+## 浏览器环境，规格
+
+根对象: window
+
+1. `window`是JS代码的全局对象
+2. 代表浏览器窗口
+
+```js
+function sayHi() {
+    alert("Hello");
+}
+
+window.sayHi();
+
+alert(window.innerHeight); // 内部窗口高度
+```
+
+### 文档对象模型(DOM)
+
+* `document`是页面的主要"入口点"，使用它来创建或更改页面上的任何内容。
+
+```html
+<body>
+    <script>
+
+        // 将背景颜色修改为红色
+        document.body.style.background = "red";
+
+        // 在 1 秒后将其修改回来
+        setTimeout(() => document.body.style.background = "", 1000);
+
+    </script>
+</body>
+```
+
+### 浏览器对象模型(BOM)
+
+dom之外的所有内容的其他对象
+
+* navigator 浏览器和操作系统的背景信息
+* location 允许我们读取当前URL
+  等等
+
+## DOM树
+
+DOM将HTML表示为标签的树形结构
+
+* 标签被称为元素节点
+* 元素内的文本形成文本节点 `#text`
+
+#### 自动修正：浏览器会自动修正HTML
+
+### 其他节点类型
+
+除了元素和文本节点，注释也是DOM的一部分
+
+> HTML中的所有内容都会成为DOM的一部分
+
+## 遍历DOM
+
+
+### 在最顶层: documentElement和body
+
+* `<html> = document.documentElement`
+* `<body> = document.body`
+* `<head> = document.head`
+
+> 脚本无法访问运行时不存在的元素
+> 如果一个脚本在`<head>`中，那么无法访问到`document.body`元素
+> DOM中的`null`意味着不存在
+
+### 子节点: childNodes, firstChild, lastChild
+
+* 子节点: 给定元素的子元素
+* 子孙元素: 给定元素中的所有元素
+
+#### `childNodes`列出所有子节点
+
+```js
+document.body.style.background = "red";
+
+setTimeout(() => document.body.style.background='', 1000);
+
+// 显示文本节点和元素
+for (let i = 0; i < document.body.childNodes.length; i++) {
+    alert(document.body.childNodes[i]);
+}
+```
+
+#### `firstChild`和`lastChild`分别是第一个和最后一个子元素
+
+#### DOM集合
+
+`childNodes`是一个**集合**(一个类数组的可迭代对象)
+
+1. 可以使用`for...of`
+2. 但无法使用数组方法
+
+> DOM集合是只读的
+> 实时的
+> 不要使用`for...in`遍历，使用`for...of`
+
+### 兄弟节点和父节点
+
+* 下一个兄弟节点 `nextSibling`
+* 上一个兄弟节点 `previousSibling`
+* 父节点 `parentNode`
+
+### 纯元素导航
+
+对于很多任务来说，我们并不想要文本节点或注释节点。我们希望操纵的是代表标签的和形成页面结构的元素节点。
+只考虑元素节点的导航链接
+
+* `children` 仅作为元素节点的子节点
+* `firstElementChild`, `lastElementChild` 第一个/最后一个子元素
+* `previousElementSibling`, `nextElementSibling` 前/后兄弟元素
+* `parentElement` 父元素
+
+```js
+// 只显示元素
+for (let elm of document.body.children) {
+    console.log(elm);
+}
+```
+
+### 更多链接, 例如: 表格
+
+`<table>`元素支持 (除了上面给出的，之外) 以下属性:
+
+* `table.rows` 每一行`<tr>`元素的集合
+* `table.caption/tHead/tFoot` 引用元素`<caption>`, `<thead>`, `<tfoot>`
+  `<thead>`，`<tfoot>`，`<tbody>` 元素提供了`rows`属性：
+* `tbody.rows` 表格内部`<tr>`元素的集合
+
+`<tr>`：
+
+* `tr.cells` 给定`<tr>`中的`<td>`和`<th>`单元格的集合
+* `tr.sectionRowIndex` 给定的`<tr>`在封闭的`<thead>/<tbody>/<tfoot>`中的位置（索引）。
+* `tr.rowIndex` 在整个表格中`<tr>`的编号（包括表格的所有行）。
+
+`<td>`和`<th>`：
+
+* `td.cellIndex` 在封闭的`<tr>`中单元格的编号。
+
+### 作业
+```js
+
+// 作业1
+alert(document.body.children[1]);
+//alert(document.body.childNodes[3]);
+
+alert(document.body.children[2]);
+alert(document.body.children[2].lastElementChild);
+
+
+// 作业2 兄弟节点
+
+// 作业3
+for (let i=0; i < table.rows.length; i++) {
+    let row = table.rows[i];
+    row.cells[i].style.backgroundColor = 'red';
+}
+```
