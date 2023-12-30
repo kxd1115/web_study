@@ -7875,3 +7875,529 @@ for (let i=0; i < table.rows.length; i++) {
     row.cells[i].style.backgroundColor = 'red';
 }
 ```
+## 搜索: getElement*, querySelector*
+
+### document.getElementById 或者只用id
+```html
+<div id="'elem">
+    <div id="elem-content">Element</div>
+</div>
+<script>
+
+    // 获取该元素
+    let elem = document.getElementById('elem');
+
+    // 修改属性
+    elem.style.background = "red";
+    // 可以直接使用elem，elem是对id='elem'的DOM元素的引用
+    // 但不推荐
+
+</script>
+```
+* 如果没有一个和id同名的变量，那么它具有优先权
+
+> 不要使用不要直接使用以id命名的全局变量来访问元素
+
+### querySelectorAll
+`elem.querySelectorAll(css)`返回给定的CSS选择器匹配的所有元素
+```html
+<ul>
+    <li>The</li>
+    <li>test</li>
+</ul>
+<ul>
+    <li>has</li>
+    <li>passed</li>
+</ul>
+<script>
+
+    let elements = document.querySelectorAll('ul > li:last-child');
+
+    for (let elem of elements) {
+        alert(elem.innerHTML); // test, passed
+    }
+    // 支持伪类
+</script>
+```
+### querySelector
+`querySelector(css)`返回给定CSS选择器的第一个元素
+
+### matches
+`elem.matches(css)`返回true或false
+
+### closest
+`elem.closest(css)`查找与CSS选择器匹配的最近的标签（向上查找）
+
+### getElementsBy*
+> 注意有s
+* `elem.getElementsByTagName(tag)` 查找具有给定标签的元素
+* `elem.getElementsByClassName(classname)` 返回具有给定CSS类的元素
+* `document.getElementsByName(name)` 返回具有给定name特性的元素, 很少使用
+> 以上方法返回的是一个集合
+
+### 实时的集合
+`getElementsBy*`返回的都是一个**实时的集合**
+`querySelectorAll`返回的是一个**静态的集合**
+
+### 作业
+```js
+```
+
+## 节点属性: type, tag和content
+
+### DOM节点类
+每个DOM节点都属于相应的内建类
+
+* EventTarget: 一切的根类(抽象类)
+* Node: DOM节点的基础(抽象类)
+* Document: DOM的入口, 一般会被`HTMLDocument`继承
+* CharaData: 一个抽象类，被以下类继承
+    * Text: 对应元素内部文本的类
+    * Comment: 注释类
+* Element: DOM元素类的基础
+* HTMLDocument: 所有元素的基础类
+
+> console.log(elem)与console.dir(elem)
+```js
+// 显示DOM树
+console.log( document.body );
+
+// 将元素显示为DOM对象，及相关属性
+console.dir( document.body );
+```
+> 规范中的IDL(一种特殊的接口描述语言，用来描述DOM类)
+
+### `nodeType`属性
+现在用的比较少, 1表示元素节点，3表示文本节点
+
+### 标签nodeName和tagName
+```js
+// 除了元素节点，也使用于其他类型的节点(text, comment等)
+alert( document.body.nodeName ); // BODY
+
+// 仅适用于ELement节点
+alert( document.body.tagName ); // BODY
+```
+### innerHTML: 内容
+```js
+// 展示元素节点中的内容
+alert(document.body.innerHTML);
+
+// 也可以修改节点中的内容
+document.body.innerHTML = "The new Body!";
+```
+小心：`innerHTML+=` 会进行完全重写
+
+### outerHTML: 元素的完整HTML
+```html
+<div id="elem">Hello <b>World</b></div>
+
+<script>
+    alert(elem.outerHTML); 
+    // <div id="elem">Hello <b>World</b></div>
+</script>
+```
+注意：与 innerHTML 不同，写入 outerHTML 不会改变元素。而是在 DOM 中替换它。
+
+### nodeValue/data: 文本节点内容
+* innerHTML仅对元素节点有效
+两者在实际使用中几乎相同
+```html
+Hello
+<!--Comment-->
+<script>
+    let text = document.body.firstChild;
+    alert(text.nodeValue); //Hello
+
+    let comment = text.nextSibling;
+
+    alert(comment.data); // Comment
+</script>
+```
+### textContext: 纯文本
+仅对元素内的文本有访问权限
+* 使用该方法进行写入比较好用，它允许以"安全方式"写入文本
+
+### `hidden`属性
+指定元素是否可见，可以在HTML中使用
+```html
+Hello
+<!--Comment-->
+<div hidden>"你好"</div>
+<div id="elem">"你好嘛？"</div>
+<script>
+    
+    let elem = document.getElementById(elem);
+    elem.hidden = true;
+    // 可以通过赋值来修改DOM是否可见
+
+</script>
+```
+
+## 特性和属性
+
+### DOM属性
+DOM节点是常规的JS对象，我们可以更改他们
+```js
+// 为某个DOM节点创建一个新的属性
+document.body.myData = {
+    name: 'Caesar',
+    title: 'Imperator',
+}
+
+// 为其添加方法
+document.body.sayTagName = function() {
+    alert(this.tagName);
+}
+
+alert(document.body.myData.title); // Imperator
+
+document.body.sayTagName(); // BODY
+
+// 甚至可以修改内建属性的原型
+// 修改Element.prototype为所有元素添加新的方法
+Element.prototype.sayHi = function() {
+    alert(`Hello! I'm ${this.tagName}`);
+};
+
+document.documentElement.sayHi(); // Hello! I'm HTML
+document.body.sayHi(); // Hello! I'm BODY
+```
+
+### HTML特性
+当一个元素有id或其他**标准的**特性，就会生成对应的DOM属性。
+**非标准的**特性则不会。
+```html
+<body id="test" something="non-standard">
+  <script>
+    alert(document.body.id); // test
+    // 非标准的特性没有获得对应的属性
+    alert(document.body.something); // undefined
+  </script>
+</body>
+```
+> 注意: 一个元素的标准特性对另一个元素来说可能是未知的
+
+一些访问特性的方法
+* `elem.hasAttribute(name)`: 检查特性是否存在
+* `elem.getAttribute(name)`: 获取这个特性值
+* `elem.setAttribute(name, value)`: 设置这个特性值
+* `elem.removeAttribute(name)`: 移除这个特性
+* `elem.attributes`: 所有特性的集合, 具有name和value属性
+
+HTML特性的特征
+1. 大小写不敏感
+2. 值总是字符串类型
+
+### DOM属性-HTML特性同步
+一般情况下，改变特性，对应的属性也会发生改变，反之亦然。
+* 例外情况：input只能从特性同步到属性，反过来不行
+### DOM属性是多类型
+HTML特性的值总是字符串，但DOM属性的值则可以是其他类型。
+
+### 非标准的特性, dataset
+> 所有以`data-`开头的特性均被保留供程序员使用。他们可以在`dataset`属性中使用
+```html
+<body data-about="Elephants">
+    <script>
+        alert(document.body.dataset.about); // Elephants
+        // 特性data-about
+        // 在属性中调用时，使用dataset.about
+    </script>
+</body>
+```
+#### 大多数情况下，优先使用DOM属性
+
+### 作业
+```html
+<body> 
+<div data-widget-name="menu">Choose the genre</div>
+<script>
+
+    let elem = document.querySelector('[data-widget-name]');
+    alert(elem.innerHTML);
+    alert(elem.dataset.widgetName);
+    alert(elem.getAttribute('data-widget-name'));
+
+</script>
+</body>
+```
+```html
+<a name="list">the list</a>
+<ul>
+    <li><a href="http://google.com">http://google.com</a></li>
+    <li><a href="/tutorial">/tutorial.html</a></li>
+    <li><a href="local/path">local/path</a></li>
+    <li><a href="ftp://ftp.com/my.zip">ftp://ftp.com/my.zip</a></li>
+    <li><a href="http://nodejs.org">http://nodejs.org</a></li>
+    <li><a href="http://internal.com/test">http://internal.com/test</a></li>
+</ul>
+
+<script>
+    // 为单个链接设置样式
+    let links = document.querySelectorAll('a');
+
+    for (let link of links) {
+
+        let href = link.getAttribute('href');
+
+        if (!href) continue;
+
+        if (!href.includes("://")) continue;
+
+        if (href.startsWith('http://internal.com')) continue;
+
+        link.style.color = 'orange';
+
+    }
+</script>
+```
+
+## 修改文档
+
+### 创建一个元素
+* `document.createElement(tag)`
+    * 创建一个新**元素节点**
+* `document.createTextNode(text)`
+    * 用给定的文本创建一个**文本节点**
+
+#### 创建一条消息
+```html
+<body>
+    <script>
+        // 1. 创建 <div> 元素
+        let div = document.createElement('div');
+        
+        // 2. 将元素的类设置为 "alert"
+        div.className = "alert";
+        
+        // 3. 填充消息内容
+        div.innerHTML = "<strong>Hi there!</strong> You've read an important message.";
+        
+        // 插入
+        document.body.append(div);
+    </script>
+</body>
+```
+* 一些其他插入方法
+    * `node.append()`: 在`node`**末尾**插入节点或字符串
+    * `node.prepend()`: 在`node`**开头**插入节点或字符串
+    * `node.before()`: 在`node`**前面**插入节点或字符串
+    * `node.after()`: 在`node`**后面**插入节点或字符串
+    * `node.replaceWith()`:将`node`替换为给定的字符串或节点
+
+### insertAdjacentHTML/Text/Element
+* `insertAdjancentHTML(where, html)`
+    * `"beforebegin"`: 将`html`插入到`elem`之前
+    * `"afterbegin"`: 将`html`插入到`elem`开头
+    * `"beforereend"`: 将`html`插入到`elem`末尾
+    * `"afterreend"`: 将`html`插入到`elem`之后
+```html
+<div id="div"></div>
+<script>
+    div.insertAdjacentHTML('beforebegin', '<p>Hello</p>');
+    div.insertAdjacentHTML('afterend', '<p>Bye</p>');
+</script>
+```
+
+### 节点移除
+`node.remove()`
+```js
+let div = document.createElement('div');
+div.className = "alert";
+div.innerHTML = "<strong>Hi there!</strong> You've read an important message.";
+    
+document.body.append(div);
+
+// 节点在1秒钟之后消失
+setTimeout(() => div.remove(), 1000);
+```
+> 所有的插入方法都会自动从旧位置删除该节点
+
+### 克隆节点: cloneNode
+* `elem.cloneNode(true)`
+    * 克隆一个包含所有特性和子元素的"深"克隆
+* `elem.cloneNode(false)`
+    * 克隆不包含子元素
+```HTML
+<div class="alert" id="div">
+    <strong>Hi there!</strong> You've read an important message.
+</div>
+<script>
+    
+    let div = document.getElementById('div');
+
+    let div2 = div.cloneNode(true);
+    div2.querySelector('strong').innerHTML = 'Bye there!';
+
+    div.after(div2); // 在已有DIV的后面显示克隆
+
+</script>
+```
+### DocumentFragment
+一个特殊的DOM节点对象，用作来传递节点列表的包装器。
+```html
+<ul id="ul"></ul>
+
+<script>
+    function getListContent(val) {
+        let fragment = new DocumentFragment();
+
+        for (let i=1; i<val; i++) {
+            let li = document.createElement('li');
+            li.append(i);
+            fragment.append(li); // 这里插入的是<li>i</li>
+        }
+
+        return fragment;
+    }
+    // DocumentFragment很少被显示使用
+
+    ul.append(getListContent(5));
+</script>
+```
+
+### 老式的insert/remove方法
+> 用于理解旧版本，目前不适用于新代码的开发中
+
+
+### 作业
+
+```js
+function clear(elem) {
+  while (elem.firstChild) {
+    elem.firstChild.remove();
+  }
+}
+
+function clear(elem) {
+    elem.innerHTML = '';
+}
+```
+```html
+<ul id="ul"></ul>
+<script>
+    let elem = document.querySelector('ul');
+    
+    let value = prompt("请输入列表内容", "test");
+    while (value) {
+        let li = document.createElement('li');
+        li.innerHTML = value;
+        elem.append(li);
+        value = prompt("请输入列表内容", "test");
+    }
+</script>
+```
+```html
+<ul id="container"></ul>
+<script>
+
+    let data = {
+        "Fish": {
+            "trout": {},
+            "salmon": {}
+        },
+
+        "Tree": {
+            "Huge": {
+            "sequoia": {},
+            "oak": {}
+            },
+            "Flowering": {
+            "apple tree": {},
+            "magnolia": {}
+            }
+        }
+    };
+
+    let container = document.getElementById('container');
+    createTree(container, data); // 将树创建在 container 中
+
+    function createTree(elem, obj) {
+        elem.append(createTreeDom(obj));
+    }
+
+    function createTreeDom(obj) {
+        
+        // 创建ul标签
+        let ul = document.createElement('ul');
+
+        // 如果长度为0，则直接返回
+        if (!Object.keys(obj).length) return;
+
+        // 遍历对象，并将key赋值进列表
+        for (let key in obj) {
+            let li = document.createElement('li');
+            li.innerHTML = key;
+
+
+            // 这里处理嵌套对象
+            let childrenUl = createTreeDom(obj[key]);
+            // 如果嵌套对象中有内容，则添加
+            if (childrenUl) {
+                li.append(childrenUl);
+            }
+
+            // 最后将list添加进ul中
+            ul.append(li);
+        }
+
+        // 返回列表
+        return ul;
+    }
+
+</script>
+```
+```html
+<ul>
+    <li>Animals
+        <ul>
+        <li>Mammals
+            <ul>
+            <li>Cows</li>
+            <li>Donkeys</li>
+            <li>Dogs</li>
+            <li>Tigers</li>
+            </ul>
+        </li>
+        <li>Other
+            <ul>
+            <li>Snakes</li>
+            <li>Birds</li>
+            <li>Lizards</li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+    <li>Fishes
+        <ul>
+        <li>Aquarium
+            <ul>
+            <li>Guppy</li>
+            <li>Angelfish</li>
+            </ul>
+        </li>
+        <li>Sea
+            <ul>
+            <li>Sea trout</li>
+            </ul>
+        </li>
+        </ul>
+    </li>
+</ul>
+<script>
+    // 查找所有的li标签集合
+    let elements = document.querySelectorAll('li');
+
+    for (elem of elements) {
+        // 获取子节点的数量
+        let listCount = elem.querySelectorAll('li').length;
+        // 如果没有子节点，跳过本次循环
+        if (!listCount) continue;
+
+        // 如果有子节点，则展示数量
+        elem.firstChild.data += ' [' + listCount + ']';
+    }
+</script>
+```
+
