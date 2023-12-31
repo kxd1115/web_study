@@ -8636,3 +8636,48 @@ function showNotification(obj) {
     }, 1500);
 }
 ```
+
+## 元素大小和滚动
+
+### offsetWidth/Height
+显示元素的width/height，包括边框
+```html
+<div id="example">
+    ...Text...
+</div>
+<style>
+    #example {
+        width: 300px;
+        height: 200px;
+        border: 25px solid #E8C48F;
+        padding: 20px;
+        overflow: auto;
+    }
+</style>
+<script>
+    let div = document.getElementById("example");
+    console.log(div.offsetWidth);  // 389
+    console.log(div.offsetHeight); // 289
+</script>
+```
+
+### clientTop/Left
+测量元素的边框宽度(border)
+
+### clientWidth/Height
+元素边框内区域的大小， 包括`content width`和`padding`，不包含滚动条宽度
+
+### scrollWidth/Height
+类似`clientWidth/Height`，但包含滚动出（隐藏）的部分
+```js
+// 将元素展开到完整内容的高度
+element.style.height = `${element.scrollHeight}px`;
+```
+
+### scrollLeft/scrollTop
+元素隐藏、滚动部分的`width/height`
+* scrollTop就是元素已经滚动了多少
+
+### 不要从CSS中获取width/height
+优先使用DOM元素的几何属性
+
