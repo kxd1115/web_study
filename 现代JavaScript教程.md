@@ -8401,3 +8401,238 @@ function clear(elem) {
 </script>
 ```
 
+```html
+ <table>
+    <thead>
+        <tr>
+            <th>MO</th>
+            <th>TU</th>
+            <th>WE</th>
+            <th>TH</th>
+            <th>FR</th>
+            <th>SA</th>
+            <th>SU</th>
+        </tr>
+    </thead>
+</table>
+<script>
+
+    function createCalendar(year, month) {
+        
+        let table = document.querySelector("table");
+        let tbody = document.createElement("tbody");
+        table.append(tbody);
+
+        // 1. 确定当月需要几行?就添加几个tr
+        // 根据当月第一天处在周几进行判断
+        let mon = month-1;
+        let date = new Date(year, mon);
+        
+        // 获取第一天是周几
+        let firstWeekday = getDay(date);
+
+        // 获取当月有多少天
+        let daysInMonth = getDaysInMonth(date);
+
+        // 得到第一天需要填充的位置
+        trLine = Math.ceil((daysInMonth - (6-firstWeekday)) / 7) + 1;
+
+        // 添加格子，每行7个单元格
+        for (let i=0; i < trLine; i++) {
+            let tr = document.createElement('tr')
+            tbody.append(tr);
+            for (let j=0; j<7; j++) {
+                let td = document.createElement("td");
+                tr.append(td);
+            }
+        }
+
+        // 获取格子数量，第一天从第几个格子开始?
+        let firstTd = getDay(date)-1; // 从0开始基数
+        for (let k=1; k<=daysInMonth; k++) {
+            let tbody = document.querySelector('tbody');
+            let td = tbody.querySelectorAll('td');
+            td[firstTd].innerHTML += k;
+            firstTd++;
+        }
+
+        // 把周日的0变成7
+        function getDay(date) {
+            let day = date.getDay();
+            if (day===0) day = 7;
+            return day;
+        }
+
+        // 获取当月的总天数
+        function getDaysInMonth(date) {
+            return new Date(date.getFullYear(), date.getMonth()+1, 0).getDate()
+        }
+
+    }
+
+    createCalendar(2022,2)
+
+</script>
+```
+```html
+<div id="clock">
+    <span id="hours">hh</span>:<span id="minutes">mm</span>:<span id="seconds">ss</span>
+</div>
+<button id="start" onclick="clockStart()">Start</button>
+<button id="stop" onclick="clockStop()">Stop</button>
+<script>
+    
+    function update() {
+        let date = new Date();
+
+        let clock = document.getElementById("clock");
+
+
+        let hour = date.getHours();
+        if (hour<10) hour = '0' + hour;
+        clock.children[0].innerHTML = hour;
+
+        let minu = date.getMinutes();
+        if (minu<10) minu = '0' + minu;
+        clock.children[1].innerHTML = minu;
+
+        let seco = date.getSeconds();
+        if (seco<10) seco = '0' + seco;
+        clock.children[2].innerHTML = seco;
+    }
+
+    let timerId;
+    function clockStart() {
+        if (!timerId) {
+            timerId = setInterval(update, 1000);
+        }
+        update();
+    }
+
+    function clockStop() {
+        clearInterval(timerId);
+        timerId = null;
+    }
+
+</script>
+```
+```html
+<ul id="ul">
+    <li id="one">1</li>
+    <li id="two">4</li>
+</ul>
+<script>
+    let two = document.getElementById("two");
+
+    two.insertAdjacentHTML("beforebegin", "<li>2</li><li>3</li>");
+</script>
+```
+## 样式和类
+
+### className和classList 
+* className: 获取元素的CSS类名称
+* classList
+  * add: 添加类
+  * remove: 移除类
+  * toggle: 如果类不存在就添加，存在就移除
+  * contains(class): 检查给定类，返回true/false
+```html
+<body class="main page"> 
+   <script>
+        console.log(document.body.className); 
+        // main page
+    
+
+        document.body.classList.add("article");
+        console.log(document.body.classList); // 一个特殊的对象
+        // ['main', 'page', 'article', value: 'main page article']
+   </script>
+</body>
+```
+### 元素样式
+* `elem.style` 
+  * 对应style特性中所写的内容
+```
+background-color  => elem.style.backgroundColor
+z-index           => elem.style.zIndex
+border-left-width => elem.style.borderLeftWidth
+```
+
+### 充值样式属性
+* `elem.style.display`
+```js
+// 如果设置了body样式，这个则隐藏了样式
+document.body.style.display = "none";
+
+// 1秒钟之后，移除设置
+setTimeout(() => document.body.style.display="", 1000)
+```
+* 一个特殊方法，用于删除CSS样式
+  * `elem.style.removeProperty('style property')`
+* `style.cssText`
+  * 进行样式重写
+```html
+<div id="div">111</div>
+<script>
+    
+    div.style.cssText=`color: red !important;
+        background-color: yellow;
+        width: 100px;
+        text-align: center;
+    `;
+
+</script>
+</body>
+```
+### 注意单位
+在设置样式时，应该带上单位，否则无效
+```js
+document.body.style.margin = '20px';
+```
+
+### 计算样式: getComputedStyle
+* getComputedStyle(element)
+  * 返回一个包含元素CSS样式的对象
+```js
+<style>
+    body {
+        clip: red;
+        margin: 5px;
+    }
+</style>
+<div id="div">111</div>
+<script>
+    
+    let computedStyle = getComputedStyle(document.body);
+
+    alert(computedStyle.color) // rgb(0,0,0)
+
+</script>
+```
+### 作业
+```js
+// 在窗口的右上角附近显示一个带有文本 "Hello" 的元素
+showNotification({
+    top: 10, // 距窗口顶部 10px（默认为 0px）
+    right: 10, // 距窗口右边缘 10px（默认为 0px）
+    html: "Hello!", // 通知中的 HTML
+    className: "welcome" // div 的附加类（可选）
+});
+
+function showNotification(obj) {
+    div = document.createElement("div");
+    
+    if (!obj.className) div.classList.add(obj.className);
+    
+    div.style.top = obj.top + 'px';
+    div.style.right = obj.right + 'px';
+    div.innerHTML = obj.html;
+    
+    document.body.append(div)
+
+    // 1.5秒之后移除该元素
+    setTimeout(() => {
+        div.remove()
+    }, 1500);
+}
+```
