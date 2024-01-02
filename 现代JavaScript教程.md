@@ -8681,3 +8681,145 @@ element.style.height = `${element.scrollHeight}px`;
 ### 不要从CSS中获取width/height
 优先使用DOM元素的几何属性
 
+## Window大小和滚动
+
+### 浏览器窗口的width/height
+* `document.documentElement.clientWidth`
+* `document.documentElement.clientHeight`
+
+### 文档的width/height
+
+### 获得当前滚动
+* `scrollLeft`
+* `scrollTop`
+
+### 滚动:scrollTo, scrollBy, scrollIntoView
+* `scrollBy(x, 10)`
+  * 滚动至相对于当前位置`(x, y)`的位置
+* `scrollTo`
+  * 将页面滚动至绝对坐标
+* `scrollIntoView(top)`
+  * `top=true`，页面滚动，使元素的上边缘与窗口顶部对其
+  * `top=false`, 使元素的下边缘与窗口底部对其
+  
+### 禁止滚动
+```js
+document.body.style.overflow = "hidden";
+
+// 恢复滚动
+document.body.style.overflow = "";
+```
+
+## 坐标
+
+两种坐标系
+
+1. 相对于窗口
+   * clientX/clientY
+2. 相对于文档
+   * pageX/pageY
+     文档在滚动后，会有超出窗口的部分
+
+### 元素坐标: getBoundingClientRect
+
+* `elem.getBoundingClientRect()`
+  * 返回最小矩形的窗口坐标
+  * 主要属性如下
+    * x/y: 矩形远点相对窗口的X/Y坐标
+    * width/height: 矩形的宽/高
+    * top/bottom: 顶部/底部边缘的Y坐标
+    * left/right: 左/右矩形边缘的X坐标
+  * left = x
+  * top = y
+  * right = x + width
+  * bottom = y + height
+
+### elementFromPoint(x, y)
+
+* `document.elementFromPoint(x, y)`: 返回在窗口坐标(x,y)处嵌套最多的元素
+
+```js
+let centerX = document.documentElement.clientWidth / 2;
+let centerY = document.documentElement.clientHeight / 2;
+
+let elem = document.elementFromPoint(centerX, centerY);
+
+// 更改样式，并随着滚动窗口，对应的元素会发生变化
+elem.style.background = "red";
+alert(elem.tagName);
+```
+
+### 用于`fixed`定位
+
+```js
+let elem = document.getElementById("coords-show-mark");
+
+function createMessageUnder(elem, html) {
+let message = document.createElement("div");
+
+// 弹性布局，因此弹出的消息仍然处于刚开始的位置
+// 也就是该消息会在窗口的某一个位置不变，即时我们在之后滚动了滚轴
+message.style.cssText = "position: fixed; color:red";
+
+let coords = elem.getBoundingClientRect();
+
+// 依赖矩形的坐标位置
+message.style.left = coords.left + "px";
+message.style.top = coords.bottom + "px";
+
+message.innerHTML = html;
+
+return message;
+}
+
+let message = createMessageUnder(elem, "hello world");
+document.body.append(message);
+setTimeout(() => {
+    message.remove();
+}, 5000);
+```
+
+### 文档坐标
+文档坐标与`position:absolute`类似，根据文档进行定位
+* pageX: clientY + 文档的垂直滚动出的部分的高度
+  * clientY: 坐标距离窗口顶部的高度
+* pageY: clientX + 文档水平滚动出的部分的宽度
+  * clientX: 坐标距离窗口左侧的宽度
+```js
+// 获取文档的窗口坐标的函数
+function getCoords(elem) {
+    // 获取元素的坐标信息
+    let box = elem.getBoundingClientRect()
+
+    return {
+        top: box.top + window.pageYOffset,
+        right: box.right + window.pageXOffset,
+        bottom: box.bottom + window.pageYOffset,
+        left: box.left + window.pageXOffset
+    };
+}
+```
+
+### 作业
+```js
+// 作业1
+let div =document.getElementById("field");
+coords = div.getBoundingClientRect();
+// 1
+console.log(coords.left, coords.top);
+// 2
+console.log(coords.right, coords.bottom);
+// 3 left + 边框宽度，top + 边框高度
+console.log(coords.left + div.clientLeft, coords.top + div.clientTop);
+// 4 left + 边框宽度 + 内边距 + 内容宽度, top + 边框高度 + 内边距 + 内容高度
+console.log(coords.left + div.clientLeft + div.clientWidth, coords.top + div.clientTop + div.clientHeight);
+
+// 作业2
+// 其中一种计算方式
+elem.style.cssText = `position: fixed; top: ${coords.top}px;`;
+elem.style.left = coords.left + "px";
+elem.style.top = coords.top - coords.offsetHeight + "px";
+
+// 作业3
+
+```
