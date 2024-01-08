@@ -8636,3 +8636,325 @@ function showNotification(obj) {
     }, 1500);
 }
 ```
+
+## 元素大小和滚动
+
+### offsetWidth/Height
+显示元素的width/height，包括边框
+```html
+<div id="example">
+    ...Text...
+</div>
+<style>
+    #example {
+        width: 300px;
+        height: 200px;
+        border: 25px solid #E8C48F;
+        padding: 20px;
+        overflow: auto;
+    }
+</style>
+<script>
+    let div = document.getElementById("example");
+    console.log(div.offsetWidth);  // 389
+    console.log(div.offsetHeight); // 289
+</script>
+```
+
+### clientTop/Left
+测量元素的边框宽度(border)
+
+### clientWidth/Height
+元素边框内区域的大小， 包括`content width`和`padding`，不包含滚动条宽度
+
+### scrollWidth/Height
+类似`clientWidth/Height`，但包含滚动出（隐藏）的部分
+```js
+// 将元素展开到完整内容的高度
+element.style.height = `${element.scrollHeight}px`;
+```
+
+### scrollLeft/scrollTop
+元素隐藏、滚动部分的`width/height`
+* scrollTop就是元素已经滚动了多少
+
+### 不要从CSS中获取width/height
+优先使用DOM元素的几何属性
+
+## Window大小和滚动
+
+### 浏览器窗口的width/height
+* `document.documentElement.clientWidth`
+* `document.documentElement.clientHeight`
+
+### 文档的width/height
+
+### 获得当前滚动
+* `scrollLeft`
+* `scrollTop`
+
+### 滚动:scrollTo, scrollBy, scrollIntoView
+* `scrollBy(x, 10)`
+  * 滚动至相对于当前位置`(x, y)`的位置
+* `scrollTo`
+  * 将页面滚动至绝对坐标
+* `scrollIntoView(top)`
+  * `top=true`，页面滚动，使元素的上边缘与窗口顶部对其
+  * `top=false`, 使元素的下边缘与窗口底部对其
+  
+### 禁止滚动
+```js
+document.body.style.overflow = "hidden";
+
+// 恢复滚动
+document.body.style.overflow = "";
+```
+
+## 坐标
+
+两种坐标系
+
+1. 相对于窗口
+   * clientX/clientY
+2. 相对于文档
+   * pageX/pageY
+     文档在滚动后，会有超出窗口的部分
+
+### 元素坐标: getBoundingClientRect
+
+* `elem.getBoundingClientRect()`
+  * 返回最小矩形的窗口坐标
+  * 主要属性如下
+    * x/y: 矩形远点相对窗口的X/Y坐标
+    * width/height: 矩形的宽/高
+    * top/bottom: 顶部/底部边缘的Y坐标
+    * left/right: 左/右矩形边缘的X坐标
+  * left = x
+  * top = y
+  * right = x + width
+  * bottom = y + height
+
+### elementFromPoint(x, y)
+
+* `document.elementFromPoint(x, y)`: 返回在窗口坐标(x,y)处嵌套最多的元素
+
+```js
+let centerX = document.documentElement.clientWidth / 2;
+let centerY = document.documentElement.clientHeight / 2;
+
+let elem = document.elementFromPoint(centerX, centerY);
+
+// 更改样式，并随着滚动窗口，对应的元素会发生变化
+elem.style.background = "red";
+alert(elem.tagName);
+```
+
+### 用于`fixed`定位
+
+```js
+let elem = document.getElementById("coords-show-mark");
+
+function createMessageUnder(elem, html) {
+let message = document.createElement("div");
+
+// 弹性布局，因此弹出的消息仍然处于刚开始的位置
+// 也就是该消息会在窗口的某一个位置不变，即时我们在之后滚动了滚轴
+message.style.cssText = "position: fixed; color:red";
+
+let coords = elem.getBoundingClientRect();
+
+// 依赖矩形的坐标位置
+message.style.left = coords.left + "px";
+message.style.top = coords.bottom + "px";
+
+message.innerHTML = html;
+
+return message;
+}
+
+let message = createMessageUnder(elem, "hello world");
+document.body.append(message);
+setTimeout(() => {
+    message.remove();
+}, 5000);
+```
+
+### 文档坐标
+文档坐标与`position:absolute`类似，根据文档进行定位
+* pageX: clientY + 文档的垂直滚动出的部分的高度
+  * clientY: 坐标距离窗口顶部的高度
+* pageY: clientX + 文档水平滚动出的部分的宽度
+  * clientX: 坐标距离窗口左侧的宽度
+```js
+// 获取文档的窗口坐标的函数
+function getCoords(elem) {
+    // 获取元素的坐标信息
+    let box = elem.getBoundingClientRect()
+
+    return {
+        top: box.top + window.pageYOffset,
+        right: box.right + window.pageXOffset,
+        bottom: box.bottom + window.pageYOffset,
+        left: box.left + window.pageXOffset
+    };
+}
+```
+
+### 作业
+```js
+// 作业1
+let div =document.getElementById("field");
+coords = div.getBoundingClientRect();
+// 1
+console.log(coords.left, coords.top);
+// 2
+console.log(coords.right, coords.bottom);
+// 3 left + 边框宽度，top + 边框高度
+console.log(coords.left + div.clientLeft, coords.top + div.clientTop);
+// 4 left + 边框宽度 + 内边距 + 内容宽度, top + 边框高度 + 内边距 + 内容高度
+console.log(coords.left + div.clientLeft + div.clientWidth, coords.top + div.clientTop + div.clientHeight);
+
+// 作业2
+// 其中一种计算方式
+elem.style.cssText = `position: fixed; top: ${coords.top}px;`;
+elem.style.left = coords.left + "px";
+elem.style.top = coords.top - coords.offsetHeight + "px";
+
+// 作业3
+
+```
+
+--- 
+# 浏览器: 文档, 事件, 接口
+
+## 浏览器事件简介
+常用DOM事件
+#### 鼠标事件
+* `click`: 鼠标点击元素时
+* `contextmenu`: 右键元素时
+* `mouseover`/`moseout`: 鼠标指针移入/离开一个元素时
+* `mousedown`/`mouseup`: 鼠标按下/释放鼠标按钮时
+* `mousemove`: 鼠标移动时
+
+#### 键盘事件
+* `keydown`和`keyup`: 按下和松开一个按键时
+
+#### 表单(form)元素事件
+* `submit`: 访问者提交了一个`<form>`时
+* `focus`: 访问者聚焦于一个元素时，例如聚焦于一个`<input>`
+
+#### Document事件
+* `DocumentLoaded`: HTML的加载和处理均完成，DOM被完全构建完成时
+
+#### CSS事件
+* `transitionend`: 当一个CSS动画完成时
+
+### 事件处理程序
+* 使用**处理程序**`handler`: 一个在事件发生时运行的函数
+
+#### HTML特性
+处理程序可以设置在HTML中名为`on<event>`的特性中
+* 例如: `onclick`
+```js
+<input type="text" value="Click me" onclick="alert('Click!')">
+```
+
+#### DOM属性
+使用DOM属性来分配处理程序
+```html
+<input id="elem" type="text" value="Click me">
+<script>
+    let elem = document.getElementById("elem");
+    elem.onclick = function() {
+        alert("Click!");
+    }
+</script>
+```
+
+### addEventListener
+为一个事件分配多个处理程序
+```js
+element.addEventListener(event, handler[, options]);
+```
+* event: 事件名
+* handler: 处理程序
+* options: 具有以下属性的附加可选对象
+  * once: 如果为true, 那么会在被处罚后自动删除监听器
+  * capture: 事件的处理阶段
+  * passive: 如果为true, 那么处理程序将不会调用`preventDefault()`
+* 移除处理程序
+  * `element.removeEventListener(event, handler[, options])`
+
+通过多次调用`addEventListener`来允许添加多个处理程序
+```js
+let elem = document.getElementById("elem");
+
+function handler1() {
+    alert("Click!");
+}
+function handler2() {
+    alert("Thanks!")
+}
+elem.addEventListener("click", handler1);
+elem.addEventListener("click", handler2);
+```
+> `DOMContentLoaded`事件只能通过`addEventListener`来进行分配
+
+### 事件对象
+事件发生时，浏览器会创建一个`event`**对象**
+```js
+let elem = document.getElementById("elem");
+
+function handler(event) {
+    alert(event.type + " at " + event.currentTarget);
+    // click at [object HTMLInputElement]
+
+    alert("Coordinates: " + event.clientX + ":" + event.clientY)
+    // Coordinates: 133:16
+}
+elem.addEventListener("click", handler);
+```
+* `event.type`: 事件类型
+* `event.currentTarget`: 处理事件的元素
+* `event.clientX / event.ClientY`指针的窗口相对坐标
+
+### 对象处理程序: handleEvent
+将一个对象分配为事件处理程序，当事件发生时，调用该对象的`handleEvent`方法
+```html
+<button id="elem">Click me</button>
+<script>
+    let elem = document.getElementById("elem");
+
+    let obj = {
+        handleEvent(event) {
+            alert(event.type + " at " + event.currentTarget);
+            // click at [object HTMLButtonElement]
+        }
+    }
+
+    elem.addEventListener("click", obj);
+</script>
+```
+```html
+<button id="elem">Click me</button>
+<script>
+    let elem = document.getElementById("elem");
+
+    class Menu {
+        handleEvent(event) {
+            switch(event.type) {
+                case 'mousedown':
+                    elem.innerHTML = "Mouse button pressed";
+                    break;
+                case 'mouseup':
+                    elem.innerHTML += "...and released.";
+                    break;
+            }
+        }
+    }
+
+    let menu = new Menu();
+    elem.addEventListener("mousedown", menu);
+    elem.addEventListener("mouseup", menu);
+</script>
+```
