@@ -8823,3 +8823,138 @@ elem.style.top = coords.top - coords.offsetHeight + "px";
 // 作业3
 
 ```
+
+--- 
+# 浏览器: 文档, 事件, 接口
+
+## 浏览器事件简介
+常用DOM事件
+#### 鼠标事件
+* `click`: 鼠标点击元素时
+* `contextmenu`: 右键元素时
+* `mouseover`/`moseout`: 鼠标指针移入/离开一个元素时
+* `mousedown`/`mouseup`: 鼠标按下/释放鼠标按钮时
+* `mousemove`: 鼠标移动时
+
+#### 键盘事件
+* `keydown`和`keyup`: 按下和松开一个按键时
+
+#### 表单(form)元素事件
+* `submit`: 访问者提交了一个`<form>`时
+* `focus`: 访问者聚焦于一个元素时，例如聚焦于一个`<input>`
+
+#### Document事件
+* `DocumentLoaded`: HTML的加载和处理均完成，DOM被完全构建完成时
+
+#### CSS事件
+* `transitionend`: 当一个CSS动画完成时
+
+### 事件处理程序
+* 使用**处理程序**`handler`: 一个在事件发生时运行的函数
+
+#### HTML特性
+处理程序可以设置在HTML中名为`on<event>`的特性中
+* 例如: `onclick`
+```js
+<input type="text" value="Click me" onclick="alert('Click!')">
+```
+
+#### DOM属性
+使用DOM属性来分配处理程序
+```html
+<input id="elem" type="text" value="Click me">
+<script>
+    let elem = document.getElementById("elem");
+    elem.onclick = function() {
+        alert("Click!");
+    }
+</script>
+```
+
+### addEventListener
+为一个事件分配多个处理程序
+```js
+element.addEventListener(event, handler[, options]);
+```
+* event: 事件名
+* handler: 处理程序
+* options: 具有以下属性的附加可选对象
+  * once: 如果为true, 那么会在被处罚后自动删除监听器
+  * capture: 事件的处理阶段
+  * passive: 如果为true, 那么处理程序将不会调用`preventDefault()`
+* 移除处理程序
+  * `element.removeEventListener(event, handler[, options])`
+
+通过多次调用`addEventListener`来允许添加多个处理程序
+```js
+let elem = document.getElementById("elem");
+
+function handler1() {
+    alert("Click!");
+}
+function handler2() {
+    alert("Thanks!")
+}
+elem.addEventListener("click", handler1);
+elem.addEventListener("click", handler2);
+```
+> `DOMContentLoaded`事件只能通过`addEventListener`来进行分配
+
+### 事件对象
+事件发生时，浏览器会创建一个`event`**对象**
+```js
+let elem = document.getElementById("elem");
+
+function handler(event) {
+    alert(event.type + " at " + event.currentTarget);
+    // click at [object HTMLInputElement]
+
+    alert("Coordinates: " + event.clientX + ":" + event.clientY)
+    // Coordinates: 133:16
+}
+elem.addEventListener("click", handler);
+```
+* `event.type`: 事件类型
+* `event.currentTarget`: 处理事件的元素
+* `event.clientX / event.ClientY`指针的窗口相对坐标
+
+### 对象处理程序: handleEvent
+将一个对象分配为事件处理程序，当事件发生时，调用该对象的`handleEvent`方法
+```html
+<button id="elem">Click me</button>
+<script>
+    let elem = document.getElementById("elem");
+
+    let obj = {
+        handleEvent(event) {
+            alert(event.type + " at " + event.currentTarget);
+            // click at [object HTMLButtonElement]
+        }
+    }
+
+    elem.addEventListener("click", obj);
+</script>
+```
+```html
+<button id="elem">Click me</button>
+<script>
+    let elem = document.getElementById("elem");
+
+    class Menu {
+        handleEvent(event) {
+            switch(event.type) {
+                case 'mousedown':
+                    elem.innerHTML = "Mouse button pressed";
+                    break;
+                case 'mouseup':
+                    elem.innerHTML += "...and released.";
+                    break;
+            }
+        }
+    }
+
+    let menu = new Menu();
+    elem.addEventListener("mousedown", menu);
+    elem.addEventListener("mouseup", menu);
+</script>
+```
