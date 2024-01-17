@@ -8188,10 +8188,10 @@ HTML特性的值总是字符串，但DOM属性的值则可以是其他类型。
 
 ### insertAdjacentHTML/Text/Element
 * `insertAdjancentHTML(where, html)`
-    * `"beforebegin"`: 将`html`插入到`elem`之前
-    * `"afterbegin"`: 将`html`插入到`elem`开头
-    * `"beforereend"`: 将`html`插入到`elem`末尾
-    * `"afterreend"`: 将`html`插入到`elem`之后
+    * `"beforebegin"`: 将`html`插入到`elem`自己的前面
+    * `"afterbegin"`: 将`html`插入到`elem`第一个子节点之前
+    * `"beforereend"`: 将`html`插入到`elem`第一个子节点之后
+    * `"afterreend"`: 将`html`插入到`elem`自己的后面
 ```html
 <div id="div"></div>
 <script>
@@ -8957,4 +8957,265 @@ elem.addEventListener("click", handler);
     elem.addEventListener("mousedown", menu);
     elem.addEventListener("mouseup", menu);
 </script>
+```
+
+### 作业
+```html
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业1</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/study_css_html/index.css">
+    <style>
+        #field {
+            width: 200px;
+            height: 150px;
+            border: 10px solid black;
+            background-color: #00FF00;
+            overflow: hidden;
+            position: relative; /*相对定位*/
+            cursor: pointer;    /*鼠标指针样式*/
+        }
+        #ball {
+            position: absolute; /*绝对定位*/ 
+            left: 0;
+            top: 0;
+            transition: all 1s; /*控制运动动画*/
+        }
+    </style>
+</head>
+<body>
+    lick on a field to move the ball there.
+    <br> The ball should never leave the field.
+
+    <div id="field">
+        <img src="https://en.js.cx/clipart/ball.svg" id="ball"> . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+    </div>
+    <script>
+        let ball = document.getElementById("ball");
+        let field = document.getElementById("field");
+
+        // coords
+        let fieldCoords = field.getBoundingClientRect();
+        let ballCoords = ball.getBoundingClientRect();
+
+        console.log(field.clientHeight, field.clientWidth);
+
+        field.onclick = function(event) {
+            ballCoords = {
+                left: event.clientX - fieldCoords.left - field.clientLeft - ball.clientWidth/2,
+                top: event.clientY - fieldCoords.top - field.clientTop - ball.clientHeight/2,
+            }
+            
+            // 限制左边和上边
+            if (ballCoords.left <0) ballCoords.left = 0;
+            if (ballCoords.top <0) ballCoords.top = 0;
+
+            // 限制下边和右边
+            if (ballCoords.left+ball.clientWidth > field.clientWidth) {
+                ballCoords.left = field.clientWidth - ball.clientWidth
+            }
+            if (ballCoords.top+ball.clientHeight > field.clientHeight) {
+                ballCoords.top = field.clientHeight - ball.clientHeight
+            }
+            
+            // 最终结果
+            ball.style.left = ballCoords.left + "px";
+            ball.style.top = ballCoords.top + "px";
+        }
+    </script>
+</body>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style/style.css">
+    <style>
+      #option {
+        cursor: pointer;
+      }
+      #option::before {
+        content: "▼";
+      }
+      .menu.open #option::before {
+        content: "▶";
+      }
+      ul {
+        display: block;
+      }
+      .menu.open ul {
+        display: none;
+      }
+    </style>
+</head>
+<body>
+
+  <div id="box" class="menu">
+    <span id="option">Sweeties (click me)!</span>
+    <ul>
+      <li>Cake</li>
+      <li>Donut</li>
+      <li>Honey</li>
+    </ul>
+  </div>
+  <script>
+    let box = document.getElementById("box");
+
+    let option = document.getElementById("option");
+    option.onclick = function() {
+      box.classList.toggle("open");
+    }
+  </script>
+
+</body>
+</html>
+```
+### 作业
+```js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/study_css_html/index.css">
+    <style>
+        body {
+            margin: 10px auto;
+            width: 470px;
+        }
+
+        h3 {
+            margin: 0;
+            padding-bottom: .3em;
+            font-size: 1.1em;
+        }
+
+        p {
+            margin: 0;
+            padding: 0 0 .5em;
+        }
+
+        .pane {
+            background: #edf5e1;
+            padding: 10px 20px 10px;
+            border-top: solid 2px #c4df9b;
+            position: relative;
+        }
+
+        .remove-button {
+            font-size: 110%;
+            color: darkred;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <div class="pane">
+            <h3>Horse</h3>
+            <p>The horse is one of two extant subspecies of Equus ferus. It is an odd-toed ungulate mammal belonging to the taxonomic family Equidae. The horse has evolved over the past 45 to 55 million years from a small multi-toed creature, Eohippus, into the large, single-toed animal of today.</p>
+        </div>
+        <div class="pane">
+            <h3>Donkey</h3>
+            <p>The donkey or ass (Equus africanus asinus) is a domesticated member of the horse family, Equidae. The wild ancestor of the donkey is the African wild ass, E. africanus. The donkey has been used as a working animal for at least 5000 years.</p>
+        </div>
+        <div class="pane">
+            <h3>Cat</h3>
+            <p>The domestic cat (Latin: Felis catus) is a small, typically furry, carnivorous mammal. They are often called house cats when kept as indoor pets or simply cats when there is no need to distinguish them from other felids and felines. Cats are often valued by humans for companionship and for their ability to hunt vermin.
+            </p>
+        </div>
+    </div>
+    <script>
+        let panes = document.getElementsByClassName("pane");
+
+        for (let pane of panes) {
+            // 将HTML内容添加到pane的前面, afterbegin：指插入到第一个子节点之前
+            pane.insertAdjacentHTML("afterbegin", '<button class="remove-button">[x]</button>')
+            
+            
+            pane.firstChild.onclick = function() {
+                pane.remove(); // 移除元素
+                
+                // pane.hidden = true; 
+                // 这种方法只是隐藏元素
+            }
+        }
+    </script>
+</body>
+</html>
+```
+
+### 作业
+
+
+
+## 冒泡和捕获
+
+### 冒泡
+
+当一个事件发生在一个元素上，它会首先运行在该元素上的处理程序，然后运行其父元素上的处理程序，然后一直向上到其他祖先上的处理程序。
+
+```html
+<form action="" onclick="alert('form')">FORM
+    <div onclick="alert('div')">DIV
+        <p onclick="alert('p')">P</p>
+    </div>
+</form>
+```
+
+> 几乎所有事件都会冒泡
+
+### event.target
+
+获取引发事件的那个嵌套层级最深的元素，目标元素
+
+* 与`this(=event.currentTarget)`的区别
+  * this: 是当前正在运行的处理程序, 当前元素
+  * 引发事件的目标元素，在冒泡过程中不会变化
+
+## 停止冒泡
+
+`event.stopPropagation()`
+
+> 不要在没有需要的情况下停止冒泡!
+
+## 捕获
+
+* 了解即可，在开发中很少使用
+  DOM事件的传播3阶段
+
+1. 捕获阶段: 事件(从window)向下走进元素
+2. 目标阶段: 事件到达目标元素
+3. 冒泡阶段: 事件从元素上(向上)开始冒泡
+
+```js
+// 在捕获阶段捕获时间
+elem.addEventListener(..., {capture: true});
+// 简化版本
+elem.addEventListener(..., true);
+```
+
+* true: 在捕获阶段设置处理程序
+* false(默认值): 在冒泡阶段处理程序
+  如果设置了再捕获阶段处理程序，则移除时需要正确删除
+
+```js
+elem.removeEventListener(..., true);
 ```
