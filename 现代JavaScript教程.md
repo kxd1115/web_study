@@ -9162,8 +9162,158 @@ elem.addEventListener("click", handler);
 </html>
 ```
 
-### 作业
+### 作业3
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/study_css_html/index.css">
+    <style>
+        .arrow {
+            padding: 0;
+            background: #ddd;
+            border-radius: 15px;
+            border: 1px solid gray;
+            font-size: 24px;
+            line-height: 24px;
+            color: #444;
+            display: block;
+            position: absolute;
+        }
+        .start {
+            left: 5px;
+            top: 63px;
+        }
+        .end {
+            right: 5px;
+            top: 63px;
+        }
+        .arrow:focus {
+            outline: none;
+        }
 
+        .arrow:hover {
+            background: #ccc;
+            cursor: pointer;
+        }
+
+        .gallery {
+            width: 390px;
+            height: 130px;
+            overflow: hidden; /* 超出的部分隐藏 */
+            top: 10px;
+            left: 30px;
+            position: relative;
+        }
+
+        ul {
+            height: 130px;
+            width: 9999px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 0;
+            position: absolute;
+            transition: margin-left 250ms; /* 动画效果 */
+        }
+
+        ul img {
+            width: 130px;
+            height: 130px;
+            display: block; /* removes extra space near images */
+        }
+
+        ul li {
+            display: inline-block; /* removes extra space between list items*/
+        }
+
+        .box {
+            width: 450px;
+            height: 150px;
+            background-color: #ddd;
+            border-radius: 1em;
+            border: 1px solid rgb(168, 166, 166);
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <!-- create your markup and styles -->
+
+    <div class="box">
+        <button class="arrow start">⇦</button>
+        <div class="gallery">
+            <ul>
+                <li><img src="https://en.js.cx/carousel/1.png"></li>
+                <li><img src="https://en.js.cx/carousel/2.png"></li>
+                <li><img src="https://en.js.cx/carousel/3.png"></li>
+                <li><img src="https://en.js.cx/carousel/4.png"></li>
+                <li><img src="https://en.js.cx/carousel/5.png"></li>
+                <li><img src="https://en.js.cx/carousel/6.png"></li>
+                <li><img src="https://en.js.cx/carousel/7.png"></li>
+                <li><img src="https://en.js.cx/carousel/8.png"></li>
+                <li><img src="https://en.js.cx/carousel/10.png"></li>
+            </ul>
+        </div>
+        <button class="arrow end">⇨</button>
+    </div>
+
+
+
+    <script>
+        // label the images to visually track them, just for convenience,
+        // this code can be removed
+        let box = document.getElementById("box");
+        let list = document.querySelector("ul");
+        let listElems = list.querySelectorAll("li");
+        
+        let i = 1;
+        for (let li of listElems) {
+            li.style.position = 'relative';
+            li.insertAdjacentHTML(
+                "beforeend", 
+                `<span style="position:absolute; left:0; top:0;">${i}</span>`
+            );
+            i++;
+        }
+
+        let width = 130;
+        let count = 3;
+        let position = 0;
+
+        // 点击的时候修改margin-left的值
+        document.querySelector(".start").onclick = function() {
+            position += width * count;
+            if (position>0) {
+                position = -width * (listElems.length - count)
+            }
+            position = Math.min(position, 0);
+            list.style.marginLeft = position + "px";
+        }
+
+        function end() {
+            position -= width * count;
+            if (position<= -width * listElems.length) {
+                position = 0;
+            }
+            position = Math.max(position, -width * (listElems.length - count));
+            list.style.marginLeft = position + "px";
+        }
+        document.querySelector(".end").addEventListener("click", end);
+
+        // 每2s自动滚动
+        setInterval(() => {
+            end();
+        }, 2000);
+
+    </script>
+</body>
+</html>
+```
 
 
 ## 冒泡和捕获
@@ -9218,4 +9368,548 @@ elem.addEventListener(..., true);
 
 ```js
 elem.removeEventListener(..., true);
+```
+
+## 事件委托
+
+
+### 委托示例: 标记中的行为
+```js
+let menu = document.getElementById("menu");
+
+class Menu {
+    constructor(elem) {
+        this._elem = elem;
+        // 通过bind方法，将this指定为当前的按钮
+        elem.onclick = this.onClick.bind(this);
+    }
+
+    save() {
+        alert("saving");
+    }
+
+    load() {
+        alert("loading");
+    }
+
+    serach() {
+        alert("seraching");
+    }
+
+    onClick(event) {
+        // 获取elem的只读属性 data-action的内容
+        let action = event.target.dataset.action;
+        if (action) {
+            this[action]();
+        }
+    }
+}
+new Menu(menu);
+```
+
+### 行为模式
+使用事件委托将**行为**以**声明方式**添加到具有特殊特性和类的元素中
+1. 将自定义特性添加到描述其行为的元素
+2. 用文档范围级的处理程序追踪事件，如果事件发生在具有特定特性的元素上：则执行行为(action)
+
+#### 行为: 计数器
+```html
+<body>
+    Counter: <input type="button" value="1" data-counter>
+    Oner more counter: <input type="button" value="2" data-counter>
+    <script>
+        document.addEventListener('click', function(event) {
+            if (event.target.dataset.counter != undefined) {
+                // 如果这个元素存在data-counter特性，则执行
+                event.target.value++;
+            }
+        })
+    </script>
+</body>
+```
+> 对于文档级的处理程序，始终使用addEventListener
+
+#### 行为: 切换器
+```html
+<body>
+    <button data-toggle-id="subscription-mail">
+        Show the subscription form
+    </button>
+    <form id="subscription-mail" hidden>
+        Your mail: <input type="email" name="" id="">
+    </form>
+    <script>
+        document.addEventListener('click', function(event) {
+            let id = event.target.dataset.toggleId;
+            if (!id) return;
+
+            let elem = document.getElementById(id);
+
+            elem.hidden = !elem.hidden;
+        })
+    </script>
+</body>
+```
+
+### 作业
+```js
+// 作业1的JS解决方案
+document.addEventListener('click', function(event) {
+    if (event.target.className!="remove-button") return;
+    
+    // 找到距离最近的祖先div
+    let div = event.target.closest('div');
+    div.remove();
+})
+
+```
+```html
+<!-- 作业2 树形菜单 -->
+<style>
+    .tree span:hover {
+        font-weight: bold;
+    }
+    .tree span {
+        cursor: pointer;
+    }
+</style>
+<script>
+    let tree = document.getElementById("tree");
+
+    for (let li of tree.querySelectorAll("li")) {
+        let span = document.createElement("span");
+        li.prepend(span); // 在第一个子节点之前插入一个span
+        span.append(span.nextSibling); // 把文本移入span标签内部
+        // 这里是因为span标签具有有限的宽度
+    
+    }
+
+    tree.onclick = function(event) {
+        // 使用大写
+        if (event.target.tagName!="SPAN") return;
+
+        // 查看点击内容的父元素是否是ul，如果不是，则不工作
+        let childrenContainer = event.target.parentNode.querySelector("ul");
+        if (!childrenContainer) return;
+
+        // 如果是, 则改变状态
+        childrenContainer.hidden = !childrenContainer.hidden;
+    }
+
+</script>
+```
+```html
+<!-- 可排序的表格 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/study_css_html/index.css">
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 4px;
+      }
+      th {
+        cursor: pointer;
+      }
+      th:hover {
+        background: yellow;
+      }
+    </style>
+</head>
+<body>
+    <table id="grid">
+      <thead>
+        <tr>
+          <th data-type="number">Age</th>
+          <th data-type="string">Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>5</td>
+          <td>John</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Pete</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td>Ann</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Eugene</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Ilya</td>
+        </tr>
+      </tbody>
+    </table>
+    </table>
+    <script>
+      let table = document.getElementById("grid");
+
+      table.addEventListener('click', function(event) {
+
+        let th = event.target;
+
+        // 如果点击的单元格错误，则直接返回
+        if (th.tagName != 'TH') return;
+
+        sortGrid(th.cellIndex, th.dataset.type);
+
+      })
+
+      function sortGrid(colNum, type) {
+        
+        // 获取表格内容
+        let tbody = table.querySelector("tbody");
+
+        // 将表格身体中的行转换为数组
+        let rowsArray = Array.from(tbody.rows);
+
+        let compare;
+
+        switch(type) {
+          case 'number':
+            // 如果是数值，则直接获取差值，方便排序
+            compare = function(rowA, rowB) {
+              return rowA.cells[colNum].innerHTML - rowB.cells[colNum].innerHTML;
+            };
+            break;
+          case 'string':
+            // 如果是string, 则转换为1，-1, 方便后续排序
+            compare = function(rowA, rowB) {
+              return rowA.cells[colNum].innerHTML > rowB.cells[colNum].innerHTML ? 1 : -1;
+            };
+            break;
+        }
+
+        // 根据compare值进行排序
+        /*
+        这里可以理解为
+        rowsArray.sort((rowA, rowB) => {
+          // 视type类型进行返回不同值
+          rowA.cells[colNum].innerHTML - rowB.cells[colNum].innerHTML;
+          // OR
+          return rowA.cells[colNum].innerHTML > rowB.cells[colNum].innerHTML ? 1 : -1;
+        })
+        */ 
+        rowsArray.sort(compare); 
+
+        // 排序好的结果重新导入表格
+        tbody.append(...rowsArray);
+      }
+      
+    </script>
+</body>
+</html>
+```
+```html
+<!-- 工具提示行为 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/study_css_html/index.css">
+    <style>
+      body {
+        height: 2000px;
+        /* make body scrollable, the tooltip should work after the scroll */
+      }
+
+      .tooltip {
+        /* some styles for the tooltip, you can use your own instead */
+        position: fixed;
+        padding: 10px 20px;
+        border: 1px solid #b3c9ce;
+        border-radius: 4px;
+        text-align: center;
+        font: italic 14px/1.3 sans-serif;
+        color: #333;
+        background: #fff;
+        box-shadow: 3px 3px 3px rgba(0, 0, 0, .3);
+      }
+      p {
+        z-index: 1;
+        display: block;
+      }
+    </style>
+</head>
+<body>
+  <p>LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa</p>
+  <p>LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa</p>
+  <button data-tooltip="the tooltip is longer than the element">Short button</button>
+  <button data-tooltip="HTML<br>tooltip">One more button</button>
+
+  <p>Scroll the page to make buttons appear on the top, check if the tooltips show up correctly.</p>
+  <script>
+      // 获取按钮元素的列表
+      let buttonList = document.querySelectorAll("button");
+
+      
+
+      // 设置一个盒子接收提示信息
+      let div = document.createElement("div");
+
+      for (let button of buttonList) {
+
+        button.addEventListener('mouseover', function(event) {
+          // 获取button的left
+          buttonCoords = button.getBoundingClientRect();
+          
+
+          // 将div添加进body
+          document.body.prepend(div);
+          // 设置div的风格
+          div.className='tooltip'
+          
+          // 设置文本内容
+          div.innerHTML = event.target.dataset.tooltip;
+          
+          // 设置div的top和left
+          divCoords = div.getBoundingClientRect();
+          
+          // 上方也需要判断
+          let top = buttonCoords.top - div.offsetHeight - 5;
+          if (top<0) {
+            top = buttonCoords.top + button.offsetHeight + 5;
+          }
+          
+          // 判断左侧是否有足够距离让元素居中展示
+          let left = buttonCoords.left + (button.offsetWidth - div.offsetWidth)/2
+          if (left<0) left = 5;
+
+          div.style.top = top + "px";
+          div.style.left = left + "px";
+
+        })
+
+        button.addEventListener('mouseout', function(event) {
+          div.remove()
+        })
+
+      }
+  </script>
+</body>
+</html>
+```
+
+## 浏览器默认行为
+
+### 阻止浏览器行为
+
+两种方式
+
+1. 使用`event`对象。`event.preventDefault()`方法
+2. `on<event>`返回`false`
+
+```html
+<a href="/" onclick="return false">Click here</a>
+OR
+<a href="/" onclick="event.preventDefault()">here</a>
+```
+
+#### 示例: 菜单
+
+* 菜单选项一般使用`<a>`标签实现，这样可以用右键单击新窗口打开链接，但使用`<button>`或者`<span>`则不行
+
+```html
+<ul id="menu" class="menu">
+    <li><a href="/html">HTML</a></li>
+    <li><a href="/javascript">JavaScript</a></li>
+    <li><a href="/css">CSS</a></li>
+</ul>
+<script>
+    let menu = document.getElementById("menu");
+
+    menu.onclick = function(event) {
+        if (event.target.tagName != "A") return;
+
+        // 返回href属性的值
+        let href = event.target.getAttribute('href');
+        alert(href);
+
+        // 禁止浏览器的自动跳转
+        return false;
+    }
+</script>
+```
+
+### 处理程序选项`passive`
+
+```js
+addEventListener()
+// 可选项: passive: true
+// 向浏览器发出信号，表明处理程序不会调用preventDefault()
+```
+
+### event.defaultPrevented
+
+当默认行为被阻止，该属性为true，否则为false
+
+* 在某些情况替代**停止冒泡**，告诉其他事件处理程序，该事件已经被处理
+
+```html
+<button>Right-click shows browser context menu</button>  
+<button oncontextmenu="alert('Draw our menu'); return false">
+    Right-click shows our context menu
+    <!--代替默认的鼠标右键事件-->
+</button>
+```
+
+```html
+<p>Right-click for the document menu (added a check for event.defaultPrevented)</p>
+<button>Right-click shows browser context menu</button>  
+<script>
+    let button = document.querySelector("button");
+    button.oncontextmenu = function(event) {
+        // 阻止浏览器的默认行为
+        event.preventDefault();
+        // 用该事件代替
+        alert("Button context menu");
+    }
+    document.oncontextmenu = function(event) {
+        // 是否阻止了浏览器的默认行为？如果阻止，则直接返回
+        // 该参数在当浏览器阻止了默认行为，会变成true，否则就是false
+        if (event.defaultPrevented) return;
+
+        // 阻止浏览器的默认行为
+        event.preventDefault();
+        // 用该事件代替
+        alert("Doucement context menu");
+    }
+</script>
+```
+
+### 作业
+
+```html
+<fieldset id="contents">
+<legend>#contents</legend>
+<p>
+    How about to read <a href="https://wikipedia.org">Wikipedia</a> or visit <a href="https://w3.org"><i>W3.org</i></a> and learn about modern standards?
+</p>
+</fieldset> 
+<script>
+    let content = document.getElementById("contents");
+
+    content.onclick = function(event) {
+
+        function handleLink(href) {
+            let value = confirm(`Are you sure leave for ${href}?`);
+            if (!value) return false;
+        }
+
+        // 获取距离当前元素最近的祖先元素a，也可以是自身
+        let target = event.target.closest("a");
+
+        if (target && content.contains(target)) {
+            return handleLink(target.getAttribute("href"))
+        }
+
+    }
+</script>
+```
+
+```html
+<!-- 图册 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font: 75%/120% sans-serif;
+      }
+
+      #largeImg {
+        border: solid 1px #ccc;
+        width: 550px;
+        height: 400px;
+        padding: 5px;
+      }
+
+      #thumbs a {
+        border: solid 1px #ccc;
+        width: 100px;
+        height: 100px;
+        padding: 3px;
+        margin: 2px;
+        float: left;
+      }
+
+      #thumbs a:hover {
+        border-color: #FF9900;
+      }
+
+      #thumbs li {
+        list-style: none;
+      }
+
+      #thumbs {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+</head>
+<body>
+  <p><img id="largeImg" src="https://en.js.cx/gallery/img1-lg.jpg" alt="Large image"></p>
+
+  <ul id="thumbs">
+    <!-- the browser shows a small built-in tooltip on hover with the text from "title" attribute -->
+    <li>
+      <a href="https://en.js.cx/gallery/img2-lg.jpg" title="Image 2"><img src="https://en.js.cx/gallery/img2-thumb.jpg"></a>
+    </li>
+    <li>
+      <a href="https://en.js.cx/gallery/img3-lg.jpg" title="Image 3"><img src="https://en.js.cx/gallery/img3-thumb.jpg"></a>
+    </li>
+    <li>
+      <a href="https://en.js.cx/gallery/img4-lg.jpg" title="Image 4"><img src="https://en.js.cx/gallery/img4-thumb.jpg"></a>
+    </li>
+    <li>
+      <a href="https://en.js.cx/gallery/img5-lg.jpg" title="Image 5"><img src="https://en.js.cx/gallery/img5-thumb.jpg"></a>
+    </li>
+    <li>
+      <a href="https://en.js.cx/gallery/img6-lg.jpg" title="Image 6"><img src="https://en.js.cx/gallery/img6-thumb.jpg"></a>
+    </li>
+  </ul>
+  <script>
+    let thumbs = document.getElementById("thumbs");
+    let largeImg = document.getElementById("largeImg");
+    
+    thumbs.onclick = function(event) {
+
+      let tag = event.target.closest("a");
+      if (tag) {
+        // 阻止默认事件
+        event.preventDefault();
+
+        // 用自定义事件替代
+        largeImg.setAttribute("src", tag.getAttribute("href"));
+
+      }
+
+    }
+  </script>
+</body>
+</html>
 ```
