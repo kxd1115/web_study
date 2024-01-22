@@ -9913,3 +9913,75 @@ addEventListener()
 </body>
 </html>
 ```
+
+## 创建自定义事件
+
+
+### 事件构造器
+
+根据内建的`Event`类创建
+
+```js
+let event = new Event(type[, options]);
+```
+
+* type 事件类型
+* options 具有两个可选属性的对象
+  * bubbles: true/false → 如果为true, 事件会冒泡
+  * cancelable: true/false → 如果为true, 默认行为会被阻止
+  * 默认情况下，以上2者都为false
+
+### dispatchEvent
+
+在事件对象被创建后，使用`elem.dispatchEvent(event)`调用并运行
+
+
+### 冒泡示例
+
+创建一个事件，并允许冒泡
+
+```html
+<h1 id="elem">Hello from the script!</h1>
+<script>
+    document.addEventListener("hello", function(event) {
+        alert("hello from " + event.target.tagName);
+    });
+
+    // 允许冒泡
+    let event = new Event("hello", {bubbles: true});
+
+    let elem = document.getElementById("elem");
+    elem.dispatchEvent(event); // hello from H1
+</script>
+```
+
+### MouseEvent, KeyboardEvent及其他
+
+一些其他事件对象
+
+* UIEvent
+* FocusEvent
+* MouseEvent
+* WheelEvent
+* KeyboardEvent
+  ...
+  当需要创建这些事件时，不使用`new Event`而是使用`new UIEvent`等
+* 与`new Event`不同的是，他们的`options`可选属性对象不仅仅局限于`bubbles`和`cancelable`
+
+### 自定义事件
+
+一些我们自己自定义的全新事件类型, 应该使用`new CustomEvent`
+
+* 额外提供一个特殊的字段
+  * detail 可以传递任何自定义信息
+
+### event.preventDefault()
+
+
+### 事件中的事件时同步的
+
+如果在一个事件中嵌套了另一个事件，那么该事件会被立即处理
+
+---
+
+# UI事件
