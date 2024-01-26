@@ -9985,3 +9985,122 @@ let event = new Event(type[, options]);
 ---
 
 # UI事件
+
+## 鼠标事件
+
+
+### 鼠标事件类型
+* `mousedown/mouseup`
+  * 点击/释放按钮
+* `mouseover/mouseout`
+  * 指针从元素上移入/移出
+* `mousemove`
+  * 鼠标在元素上移动时触发
+* `click`
+  * 点击鼠标左键
+  * 在`mousedown/mouseup`之后触发
+* `dbclick`
+  * 同一时间内双击某个元素（现在使用较少）
+* `contextmenu`
+  * 按下鼠标右键时触发
+  
+### 事件顺序
+例如: 按下鼠标左键`mousedown` → 释放鼠标左键`mouseup` → `click`事件
+
+### 鼠标按钮
+点击相关属性`event.button`
+  * 不同按键触发后，有不同的对应数值
+  
+### 组合键: shift, alt, ctrl, meta
+对应的事件属性
+* `shiftKey`: Shift
+* `altKey`: Alt
+* `ctrlKey`: Ctrl
+* `metaKey`: Mac的`Cmd`
+在对应事件期间按下相应按键，则会返回`true`
+```html
+<button id="button">Alt+Shift+Click on me!</button>
+
+<script>
+    let button = document.getElementById("button") ;
+    button.onclick = function(event) {
+        if (event.altKey && event.shiftKey) {
+        alert("Hooray!");
+        }
+    };
+</script>
+```
+
+### 坐标: clientX/Y, pageX/Y
+* 相对于窗口的坐标: clientX/Y
+* 相对于文档的坐标: pageX/Y
+```html
+<input onmousemove="this.value=event.clientX+':'+event.clientY" value="Mouse over me">
+```
+
+> 防止复制
+> 使用`oncopy`事件
+
+### 作业
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <style>
+        .selected {
+          background: #0f0;
+        }
+
+        li {
+          cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+  Click on a list item to select it.
+  <br>
+
+  <ul id="ul">
+    <li>Christopher Robin</li>
+    <li>Winnie-the-Pooh</li>
+    <li>Tigger</li>
+    <li>Kanga</li>
+    <li>Rabbit. Just rabbit.</li>
+  </ul>
+
+  <script>
+    // ...your code...
+    let ul = document.getElementById("ul");
+
+    ul.onclick = function(event) {
+      let li = event.target;
+
+      if (li.tagName!="LI") return;
+
+      if (event.ctrlKey || event.metaKey) {
+        // 如果有就移除，否则添加
+        li.classList.toggle('selected');
+      } else {
+        // 找到所有selected的li
+        let selected = ul.getElementsByClassName('selected');
+        // 遍历
+        for (let elem of selected) {
+          // 移除已有的
+          elem.classList.remove('selected');
+        }
+        // 为当前元素添加类名称
+        li.classList.add('selected');
+      }
+    }
+
+    ul.onmousedown = function() {
+      return false;
+    }
+  </script>
+</body>
+</html>
+```
