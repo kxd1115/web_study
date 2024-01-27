@@ -9818,6 +9818,7 @@ addEventListener()
         let target = event.target.closest("a");
 
         if (target && content.contains(target)) {
+            // node.contains() 用来判断当前节点是否是给定节点的后代
             return handleLink(target.getAttribute("href"))
         }
 
@@ -10085,7 +10086,7 @@ let event = new Event(type[, options]);
         // 如果有就移除，否则添加
         li.classList.toggle('selected');
       } else {
-        // 找到所有selected的li
+        // 找到其他所有类名称selected的li
         let selected = ul.getElementsByClassName('selected');
         // 遍历
         for (let elem of selected) {
@@ -10104,3 +10105,36 @@ let event = new Event(type[, options]);
 </body>
 </html>
 ```
+
+## 移动鼠标: mouseover/out, mouseenter/leave
+
+### 事件mouseover/mouseout, relatedTarget
+这些事件具有`relatedTarget`属性，是对`target`属性的补充
+* 对于`mouseover`
+  * `event.target`: 鼠标目前所在的那个元素
+  * `event.relatedTarget`: 鼠标之前所在的那个元素
+* 对于`mouseout`
+  * `event.target`: 鼠标离开的那个元素
+  * `event.relatedTarget`: 鼠标目前所在的那个元素
+> 当relatedTarget是nul时，意味着鼠标来自窗口之外，或者它离开了窗口
+
+### 跳过元素
+* 鼠标移动时会触发`mousemove`事件
+
+> mouseover触发，就一定会有mouseout
+
+
+### 移动到子元素时mouseout
+在移动到元素的后代时，也能触发`mouseout`
+
+
+### 事件mouseenter/mouseleave
+与mouseover/mouseout的区别
+1. 在元素内部与后代之间的转换，不会被记录
+2. `mouseenter/mouseleave`不会冒泡
+
+
+### 事件委托
+由于`mouseenter/mouseleave`不会冒泡，在进行事件委托时选用`mouseover/mouseout`
+
+
