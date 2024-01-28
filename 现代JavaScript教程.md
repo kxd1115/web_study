@@ -9933,7 +9933,6 @@ let event = new Event(type[, options]);
   * 默认情况下，以上2者都为false
 
 ### dispatchEvent
-
 在事件对象被创建后，使用`elem.dispatchEvent(event)`调用并运行
 
 
@@ -10138,3 +10137,121 @@ let event = new Event(type[, options]);
 由于`mouseenter/mouseleave`不会冒泡，在进行事件委托时选用`mouseover/mouseout`
 
 
+### 作业
+
+```html
+<!--作业1-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style/style.css">
+    <style>
+      body {
+        height: 2000px;
+        /* 在页面滚动后，工具提示也应该正常展示 */
+      }
+
+      .tooltip {
+        position: fixed;
+        z-index: 100;
+
+        padding: 10px 20px;
+
+        border: 1px solid #b3c9ce;
+        border-radius: 4px;
+        text-align: center;
+        font: italic 14px/1.3 sans-serif;
+        color: #333;
+        background: #fff;
+        box-shadow: 3px 3px 3px rgba(0, 0, 0, .3);
+      }
+
+      #house {
+        margin-top: 50px;
+        width: 400px;
+        border: 1px solid brown;
+      }
+
+      #roof {
+        width: 0;
+        height: 0;
+        border-left: 200px solid transparent;
+        border-right: 200px solid transparent;
+        border-bottom: 20px solid brown;
+        margin-top: -20px;
+      }
+
+      p {
+        text-align: justify;
+        margin: 10px 3px;
+      }
+    </style>
+</head>
+<body>
+  <div data-tooltip="这是房子的内部" id="house">
+    <div data-tooltip="这里是屋顶" id="roof"></div>
+
+    <p>从前有一个猪妈妈，她养了三只小猪。</p>
+
+    <p>三只小猪长得很快快，妈妈对它们说：“你们太大了，不能住在这里了，你们自己去盖房子吧，但要小心不要让狼抓到你们。”</p>
+
+    <p>三只小猪出发了。 “我们会注意不要让狼抓住我们，”他们说。</p>
+
+    <p>很快，它们遇到了一个男人。<a href="https://en.wikipedia.org/wiki/The_Three_Little_Pigs" data-tooltip="继续阅读...">鼠标悬浮在我上</a></p>
+
+  </div>
+  <script>
+    let house = document.getElementById("house");
+    
+    let tooltip;
+    
+    house.onmouseover = function(event) {
+      
+      let box = event.target.closest('[data-tooltip]');
+      
+      if (!box) return;
+      
+      let div = document.createElement('div');
+      div.innerHTML = box.dataset.tooltip;
+      div.className = 'tooltip';
+      document.body.append(div);
+
+      // 设置div的位置
+      let boxCoords = box.getBoundingClientRect();
+      
+      let top = boxCoords.top - div.offsetHeight - 5;
+      if (top<0) {
+        top = boxCoords.top + box.offsetHeight + 5;
+      }
+      
+      let left = boxCoords.left + (box.offsetWidth - div.offsetWidth)/2
+      if (left<0) left = 5;
+      
+      div.style.top = top + "px";
+      div.style.left = left + "px";
+
+      tooltip = div;
+      
+    }
+    
+    house.onmouseout = function(event) {
+      
+      if (tooltip) {
+        tooltip.remove();
+        tooltip = false;
+      }
+    }
+    
+  </script>
+</body>
+</html>
+```
+
+```html
+<!-- 作业2 -->
+<!-- 好难啊！！这个作业后续来补充，先将其他内容看完 -->
+```
