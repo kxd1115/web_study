@@ -10255,3 +10255,58 @@ let event = new Event(type[, options]);
 <!-- 作业2 -->
 <!-- 好难啊！！这个作业后续来补充，先将其他内容看完 -->
 ```
+
+## 鼠标拖放事件
+
+### 拖放算法
+基础步骤
+1. 在`mousedown`上: 根据需要准备移动的元素
+2. 在`mousemove`上: 通过更改`position: absolute`情况下的`left/top`来移动它
+3. 在`mouseup`上: 执行与完成的拖放相关的所有行为
+```js
+// 拖放一个球的实现代码
+let ball = document.getElementById("ball");
+
+ball.onmousedown = function(event) {
+    
+    // 让ball成为body的子元素
+    document.body.append(ball);
+
+    // 这样就能够基于body绝对定位
+    ball.style.position = "absolute";
+    // 确保ball永远在最上面
+    ball.style.zIndex = 1000;
+
+    // 调整球的中心
+    let shiftX = event.clientX - ball.getBoundingClientRect().left;
+    let shiftY = event.clientY - ball.getBoundingClientRect().top;
+
+    function moseAt(pageX, pageY) {
+    ball.style.left = pageX - shiftX + "px";
+    ball.style.top = pageY - shiftY + "px";
+    } 
+
+    // 点击时，将球移动到指针下方
+    moseAt(event.pageX, event.pageY);
+
+    function onMouseMove(event) {
+    moseAt(event.pageX, event.pageY);
+    }
+    
+    // 拖拽时，让球随着指针移动
+    ball.addEventListener('mousemove', onMouseMove);
+
+    // 放下球时，移除不必要的事件
+    document.onmouseup = function() {
+    ball.removeEventListener('mousemove', onMouseMove);
+    ball.onmouseup = null;
+    }
+};
+
+// 禁止一个拖拽事件，在onmouseup之后球会一直跟着鼠标移动
+ball.ondragstart = function() {
+    return false;
+};
+
+// 为什么当我快速移动鼠标后，球会停住？而不是继续随着鼠标移动？
+```
