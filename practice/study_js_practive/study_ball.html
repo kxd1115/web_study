@@ -27,7 +27,7 @@
             // 将ball添加到body中, 让ball相对body进行定位
             document.body.append(ball);
 
-            // 修真定位, 在鼠标点击的位置是球的非中心时，不移动球
+            // 修正定位, 在鼠标点击的位置是球的非中心时，不移动球
             let ballCoords = ball.getBoundingClientRect()
             shiftX = event.clientX - ballCoords.left;
             shiftY = event.clientY - ballCoords.top;
