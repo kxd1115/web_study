@@ -10263,50 +10263,36 @@ let event = new Event(type[, options]);
 1. 在`mousedown`上: 根据需要准备移动的元素
 2. 在`mousemove`上: 通过更改`position: absolute`情况下的`left/top`来移动它
 3. 在`mouseup`上: 执行与完成的拖放相关的所有行为
-```js
-// 拖放一个球的实现代码
-let ball = document.getElementById("ball");
 
-ball.onmousedown = function(event) {
-    
-    // 让ball成为body的子元素
-    document.body.append(ball);
 
-    // 这样就能够基于body绝对定位
-    ball.style.position = "absolute";
-    // 确保ball永远在最上面
-    ball.style.zIndex = 1000;
+## 指针事件
+指针事件是为了适应其他输入设备而诞生的现代化解决方案（鼠标，触控笔，触控屏幕等）
 
-    // 调整球的中心
-    let shiftX = event.clientX - ball.getBoundingClientRect().left;
-    let shiftY = event.clientY - ball.getBoundingClientRect().top;
+### 指针事件类型
+命名基本和鼠标事件类似
+* `pointerdown`
+* `pointerup`
+* 后缀和鼠标事件一致...
+* 额外多了3个
+  * `pointercancel`
+  * `pointercapture`
+  * `lostpointercature`
+### 指针事件属性
+拥有和鼠标事件完全相同的属性
+* 额外的其他属性
+  * `pointerId`: 触发当前事件的指针唯一标识符
+  * `pointerType`: 指针设备类型
+  * `isPrimary`: 当前指针为首要指针(多点触控时，按下的第一根手指)时为true
+* `width`: 指针接触设备区域的宽度
+* `height`: 指针接触设备区域的长度
+* `presure`: 触摸压力(0~1之间的浮点数)
+* `tangentialPressure`: 归一化后的切向压力
+* `tilX, tilY, twist`: 用于描述触控笔和屏幕表面的相对位置
 
-    function moseAt(pageX, pageY) {
-    ball.style.left = pageX - shiftX + "px";
-    ball.style.top = pageY - shiftY + "px";
-    } 
+### 多点触控
 
-    // 点击时，将球移动到指针下方
-    moseAt(event.pageX, event.pageY);
 
-    function onMouseMove(event) {
-    moseAt(event.pageX, event.pageY);
-    }
-    
-    // 拖拽时，让球随着指针移动
-    ball.addEventListener('mousemove', onMouseMove);
+### 事件: pointercancel
+将会在一个正处于活跃状态的指针交互由于某些原因被中断时触发。
 
-    // 放下球时，移除不必要的事件
-    document.onmouseup = function() {
-    ball.removeEventListener('mousemove', onMouseMove);
-    ball.onmouseup = null;
-    }
-};
-
-// 禁止一个拖拽事件，在onmouseup之后球会一直跟着鼠标移动
-ball.ondragstart = function() {
-    return false;
-};
-
-// 为什么当我快速移动鼠标后，球会停住？而不是继续随着鼠标移动？
-```
+### 指针捕获
