@@ -10296,3 +10296,78 @@ let event = new Event(type[, options]);
 将会在一个正处于活跃状态的指针交互由于某些原因被中断时触发。
 
 ### 指针捕获
+
+## 键盘: keydown和keyup
+当鼠标按下时，触发`keydown`事件，弹起时，触发`keyup`事件。
+
+### `event.code`和`event.key`
+```js
+function keyboard(event) {
+  console.log(event.code, event.key);
+}
+document.addEventListener('keydown', keyboard);
+// event.code: KeyZ
+// event.key: z
+```
+> 注意大小写
+
+#### 自动重复
+当按下一个按键够长时间，`keydown`会被一次又一次的重复触发
+
+### 默认行为
+```html
+<script>
+function checkPhoneKey(key) {
+  return (key >= '0' && key <= '9') ||
+    ['+','(',')','-','ArrowLeft','ArrowRight','Delete','Backspace'].includes(key);
+    // 放款阻止输入的条件
+}
+</script>
+<input onkeydown="return checkPhoneKey(event.key)" placeholder="Phone, please" type="tel">
+```
+### 作业
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>practice</title>
+</head>
+<body>
+  <script>
+    runOnKeys(
+      () => alert("Hello!"),
+      "KeyQ",
+      "KeyW"
+    );
+    
+    function runOnKeys(func, ...args) {
+      let pressed = new Set();
+      let arr = args;
+
+      document.addEventListener('keydown', function(event) {
+          pressed.add(event.code);
+
+          // 检查pressed中是否包含条件中的按键
+          for (let arg of args) {
+            if (!pressed.has(arg)) return;
+          }
+
+          // 执行完成后清空set
+          pressed.clear();
+
+          // 执行条件1中的函数
+          func();
+        }
+      );
+      
+      // 松下按键时，删除code
+      document.addEventListener('keyup', function(event) {
+        pressed.delete(event.code);
+      });
+    };
+  </script>
+</body>
+</html>
+```
