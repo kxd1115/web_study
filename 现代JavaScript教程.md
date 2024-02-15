@@ -9162,8 +9162,158 @@ elem.addEventListener("click", handler);
 </html>
 ```
 
-### 作业
+### 作业3
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/study_css_html/index.css">
+    <style>
+        .arrow {
+            padding: 0;
+            background: #ddd;
+            border-radius: 15px;
+            border: 1px solid gray;
+            font-size: 24px;
+            line-height: 24px;
+            color: #444;
+            display: block;
+            position: absolute;
+        }
+        .start {
+            left: 5px;
+            top: 63px;
+        }
+        .end {
+            right: 5px;
+            top: 63px;
+        }
+        .arrow:focus {
+            outline: none;
+        }
 
+        .arrow:hover {
+            background: #ccc;
+            cursor: pointer;
+        }
+
+        .gallery {
+            width: 390px;
+            height: 130px;
+            overflow: hidden; /* 超出的部分隐藏 */
+            top: 10px;
+            left: 30px;
+            position: relative;
+        }
+
+        ul {
+            height: 130px;
+            width: 9999px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 0;
+            position: absolute;
+            transition: margin-left 250ms; /* 动画效果 */
+        }
+
+        ul img {
+            width: 130px;
+            height: 130px;
+            display: block; /* removes extra space near images */
+        }
+
+        ul li {
+            display: inline-block; /* removes extra space between list items*/
+        }
+
+        .box {
+            width: 450px;
+            height: 150px;
+            background-color: #ddd;
+            border-radius: 1em;
+            border: 1px solid rgb(168, 166, 166);
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <!-- create your markup and styles -->
+
+    <div class="box">
+        <button class="arrow start">⇦</button>
+        <div class="gallery">
+            <ul>
+                <li><img src="https://en.js.cx/carousel/1.png"></li>
+                <li><img src="https://en.js.cx/carousel/2.png"></li>
+                <li><img src="https://en.js.cx/carousel/3.png"></li>
+                <li><img src="https://en.js.cx/carousel/4.png"></li>
+                <li><img src="https://en.js.cx/carousel/5.png"></li>
+                <li><img src="https://en.js.cx/carousel/6.png"></li>
+                <li><img src="https://en.js.cx/carousel/7.png"></li>
+                <li><img src="https://en.js.cx/carousel/8.png"></li>
+                <li><img src="https://en.js.cx/carousel/10.png"></li>
+            </ul>
+        </div>
+        <button class="arrow end">⇨</button>
+    </div>
+
+
+
+    <script>
+        // label the images to visually track them, just for convenience,
+        // this code can be removed
+        let box = document.getElementById("box");
+        let list = document.querySelector("ul");
+        let listElems = list.querySelectorAll("li");
+        
+        let i = 1;
+        for (let li of listElems) {
+            li.style.position = 'relative';
+            li.insertAdjacentHTML(
+                "beforeend", 
+                `<span style="position:absolute; left:0; top:0;">${i}</span>`
+            );
+            i++;
+        }
+
+        let width = 130;
+        let count = 3;
+        let position = 0;
+
+        // 点击的时候修改margin-left的值
+        document.querySelector(".start").onclick = function() {
+            position += width * count;
+            if (position>0) {
+                position = -width * (listElems.length - count)
+            }
+            position = Math.min(position, 0);
+            list.style.marginLeft = position + "px";
+        }
+
+        function end() {
+            position -= width * count;
+            if (position<= -width * listElems.length) {
+                position = 0;
+            }
+            position = Math.max(position, -width * (listElems.length - count));
+            list.style.marginLeft = position + "px";
+        }
+        document.querySelector(".end").addEventListener("click", end);
+
+        // 每2s自动滚动
+        setInterval(() => {
+            end();
+        }, 2000);
+
+    </script>
+</body>
+</html>
+```
 
 
 ## 冒泡和捕获
@@ -9219,3 +9369,6 @@ elem.addEventListener(..., true);
 ```js
 elem.removeEventListener(..., true);
 ```
+
+## 事件委托
+
