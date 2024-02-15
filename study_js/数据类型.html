@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据类型</title>
+
+    <script>
+        let text = "This is the letter sigma: \u03a3.";
+        console.log(text);
+        console.log(text.length);
+
+        let age = 11;
+        let ageAsString = age.toString();
+        console.log(ageAsString, typeof ageAsString);
+
+        let value1 = null;
+        let value2;
+        console.log(String(value1));
+        console.log(String(value2));
+
+        let pageHTML = `
+        <div>
+            <a href="#">
+            <span>Jake</span>
+        </div>`;
+        console.log(pageHTML);
+
+        let value = 5;
+        let exponet = 'second';
+        // 以前是这样进行字符串插值
+        let interpolatedString = 
+            value + ' to the ' + exponet + ' power is ' + (value*value);
+        console.log(interpolatedString);          // 5 to the second power is 25
+
+        // 现在可以使用模版字面量进行插值
+        let interpolatedTemplateLiteral = 
+            `${value} to the ${exponet} power is ${value * value}`;
+        console.log(interpolatedTemplateLiteral); // 5 to the second power is 25
+
+        console.log(`\u00A9`);           // ©
+        console.log(String.raw`\u00A9`); // \u00A9
+
+        let a = 6;
+        let b = 9;
+
+        function zipTag(strings, ...expressions) {
+            return strings[0] + expressions.map( (e, i) => `${e}${strings[i + 1]}` ).join('');
+        }
+
+        let untaggedResult = `${a} + ${b} = ${a + b}`;
+        console.log(untaggedResult); // 6+9=15
+
+        let taggedResult = zipTag`${a} + ${b} = ${a + b}`;
+        console.log(taggedResult);   // 6+9=15
+
+        let sym = Symbol();
+        console.log(typeof sym);
+
+        let fooGlobalSymbol = Symbol.for('foo');      // 创建新符号
+        console.log(fooGlobalSymbol, typeof fooGlobalSymbol); // Symbol('foo') symbol
+
+        let otherFooGlobalSymbol = Symbol.for('foo'); // 重用已有符号
+        console.log(fooGlobalSymbol === otherFooGlobalSymbol); //true
+
+        console.log(Symbol.keyFor(fooGlobalSymbol));
+
+        let s1=Symbol('foo'), s2=Symbol('bar'), s3=Symbol('baz'), s4=Symbol('qux');
+        let o = {
+            [s1] : 'foo val'
+        };
+        console.log(o); // Symbol(foo): "foo val"
+
+        let age1 = 29;
+        ++age1  // 相当于 age1 = age1 + 1
+        console.log(age1) // 30
+        --age1  // 相当于 age1 = age1 - 1
+        console.log(age1) // 29
+
+
+        let num1 = 2;
+        let num2 = 20;
+        let num3 = num1-- + num2;
+        let num4 = num1 + num2;
+        console.log(num3); // 22
+        console.log(num4); // 21
+
+        let num5 = 25;
+        let num6 = ~num5;
+        console.log(num6);
+
+        let result = 25 ^ 3;
+        console.log(result); // 1
+
+        let oldValue = 25;
+        let newValue = oldValue << 5;
+        console.log(newValue); //800
+
+        let max = (newValue > oldValue) ? newValue : oldValue;
+        console.log(max);
+
+        let i = 20;
+        if (i > 25) {
+            console.log("Greater than 25."); 
+        } else if (i < 0) {
+            console.log("Less than 0.");
+        } else {
+            console.log("Less than or equal to 25.");
+        }
+
+        let j = 0;
+        do {
+            j += 2;
+            console.log(j);
+        } while (j < 30);
+        console.log("==========");
+        
+        let k = 0;
+        while (k < 10) {
+            k += 2;
+            console.log(k);
+        }
+        console.log("==========");
+        
+        let count = 10;
+        for (let i = 0; i < count; i++) {
+            console.log(i);
+        }
+        console.log("==========");
+
+        for (const el of [1,2,3,4,5,6]) {
+            document.write(el);
+        }
+
+        let num = 0;
+        for (let i = 1; i < 10; i++) {
+            if (i % 5 == 0)  {
+                // break;
+                // 当i除以5的余数是0时，则停止循环并结束循环
+                continue;
+                // 当i除以5的余数是0时，则跳过本次循环
+            }
+            console.log(i);
+            num ++;
+        }
+        console.log(num);
+
+        let i1 = 25;
+        switch(i1) {
+            case 25:
+                console.log("25");
+                break;
+            case 35:
+                console.log("35");
+                break;
+            case 45:
+                console.log("45");
+                break;
+            default:
+                console.log("Other")
+        }
+
+        
+
+
+        
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

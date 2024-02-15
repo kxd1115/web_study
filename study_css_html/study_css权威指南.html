@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>权威指南速览</title>
+
+    <style>
+        nav {
+            display: flex;
+            border-bottom: 1px solid #bfbfbf;
+        }
+        a {
+            text-decoration: none;
+            color: aliceblue;
+            font-size: 12px;
+            line-height: 25px;
+            padding: 2px 8px;
+            margin: 0 6px;
+
+            background-color: rgb(23, 122, 122);
+            border-radius: 4px 4px 0 0;
+        }
+
+        a:hover {
+            background-color: rgb(31, 192, 192);
+        }
+        a.acitve {
+            order: -1;
+        }
+
+        .grid_box1 {
+            height: 500px;
+            width: 1000px;
+            background-color: #bfbfbf;
+            margin: 20px;
+            display: grid;
+            grid-template-columns: repeat(20, 5%);
+            grid-template-rows: 10% 10% [col-c] 10% 20% 20% [col-a] 20% [col-c] 10%;
+        }
+        .grid_box1 .one {
+            background-color: aqua;
+            background-color: aqua;
+            grid-column: 2 / span 2;
+            grid-row: 2 / span col-c 1;
+        }
+        .grid_box1 .two {
+            background-color: aquamarine;
+            grid-column-start: 5;
+            grid-column-end: 6;
+            grid-row-start: 1;
+            grid-row-end: 2;
+        }
+        .grid_box1 .three {
+            background-color: bisque;
+            grid-area: 3/4/5/6;
+        }
+
+        .grid_box2 {
+            height: 200px;
+            width: 600px;
+            background-color: blueviolet;
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 60px;
+            /*
+            grid-template-rows: 100px 100px;
+            grid-template-columns: repeat(5 20%);
+            */
+        }
+        .grid_box2 {
+            list-style: none;
+            text-align: center;
+            color: #bfbfbf;
+        }
+
+        button {
+            color: magenta;
+            transition: color 200ms ease-in 50ms;
+        }
+        button:hover {
+            color: rebeccapurple;
+            transition: color 200ms ease-in 50ms;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+        nav li ul {
+            transition-property: transform;
+            transition-duration: 200ms;
+            transition-timing-function: ease-in;
+            transition-delay: 50ms;
+            transform: scale(1,0);
+            transform-origin: top center;
+        }
+        nav li:hover ul {
+            transform: scale(1,1);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="">Home</a>
+        <a href="">About</a>
+        <a href="">Blog</a>
+        <a href="" class="acitve">Careers</a>
+        <a href="">Contact Us</a>
+    </nav>
+
+    <div class="grid_box1">
+        <div class="one"></div>
+        <div class="two"></div>
+        <div class="three"></div>
+    </div>
+
+    <div class="grid_box2">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>5</li>
+        <li>6</li>
+        <li>7</li>
+        <li>8</li>
+        <li>9</li>
+        <li>10</li>
+        <li>11</li>
+    </div>
+    <button>按一下</button>
+    <nav>
+        <ul>
+            <li>About</li>
+            <li>Posts
+                <ul>
+                    <li>CSS3</li>
+                    <li>JavaScript</li>
+                    <li>HTML5</li>
+                    <li>SEO</li>
+                </ul>
+            </li>
+            <li>Topics</li>
+            <li>Events</li>
+        </ul>
+    </nav>
+</body>
+</html>

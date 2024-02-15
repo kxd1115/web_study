@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>变量作用域</title>
+
+    <script>
+        function addTen(num) {
+            num += 10;
+            return num;
+        }
+
+        let count = 20;
+        let result = addTen(count);
+        console.log(count);
+        console.log(result);
+
+        function setName(obj) {
+            obj.name = "Dennis";
+        }
+        person = new Object();
+        setName(person);
+        console.log(person.name); // Dennis
+        
+        function setName(obj) {
+            obj.name = "Dennis";
+
+            obj = new Object();
+            obj.name = "May";
+        }
+        person = new Object();
+        setName(person);
+        console.log(person.name); // Dennis
+
+        var color = "blue";
+
+        function changeColor() {
+            let anotherColor = "red";
+
+            function swapColors() {
+                let tempColor = anotherColor;
+                anotherColor = color;
+                color = tempColor;
+                // 这里能访问 tempColor、anotherColor、color
+            }
+            swapColors(); 
+            // 这里能访问变量anotherColor、color
+        }
+        changeColor(); // 这里只能访问变量color
+
+        function buildUrl() {
+            let qs = "?debug=true";
+
+            with(location) {
+                let url = href + qs;
+            }
+
+            return url;
+        }
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

@@ -9372,3 +9372,1005 @@ elem.removeEventListener(..., true);
 
 ## 事件委托
 
+
+### 委托示例: 标记中的行为
+```js
+let menu = document.getElementById("menu");
+
+class Menu {
+    constructor(elem) {
+        this._elem = elem;
+        // 通过bind方法，将this指定为当前的按钮
+        elem.onclick = this.onClick.bind(this);
+    }
+
+    save() {
+        alert("saving");
+    }
+
+    load() {
+        alert("loading");
+    }
+
+    serach() {
+        alert("seraching");
+    }
+
+    onClick(event) {
+        // 获取elem的只读属性 data-action的内容
+        let action = event.target.dataset.action;
+        if (action) {
+            this[action]();
+        }
+    }
+}
+new Menu(menu);
+```
+
+### 行为模式
+使用事件委托将**行为**以**声明方式**添加到具有特殊特性和类的元素中
+1. 将自定义特性添加到描述其行为的元素
+2. 用文档范围级的处理程序追踪事件，如果事件发生在具有特定特性的元素上：则执行行为(action)
+
+#### 行为: 计数器
+```html
+<body>
+    Counter: <input type="button" value="1" data-counter>
+    Oner more counter: <input type="button" value="2" data-counter>
+    <script>
+        document.addEventListener('click', function(event) {
+            if (event.target.dataset.counter != undefined) {
+                // 如果这个元素存在data-counter特性，则执行
+                event.target.value++;
+            }
+        })
+    </script>
+</body>
+```
+> 对于文档级的处理程序，始终使用addEventListener
+
+#### 行为: 切换器
+```html
+<body>
+    <button data-toggle-id="subscription-mail">
+        Show the subscription form
+    </button>
+    <form id="subscription-mail" hidden>
+        Your mail: <input type="email" name="" id="">
+    </form>
+    <script>
+        document.addEventListener('click', function(event) {
+            let id = event.target.dataset.toggleId;
+            if (!id) return;
+
+            let elem = document.getElementById(id);
+
+            elem.hidden = !elem.hidden;
+        })
+    </script>
+</body>
+```
+
+### 作业
+```js
+// 作业1的JS解决方案
+document.addEventListener('click', function(event) {
+    if (event.target.className!="remove-button") return;
+    
+    // 找到距离最近的祖先div
+    let div = event.target.closest('div');
+    div.remove();
+})
+
+```
+```html
+<!-- 作业2 树形菜单 -->
+<style>
+    .tree span:hover {
+        font-weight: bold;
+    }
+    .tree span {
+        cursor: pointer;
+    }
+</style>
+<script>
+    let tree = document.getElementById("tree");
+
+    for (let li of tree.querySelectorAll("li")) {
+        let span = document.createElement("span");
+        li.prepend(span); // 在第一个子节点之前插入一个span
+        span.append(span.nextSibling); // 把文本移入span标签内部
+        // 这里是因为span标签具有有限的宽度
+    
+    }
+
+    tree.onclick = function(event) {
+        // 使用大写
+        if (event.target.tagName!="SPAN") return;
+
+        // 查看点击内容的父元素是否是ul，如果不是，则不工作
+        let childrenContainer = event.target.parentNode.querySelector("ul");
+        if (!childrenContainer) return;
+
+        // 如果是, 则改变状态
+        childrenContainer.hidden = !childrenContainer.hidden;
+    }
+
+</script>
+```
+```html
+<!-- 可排序的表格 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/study_css_html/index.css">
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 4px;
+      }
+      th {
+        cursor: pointer;
+      }
+      th:hover {
+        background: yellow;
+      }
+    </style>
+</head>
+<body>
+    <table id="grid">
+      <thead>
+        <tr>
+          <th data-type="number">Age</th>
+          <th data-type="string">Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>5</td>
+          <td>John</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Pete</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td>Ann</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Eugene</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Ilya</td>
+        </tr>
+      </tbody>
+    </table>
+    </table>
+    <script>
+      let table = document.getElementById("grid");
+
+      table.addEventListener('click', function(event) {
+
+        let th = event.target;
+
+        // 如果点击的单元格错误，则直接返回
+        if (th.tagName != 'TH') return;
+
+        sortGrid(th.cellIndex, th.dataset.type);
+
+      })
+
+      function sortGrid(colNum, type) {
+        
+        // 获取表格内容
+        let tbody = table.querySelector("tbody");
+
+        // 将表格身体中的行转换为数组
+        let rowsArray = Array.from(tbody.rows);
+
+        let compare;
+
+        switch(type) {
+          case 'number':
+            // 如果是数值，则直接获取差值，方便排序
+            compare = function(rowA, rowB) {
+              return rowA.cells[colNum].innerHTML - rowB.cells[colNum].innerHTML;
+            };
+            break;
+          case 'string':
+            // 如果是string, 则转换为1，-1, 方便后续排序
+            compare = function(rowA, rowB) {
+              return rowA.cells[colNum].innerHTML > rowB.cells[colNum].innerHTML ? 1 : -1;
+            };
+            break;
+        }
+
+        // 根据compare值进行排序
+        /*
+        这里可以理解为
+        rowsArray.sort((rowA, rowB) => {
+          // 视type类型进行返回不同值
+          rowA.cells[colNum].innerHTML - rowB.cells[colNum].innerHTML;
+          // OR
+          return rowA.cells[colNum].innerHTML > rowB.cells[colNum].innerHTML ? 1 : -1;
+        })
+        */ 
+        rowsArray.sort(compare); 
+
+        // 排序好的结果重新导入表格
+        tbody.append(...rowsArray);
+      }
+      
+    </script>
+</body>
+</html>
+```
+```html
+<!-- 工具提示行为 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/study_css_html/index.css">
+    <style>
+      body {
+        height: 2000px;
+        /* make body scrollable, the tooltip should work after the scroll */
+      }
+
+      .tooltip {
+        /* some styles for the tooltip, you can use your own instead */
+        position: fixed;
+        padding: 10px 20px;
+        border: 1px solid #b3c9ce;
+        border-radius: 4px;
+        text-align: center;
+        font: italic 14px/1.3 sans-serif;
+        color: #333;
+        background: #fff;
+        box-shadow: 3px 3px 3px rgba(0, 0, 0, .3);
+      }
+      p {
+        z-index: 1;
+        display: block;
+      }
+    </style>
+</head>
+<body>
+  <p>LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa</p>
+  <p>LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa LaLaLa</p>
+  <button data-tooltip="the tooltip is longer than the element">Short button</button>
+  <button data-tooltip="HTML<br>tooltip">One more button</button>
+
+  <p>Scroll the page to make buttons appear on the top, check if the tooltips show up correctly.</p>
+  <script>
+      // 获取按钮元素的列表
+      let buttonList = document.querySelectorAll("button");
+
+      
+
+      // 设置一个盒子接收提示信息
+      let div = document.createElement("div");
+
+      for (let button of buttonList) {
+
+        button.addEventListener('mouseover', function(event) {
+          // 获取button的left
+          buttonCoords = button.getBoundingClientRect();
+          
+
+          // 将div添加进body
+          document.body.prepend(div);
+          // 设置div的风格
+          div.className='tooltip'
+          
+          // 设置文本内容
+          div.innerHTML = event.target.dataset.tooltip;
+          
+          // 设置div的top和left
+          divCoords = div.getBoundingClientRect();
+          
+          // 上方也需要判断
+          let top = buttonCoords.top - div.offsetHeight - 5;
+          if (top<0) {
+            top = buttonCoords.top + button.offsetHeight + 5;
+          }
+          
+          // 判断左侧是否有足够距离让元素居中展示
+          let left = buttonCoords.left + (button.offsetWidth - div.offsetWidth)/2
+          if (left<0) left = 5;
+
+          div.style.top = top + "px";
+          div.style.left = left + "px";
+
+        })
+
+        button.addEventListener('mouseout', function(event) {
+          div.remove()
+        })
+
+      }
+  </script>
+</body>
+</html>
+```
+
+## 浏览器默认行为
+
+### 阻止浏览器行为
+
+两种方式
+
+1. 使用`event`对象。`event.preventDefault()`方法
+2. `on<event>`返回`false`
+
+```html
+<a href="/" onclick="return false">Click here</a>
+OR
+<a href="/" onclick="event.preventDefault()">here</a>
+```
+
+#### 示例: 菜单
+
+* 菜单选项一般使用`<a>`标签实现，这样可以用右键单击新窗口打开链接，但使用`<button>`或者`<span>`则不行
+
+```html
+<ul id="menu" class="menu">
+    <li><a href="/html">HTML</a></li>
+    <li><a href="/javascript">JavaScript</a></li>
+    <li><a href="/css">CSS</a></li>
+</ul>
+<script>
+    let menu = document.getElementById("menu");
+
+    menu.onclick = function(event) {
+        if (event.target.tagName != "A") return;
+
+        // 返回href属性的值
+        let href = event.target.getAttribute('href');
+        alert(href);
+
+        // 禁止浏览器的自动跳转
+        return false;
+    }
+</script>
+```
+
+### 处理程序选项`passive`
+
+```js
+addEventListener()
+// 可选项: passive: true
+// 向浏览器发出信号，表明处理程序不会调用preventDefault()
+```
+
+### event.defaultPrevented
+
+当默认行为被阻止，该属性为true，否则为false
+
+* 在某些情况替代**停止冒泡**，告诉其他事件处理程序，该事件已经被处理
+
+```html
+<button>Right-click shows browser context menu</button>  
+<button oncontextmenu="alert('Draw our menu'); return false">
+    Right-click shows our context menu
+    <!--代替默认的鼠标右键事件-->
+</button>
+```
+
+```html
+<p>Right-click for the document menu (added a check for event.defaultPrevented)</p>
+<button>Right-click shows browser context menu</button>  
+<script>
+    let button = document.querySelector("button");
+    button.oncontextmenu = function(event) {
+        // 阻止浏览器的默认行为
+        event.preventDefault();
+        // 用该事件代替
+        alert("Button context menu");
+    }
+    document.oncontextmenu = function(event) {
+        // 是否阻止了浏览器的默认行为？如果阻止，则直接返回
+        // 该参数在当浏览器阻止了默认行为，会变成true，否则就是false
+        if (event.defaultPrevented) return;
+
+        // 阻止浏览器的默认行为
+        event.preventDefault();
+        // 用该事件代替
+        alert("Doucement context menu");
+    }
+</script>
+```
+
+### 作业
+
+```html
+<fieldset id="contents">
+<legend>#contents</legend>
+<p>
+    How about to read <a href="https://wikipedia.org">Wikipedia</a> or visit <a href="https://w3.org"><i>W3.org</i></a> and learn about modern standards?
+</p>
+</fieldset> 
+<script>
+    let content = document.getElementById("contents");
+
+    content.onclick = function(event) {
+
+        function handleLink(href) {
+            let value = confirm(`Are you sure leave for ${href}?`);
+            if (!value) return false;
+        }
+
+        // 获取距离当前元素最近的祖先元素a，也可以是自身
+        let target = event.target.closest("a");
+
+        if (target && content.contains(target)) {
+            // node.contains() 用来判断当前节点是否是给定节点的后代
+            return handleLink(target.getAttribute("href"))
+        }
+
+    }
+</script>
+```
+
+```html
+<!-- 图册 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font: 75%/120% sans-serif;
+      }
+
+      #largeImg {
+        border: solid 1px #ccc;
+        width: 550px;
+        height: 400px;
+        padding: 5px;
+      }
+
+      #thumbs a {
+        border: solid 1px #ccc;
+        width: 100px;
+        height: 100px;
+        padding: 3px;
+        margin: 2px;
+        float: left;
+      }
+
+      #thumbs a:hover {
+        border-color: #FF9900;
+      }
+
+      #thumbs li {
+        list-style: none;
+      }
+
+      #thumbs {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+</head>
+<body>
+  <p><img id="largeImg" src="https://en.js.cx/gallery/img1-lg.jpg" alt="Large image"></p>
+
+  <ul id="thumbs">
+    <!-- the browser shows a small built-in tooltip on hover with the text from "title" attribute -->
+    <li>
+      <a href="https://en.js.cx/gallery/img2-lg.jpg" title="Image 2"><img src="https://en.js.cx/gallery/img2-thumb.jpg"></a>
+    </li>
+    <li>
+      <a href="https://en.js.cx/gallery/img3-lg.jpg" title="Image 3"><img src="https://en.js.cx/gallery/img3-thumb.jpg"></a>
+    </li>
+    <li>
+      <a href="https://en.js.cx/gallery/img4-lg.jpg" title="Image 4"><img src="https://en.js.cx/gallery/img4-thumb.jpg"></a>
+    </li>
+    <li>
+      <a href="https://en.js.cx/gallery/img5-lg.jpg" title="Image 5"><img src="https://en.js.cx/gallery/img5-thumb.jpg"></a>
+    </li>
+    <li>
+      <a href="https://en.js.cx/gallery/img6-lg.jpg" title="Image 6"><img src="https://en.js.cx/gallery/img6-thumb.jpg"></a>
+    </li>
+  </ul>
+  <script>
+    let thumbs = document.getElementById("thumbs");
+    let largeImg = document.getElementById("largeImg");
+    
+    thumbs.onclick = function(event) {
+
+      let tag = event.target.closest("a");
+      if (tag) {
+        // 阻止默认事件
+        event.preventDefault();
+
+        // 用自定义事件替代
+        largeImg.setAttribute("src", tag.getAttribute("href"));
+
+      }
+
+    }
+  </script>
+</body>
+</html>
+```
+
+## 创建自定义事件
+
+
+### 事件构造器
+
+根据内建的`Event`类创建
+
+```js
+let event = new Event(type[, options]);
+```
+
+* type 事件类型
+* options 具有两个可选属性的对象
+  * bubbles: true/false → 如果为true, 事件会冒泡
+  * cancelable: true/false → 如果为true, 默认行为会被阻止
+  * 默认情况下，以上2者都为false
+
+### dispatchEvent
+在事件对象被创建后，使用`elem.dispatchEvent(event)`调用并运行
+
+
+### 冒泡示例
+
+创建一个事件，并允许冒泡
+
+```html
+<h1 id="elem">Hello from the script!</h1>
+<script>
+    document.addEventListener("hello", function(event) {
+        alert("hello from " + event.target.tagName);
+    });
+
+    // 允许冒泡
+    let event = new Event("hello", {bubbles: true});
+
+    let elem = document.getElementById("elem");
+    elem.dispatchEvent(event); // hello from H1
+</script>
+```
+
+### MouseEvent, KeyboardEvent及其他
+
+一些其他事件对象
+
+* UIEvent
+* FocusEvent
+* MouseEvent
+* WheelEvent
+* KeyboardEvent
+  ...
+  当需要创建这些事件时，不使用`new Event`而是使用`new UIEvent`等
+* 与`new Event`不同的是，他们的`options`可选属性对象不仅仅局限于`bubbles`和`cancelable`
+
+### 自定义事件
+
+一些我们自己自定义的全新事件类型, 应该使用`new CustomEvent`
+
+* 额外提供一个特殊的字段
+  * detail 可以传递任何自定义信息
+
+### event.preventDefault()
+
+
+### 事件中的事件时同步的
+
+如果在一个事件中嵌套了另一个事件，那么该事件会被立即处理
+
+---
+
+# UI事件
+
+## 鼠标事件
+
+
+### 鼠标事件类型
+* `mousedown/mouseup`
+  * 点击/释放按钮
+* `mouseover/mouseout`
+  * 指针从元素上移入/移出
+* `mousemove`
+  * 鼠标在元素上移动时触发
+* `click`
+  * 点击鼠标左键
+  * 在`mousedown/mouseup`之后触发
+* `dbclick`
+  * 同一时间内双击某个元素（现在使用较少）
+* `contextmenu`
+  * 按下鼠标右键时触发
+  
+### 事件顺序
+例如: 按下鼠标左键`mousedown` → 释放鼠标左键`mouseup` → `click`事件
+
+### 鼠标按钮
+点击相关属性`event.button`
+  * 不同按键触发后，有不同的对应数值
+  
+### 组合键: shift, alt, ctrl, meta
+对应的事件属性
+* `shiftKey`: Shift
+* `altKey`: Alt
+* `ctrlKey`: Ctrl
+* `metaKey`: Mac的`Cmd`
+在对应事件期间按下相应按键，则会返回`true`
+```html
+<button id="button">Alt+Shift+Click on me!</button>
+
+<script>
+    let button = document.getElementById("button") ;
+    button.onclick = function(event) {
+        if (event.altKey && event.shiftKey) {
+        alert("Hooray!");
+        }
+    };
+</script>
+```
+
+### 坐标: clientX/Y, pageX/Y
+* 相对于窗口的坐标: clientX/Y
+* 相对于文档的坐标: pageX/Y
+```html
+<input onmousemove="this.value=event.clientX+':'+event.clientY" value="Mouse over me">
+```
+
+> 防止复制
+> 使用`oncopy`事件
+
+### 作业
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <style>
+        .selected {
+          background: #0f0;
+        }
+
+        li {
+          cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+  Click on a list item to select it.
+  <br>
+
+  <ul id="ul">
+    <li>Christopher Robin</li>
+    <li>Winnie-the-Pooh</li>
+    <li>Tigger</li>
+    <li>Kanga</li>
+    <li>Rabbit. Just rabbit.</li>
+  </ul>
+
+  <script>
+    // ...your code...
+    let ul = document.getElementById("ul");
+
+    ul.onclick = function(event) {
+      let li = event.target;
+
+      if (li.tagName!="LI") return;
+
+      if (event.ctrlKey || event.metaKey) {
+        // 如果有就移除，否则添加
+        li.classList.toggle('selected');
+      } else {
+        // 找到其他所有类名称selected的li
+        let selected = ul.getElementsByClassName('selected');
+        // 遍历
+        for (let elem of selected) {
+          // 移除已有的
+          elem.classList.remove('selected');
+        }
+        // 为当前元素添加类名称
+        li.classList.add('selected');
+      }
+    }
+
+    ul.onmousedown = function() {
+      return false;
+    }
+  </script>
+</body>
+</html>
+```
+
+## 移动鼠标: mouseover/out, mouseenter/leave
+
+### 事件mouseover/mouseout, relatedTarget
+这些事件具有`relatedTarget`属性，是对`target`属性的补充
+* 对于`mouseover`
+  * `event.target`: 鼠标目前所在的那个元素
+  * `event.relatedTarget`: 鼠标之前所在的那个元素
+* 对于`mouseout`
+  * `event.target`: 鼠标离开的那个元素
+  * `event.relatedTarget`: 鼠标目前所在的那个元素
+> 当relatedTarget是nul时，意味着鼠标来自窗口之外，或者它离开了窗口
+
+### 跳过元素
+* 鼠标移动时会触发`mousemove`事件
+
+> mouseover触发，就一定会有mouseout
+
+
+### 移动到子元素时mouseout
+在移动到元素的后代时，也能触发`mouseout`
+
+
+### 事件mouseenter/mouseleave
+与mouseover/mouseout的区别
+1. 在元素内部与后代之间的转换，不会被记录
+2. `mouseenter/mouseleave`不会冒泡
+
+
+### 事件委托
+由于`mouseenter/mouseleave`不会冒泡，在进行事件委托时选用`mouseover/mouseout`
+
+
+### 作业
+
+```html
+<!--作业1-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style/style.css">
+    <style>
+      body {
+        height: 2000px;
+        /* 在页面滚动后，工具提示也应该正常展示 */
+      }
+
+      .tooltip {
+        position: fixed;
+        z-index: 100;
+
+        padding: 10px 20px;
+
+        border: 1px solid #b3c9ce;
+        border-radius: 4px;
+        text-align: center;
+        font: italic 14px/1.3 sans-serif;
+        color: #333;
+        background: #fff;
+        box-shadow: 3px 3px 3px rgba(0, 0, 0, .3);
+      }
+
+      #house {
+        margin-top: 50px;
+        width: 400px;
+        border: 1px solid brown;
+      }
+
+      #roof {
+        width: 0;
+        height: 0;
+        border-left: 200px solid transparent;
+        border-right: 200px solid transparent;
+        border-bottom: 20px solid brown;
+        margin-top: -20px;
+      }
+
+      p {
+        text-align: justify;
+        margin: 10px 3px;
+      }
+    </style>
+</head>
+<body>
+  <div data-tooltip="这是房子的内部" id="house">
+    <div data-tooltip="这里是屋顶" id="roof"></div>
+
+    <p>从前有一个猪妈妈，她养了三只小猪。</p>
+
+    <p>三只小猪长得很快快，妈妈对它们说：“你们太大了，不能住在这里了，你们自己去盖房子吧，但要小心不要让狼抓到你们。”</p>
+
+    <p>三只小猪出发了。 “我们会注意不要让狼抓住我们，”他们说。</p>
+
+    <p>很快，它们遇到了一个男人。<a href="https://en.wikipedia.org/wiki/The_Three_Little_Pigs" data-tooltip="继续阅读...">鼠标悬浮在我上</a></p>
+
+  </div>
+  <script>
+    let house = document.getElementById("house");
+    
+    let tooltip;
+    
+    house.onmouseover = function(event) {
+      
+      let box = event.target.closest('[data-tooltip]');
+      
+      if (!box) return;
+      
+      let div = document.createElement('div');
+      div.innerHTML = box.dataset.tooltip;
+      div.className = 'tooltip';
+      document.body.append(div);
+
+      // 设置div的位置
+      let boxCoords = box.getBoundingClientRect();
+      
+      let top = boxCoords.top - div.offsetHeight - 5;
+      if (top<0) {
+        top = boxCoords.top + box.offsetHeight + 5;
+      }
+      
+      let left = boxCoords.left + (box.offsetWidth - div.offsetWidth)/2
+      if (left<0) left = 5;
+      
+      div.style.top = top + "px";
+      div.style.left = left + "px";
+
+      tooltip = div;
+      
+    }
+    
+    house.onmouseout = function(event) {
+      
+      if (tooltip) {
+        tooltip.remove();
+        tooltip = false;
+      }
+    }
+    
+  </script>
+</body>
+</html>
+```
+
+```html
+<!-- 作业2 -->
+<!-- 好难啊！！这个作业后续来补充，先将其他内容看完 -->
+```
+
+## 鼠标拖放事件
+
+### 拖放算法
+基础步骤
+1. 在`mousedown`上: 根据需要准备移动的元素
+2. 在`mousemove`上: 通过更改`position: absolute`情况下的`left/top`来移动它
+3. 在`mouseup`上: 执行与完成的拖放相关的所有行为
+
+
+## 指针事件
+指针事件是为了适应其他输入设备而诞生的现代化解决方案（鼠标，触控笔，触控屏幕等）
+
+### 指针事件类型
+命名基本和鼠标事件类似
+* `pointerdown`
+* `pointerup`
+* 后缀和鼠标事件一致...
+* 额外多了3个
+  * `pointercancel`
+  * `pointercapture`
+  * `lostpointercature`
+### 指针事件属性
+拥有和鼠标事件完全相同的属性
+* 额外的其他属性
+  * `pointerId`: 触发当前事件的指针唯一标识符
+  * `pointerType`: 指针设备类型
+  * `isPrimary`: 当前指针为首要指针(多点触控时，按下的第一根手指)时为true
+* `width`: 指针接触设备区域的宽度
+* `height`: 指针接触设备区域的长度
+* `presure`: 触摸压力(0~1之间的浮点数)
+* `tangentialPressure`: 归一化后的切向压力
+* `tilX, tilY, twist`: 用于描述触控笔和屏幕表面的相对位置
+
+### 多点触控
+
+
+### 事件: pointercancel
+将会在一个正处于活跃状态的指针交互由于某些原因被中断时触发。
+
+### 指针捕获
+
+## 键盘: keydown和keyup
+当鼠标按下时，触发`keydown`事件，弹起时，触发`keyup`事件。
+
+### `event.code`和`event.key`
+```js
+function keyboard(event) {
+  console.log(event.code, event.key);
+}
+document.addEventListener('keydown', keyboard);
+// event.code: KeyZ
+// event.key: z
+```
+> 注意大小写
+
+#### 自动重复
+当按下一个按键够长时间，`keydown`会被一次又一次的重复触发
+
+### 默认行为
+```html
+<script>
+function checkPhoneKey(key) {
+  return (key >= '0' && key <= '9') ||
+    ['+','(',')','-','ArrowLeft','ArrowRight','Delete','Backspace'].includes(key);
+    // 放款阻止输入的条件
+}
+</script>
+<input onkeydown="return checkPhoneKey(event.key)" placeholder="Phone, please" type="tel">
+```
+### 作业
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>practice</title>
+</head>
+<body>
+  <script>
+    runOnKeys(
+      () => alert("Hello!"),
+      "KeyQ",
+      "KeyW"
+    );
+    
+    function runOnKeys(func, ...args) {
+      let pressed = new Set();
+      let arr = args;
+
+      document.addEventListener('keydown', function(event) {
+          pressed.add(event.code);
+
+          // 检查pressed中是否包含条件中的按键
+          for (let arg of args) {
+            if (!pressed.has(arg)) return;
+          }
+
+          // 执行完成后清空set
+          pressed.clear();
+
+          // 执行条件1中的函数
+          func();
+        }
+      );
+      
+      // 松下按键时，删除code
+      document.addEventListener('keyup', function(event) {
+        pressed.delete(event.code);
+      });
+    };
+  </script>
+</body>
+</html>
+```
+
+## 滚动
+`scroll`事件允许对页面或元素滚动做出反应

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>slider</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="slider" class="slider">
+        <div class="thumb"></div>
+    </div>
+
+    <script>
+        // ...your code...
+        let thumb = document.querySelector(".thumb");
+        let slider = document.getElementById("slider");
+
+        thumbCoordsStart = thumb.getBoundingClientRect();
+        sliderCoords = thumb.getBoundingClientRect();
+        
+        thumb.onmousedown = function(event) {
+            
+            // 设置绝对定位
+            thumb.style.position = "absolute";
+            document.body.append(thumb);
+            
+            // 设置位置
+            let thumbCoords = thumb.getBoundingClientRect();
+            shiftX = event.clientX - thumbCoords.left;
+            // 保持顶部距离不变
+            thumb.style.top = thumbCoordsStart.top + "px";
+            
+            
+            function onMouseMove(event) {
+                // 滑动鼠标时，左右移动
+                thumb.style.left = event.pageX - shiftX + "px";
+
+                // 控制移动范围，不能超出滑动条
+                if (event.pageX - shiftX <= slider.offsetLeft) {
+                    thumb.style.left = slider.offsetLeft + "px";
+                };
+                if (event.pageX - shiftX >= slider.offsetLeft + slider.offsetWidth - thumb.offsetWidth) {
+                    thumb.style.left = slider.offsetLeft + slider.offsetWidth - thumb.offsetWidth + "px";
+                }
+            };
+
+            document.addEventListener("mousemove", onMouseMove);
+            
+            document.onmouseup = function() {
+                document.removeEventListener("mousemove", onMouseMove);
+                document.onmouseup = null;
+            }
+
+        };
+
+        thumb.ondragstart = function() {
+            return false
+        }
+
+    </script>
+</body>
+</html>

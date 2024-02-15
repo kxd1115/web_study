@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>集合引用类型</title>
+
+    <script>
+        function displayInfo(args) {
+            let output = "";
+
+            if (typeof args.name == "string") {
+                output += "Name: " + args.name + "\n";
+            }
+
+            if (typeof args.age == "number") {
+                output += "Age: " + args.age + "\n";
+            }
+
+            //alert(output);
+        }
+
+        displayInfo({
+            name: "Dennis",
+            age: 29
+        });
+
+
+        console.log(Array.from("Dennis")); // ["D", "e", "n", "n", "i", "s"]
+
+        const a1 = [1,2,3,4];
+        const a2 = Array.from(a1);
+        console.log(a1); // [1,2,3,4]
+        console.log(a2); // [1,2,3,4]
+        console.log(a1 === a2); // false
+
+        const options = [,,,,,];
+        console.log(options.length);
+        console.log(options);
+
+        const options1 = [1,,,,5];
+        for (const option of options1) {
+            console.log(option === undefined);
+        }
+
+        for (const [index, value] of options1.entries()) {
+            //alert(value);
+        }
+
+        const zeroes = [0,0,0,0,0];
+
+        // 用5填充整个数组
+        zeroes.fill(5);
+        console.log(zeroes); // [5,5,5,5,5]
+
+        // 用6填充索引≥3的元素
+        zeroes.fill(6, 3);
+        console.log(zeroes); // [5,5,5,6,6]
+
+        // 用7填充1≤索引＜3的元素
+        zeroes.fill(7,1,3);
+        console.log(zeroes); // [5,7,7,6,6]
+
+
+        let ints, reset = () => ints = [0,1,2,3,4,5,6,7,8,9];
+        reset();
+
+        // 从ints中复制索引0开始的内容，插入到索引5开始的位置
+        // 在源索引或目标索引到达数组的边界停止
+        ints.copyWithin(5);
+        console.log(ints); // [0,1,2,3,4, 0,1,2,3,4]
+        reset();
+        
+        // 从ints中复制索引5开始的内容，插入到索引0开始的位置
+        ints.copyWithin(0, 5);
+        console.log(ints); // [5,6,7,8,9, 5,6,7,8,9]
+        reset();
+
+        // 从ints中复制索引[0,3)的内容，插入到索引4开始的位置
+        ints.copyWithin(4, 0, 3);
+        console.log(ints); // [5,6,7,8,9, 5,6,7,8,9]
+        reset();
+
+        let colors = ["red", "blue", "green"];
+        console.log(colors.toString()); // red,blue,green
+        console.log(colors.valueOf());  // ["red", "blue", "green"]
+        console.log(colors);            // ["red", "blue", "green"]
+
+        let person1 = {
+            toLocaleString() {
+                return "Dennis";
+            },
+
+            toString() {
+                return "Kangxiaodong";
+            }
+        };
+
+        let person2 = {
+            toLocaleString() {
+                return "May";
+            },
+
+            toString() {
+                return "May";
+            }
+        };
+
+        let people = [person1, person2];
+        //alert(people); // Kangxiaodong,May
+        //alert(people.toLocaleString()); // Dennis,May
+        //alert(people.toString()); // Kangxiaodong,May
+
+        //alert(colors.join("||")); //red||blue||green
+
+        let colors1 = new Array();
+        let count = colors1.push("red", "blue");
+        console.log(count); // 返回数组的长度，2
+        console.log(colors1);
+
+        let item = colors1.unshift("white");
+        console.log(item); // blue
+
+        let values = [0,1,5,10,15];
+        console.log(values.sort()); // [0,1,10,15,5]
+
+        // sort()可以接收一个比较函数
+        values.sort( (a, b) => b - a );
+        console.log(values); // [15,10,5,1,0]
+
+        let valuse2 = values.concat("yellow");
+        console.log(valuse2); // [15,10,5,1,0, 'yellow']
+
+        let newValues = [12, 13];
+        newValues[Symbol.isConcatSpreadable] = false;
+
+        let values3 = values.concat(newValues);
+        console.log(values3); // [15,10,5,1,0, [12, 13]]
+
+
+        // 从索引0开始删除1个元素
+        let remove = colors.splice(0, 1); // 删除第一项
+        console.log(remove); // red
+        console.log(colors); // ['blue', 'green']
+
+        // 从索引1开始，删除0个元素，添加元素white
+        let insert = colors.splice(1, 0, "white");
+        console.log(insert); // 空数组
+        console.log(colors); // ['blue', "white", 'green']
+        
+        // 从索引2开始，删除1个元素，添加元素yellow
+        let replace = colors.splice(1, 1, "yellow");
+        console.log(replace); // white
+        console.log(colors);  // ['blue', "yellow", 'green']
+
+        let numbers = [1,2,3,4,5,6,2,1];
+        console.log(numbers.indexOf(2)); // 1
+        console.log(numbers.lastIndexOf(2)); // 6
+        console.log(numbers.includes(2)); // true
+
+        // 返回数组中第一个＞3的元素
+        console.log(numbers.find( (number, index, array) => number > 3 )); // 4
+        // 返回数组中第一个＞5的元素的索引
+        console.log(numbers.findIndex( (number, index, array) => number > 5 )); // 5
+
+
+        let numbers1 = [1,2,3,4,4,3,2,1]
+
+        let everyResult = numbers1.every( (item, index, array) => item>=1 );
+        console.log(everyResult); // true
+
+        let filterResult = numbers1.filter( (item, index, array) => item>=3 );
+        console.log(filterResult); // [3,4,4,3]
+        
+        let mapResult = numbers1.map( (item, index, array) => item * 2 );
+        console.log(mapResult); // [2,4,6,8,8,6,4,2]
+
+
+        let values1 = [1,2,3,4,5]
+
+        /*
+        遍历数组的每一项，并最终返回值
+        prev 上一个归并项
+        cur 当前归并项
+        当前归并项的索引和数组本身
+        */ 
+        let sum = values1.reduce( (prev, cur, index, array) => prev+cur );
+        console.log(sum); // 15
+
+        const buf = new ArrayBuffer(16);
+
+        // DataView默认使用整个ArrayBuffer
+        const fullDataView = new DataView(buf);
+        console.log(fullDataView.byteOffset);       // 16   
+        console.log(fullDataView.byteLength);       // 0
+        console.log(fullDataView.buffer === buf);   // true
+
+        // 接收一个可选的字节偏移量和字节长度
+        // byteOffset = 0 表示视图从缓冲起点开始
+        // byteLength = 8 限制视图为8个长度
+        const firstHalfDataView = new DataView(buf, 0, 8);
+        console.log(firstHalfDataView.byteOffset); // 0
+        console.log(firstHalfDataView.byteLength); // 8
+        console.log(firstHalfDataView.buffer === buf); // true
+
+        // 这里仅一个参数，表示视图从第7个字节开始
+        const secondHalfDataView = new DataView(buf, 7);
+        console.log(secondHalfDataView.byteLength); // 9
+
+        const buf1 = new ArrayBuffer(12);
+
+        // 创建一个Int32Array，每个元素4个字节
+        const ints1 = new Int32Array(buf1);
+        console.log(ints1.length); // 3
+
+        const ints2 = new Int16Array([2,4,5,7]);
+        console.log(ints2.length); // 4
+        console.log(ints2.buffer.byteLength); // 8，每项2个字节，一共8字节
+
+        // 基于普通数组来创建
+        const ints3 = Int32Array.from([1,2,3,4,6]);
+        console.log(ints3.buffer.byteLength); // 20
+
+        // 基于传入的参数创建一个FloatArray
+        const floats1 = Float32Array.of(3.14, 2.718, 1.618, 1.01);
+        console.log(floats1.buffer.byteLength); // 16
+        console.log(floats1[3]); // 1.0099999904632568
+
+        // 使用BYTES_PRE_ELEMENT属性，返回定型数组中每个元素的大小
+        console.log(floats1.BYTES_PER_ELEMENT); // 4
+        console.log(ints2.BYTES_PER_ELEMENT);   // 2
+
+        ints3.set([1,1], 1);
+        console.log(ints3); // [1,1,1,4,6]
+
+        const ints3Copy = ints3.subarray();
+        console.log(ints3Copy); // [1,1,1,4,6]
+        
+        const ints3Copy1 = ints3.subarray(4, 5);
+        console.log(ints3Copy1); // [6]
+        
+        const unsignedInts = new Uint8Array(2);
+
+        //上溢的位不会影响相邻索引，索引只取最低有效位上的8位
+        unsignedInts[1] = 256;
+        console.log(unsignedInts); // [0, 0]
+
+        unsignedInts[1] = 511;
+        console.log(unsignedInts); // [0, 255]
+        
+        // 下溢会被转换为其无符号的等价值
+        unsignedInts[1] = -1;
+        console.log(unsignedInts); // [0, 255]
+
+        const ints10 = new Int8Array(2);
+        // 上溢自动变成二补数形式
+        ints10[1] = 128;
+        console.log(ints10); // [0, -128]
+        
+        // 下溢自动变成二补数形式
+        ints10[1] = 255;
+        console.log(ints10); // [0, -1]
+
+        // 构造一个空映射
+        const m = new Map();
+
+        // 使用嵌套数组初始化映射
+        const m1 = new Map([
+            ["key1", "value1"],
+            ["key2", "value2"],
+            ["key3", "value3"]
+        ]);
+        console.log(m1.size); // 3
+
+        // 使用自定义迭代器额初始化映射
+        const m2 = new Map({
+            [Symbol.iterator]: function*() {
+                yield ["key1", "val1"];
+                yield ["key2", "val2"];
+                yield ["key3", "val3"];
+            }
+        });
+        console.log(m2.size); // 3
+
+        m.set("firstName", "Yue").set("lastName", "May");
+
+        console.log(m.has("firstName")); // true
+        console.log(m.get("firstName")); // Yue
+        console.log(m.size); // 2
+
+        m.delete("firstName");  // 只删除一个键值对
+        console.log(m);
+
+        m.clear(); // 清除所有键值对
+        console.log(m);
+
+        for (let key of m2.keys()) {
+            console.log(key);
+        }
+        // key1 key2 key3
+
+        for (let value of m2.values()) {
+            console.log(value);
+        }
+        // val1 val2 val3
+
+    </script>
+</head>
+<body>  
+    
+</body>
+</html>

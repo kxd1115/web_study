@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>script元素</title>
+    
+    <script src="JS/study1.js"></script>
+
+    <script>
+        var name = 'Nicholas';
+        console.log(name);
+        let age = 26;
+        console.log(age);
+    </script>
+    <script>
+        if (typeof name === 'undefined') {
+            let name; //这个name被限制在if块内部
+        }
+        name = 'Matt'; // 这里的赋值被视为全局变量
+        console.log(name);
+
+        try {
+            console.log(age); //没声明过age，此处会报错
+        }
+        catch(error) {
+            let age; //这个age被限制在catch块内部
+        }
+        age = 36; // 这里的赋值被视为全局变量
+        console.log(age);
+
+    </script>
+    <script>
+        const age1 = 26;
+        age1=36; //TypeError
+
+        //const也不允许重复声明
+        const name = 'kang'
+        const name = 'xiaoDong' //SyntaxError
+
+        //const 声明的作用域也是块
+        const name = 'Matt';
+        if (true) {
+            const name = 'Nicholas';
+        }
+        console.log(name); // Matt
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

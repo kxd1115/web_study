@@ -29,8 +29,26 @@
             color: aqua;
         }
 
-        input[type="text"] {width: attr(maxlength em);}
+        input[type="text"] {
+            width: attr(maxlength em);
+        }
 
+        .circle {
+            background-color: aqua;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(
+                #C39F76 0 26q
+                , #fff 27q 52q
+                , #C39F76 53q 79q
+                , #fff 80q 106q
+                , #C39F76 107q 133q
+                , #fff 134q 160q
+                , #C39F76 161q 188q
+
+            );
+        }
     </style>
 </head>
 <body>
@@ -78,5 +96,6 @@
             </tr>
         </tbody>
     </ul>
+    <div class="circle"></div>
 </body>
 </html>

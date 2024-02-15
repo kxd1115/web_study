@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>const声明</title>
+
+    <script>
+        let i = 0;
+        for (const j=7; i<5; ++i) {
+            console.log(j);
+        }
+        // 7 7 7 7 7
+
+        for (const key in {a:1, b:2}) {
+            console.log(key);
+        }
+        // a b
+
+        for (const value of [1,2,3,4,5]) {
+            console.log(value);
+        }
+        // 1 2 3 4 5
+
+        let message = 'some string';
+        console.log(typeof(message));
+        console.log(typeof message);
+        console.log(typeof null);
+
+        var male;
+        console.log(male === undefined); //true
+
+        console.log(null == undefined);
+        console.log(null === undefined);
+
+        let hello = 'Hello World';
+        let helloBoolean = Boolean(hello);
+        console.log(hello);        // Hello World
+        console.log(helloBoolean); // true
+
+        let num1 = Number("Hello World");
+        let num2 = Number("");
+        let num3 = Number("0000011");
+        let num4 = Number(true);
+
+        let num5 = parseInt("AF", 16); 
+        
+        let num6 = parseFloat("09.8.2");
+        console.log(num6);
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

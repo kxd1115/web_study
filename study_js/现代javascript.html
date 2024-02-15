@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代javascript教程</title>
+    <meta charset="utf-8">
+    <style>
+        #ball {
+          height: 40px;
+          width: 40px;
+          cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+  <p>Drag the ball.</p>
+  <img src="https://js.cx/clipart/ball.svg" id="ball">
+  <script>
+    // ...your code...
+    let ball = document.getElementById("ball");
+
+    ball.onmousedown = function(event) {
+      
+      // 让ball成为body的子元素
+      document.body.append(ball);
+
+      // 这样就能够基于body绝对定位
+      ball.style.position = "absolute";
+      // 确保ball永远在最上面
+      ball.style.zIndex = 1000;
+
+      // 调整球的中心
+      let shiftX = event.clientX - ball.getBoundingClientRect().left;
+      let shiftY = event.clientY - ball.getBoundingClientRect().top;
+
+      function moseAt(pageX, pageY) {
+        ball.style.left = pageX - shiftX + "px";
+        ball.style.top = pageY - shiftY + "px";
+      } 
+
+      // 点击时，将球移动到指针下方
+      moseAt(event.pageX, event.pageY);
+
+      function onMouseMove(event) {
+        moseAt(event.pageX, event.pageY);
+      }
+      
+      // 拖拽时，让球随着指针移动
+      ball.addEventListener('mousemove', onMouseMove);
+
+      // 放下球时，移除不必要的事件
+      document.onmouseup = function() {
+        ball.removeEventListener('mousemove', onMouseMove);
+        ball.onmouseup = null;
+      }
+
+      
+    };
+    
+    // 禁止一个拖拽事件
+    ball.ondragstart = function() {
+      return false;
+    };
+
+  </script>
+</body>
+</html>
