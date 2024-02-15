@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>study_ball</title>
+    <style>
+        #ball {
+            height: 40px;
+            width: 40px;
+            cursor: pointer; /* 点击球时， 鼠标指针形态变化 */
+        }
+    </style>
+</head>
+<body>
+    <p>Drag the ball.</p>
+    <img src="https://js.cx/clipart/ball.svg" alt="" id="ball">
+    <script>
+
+        let ball = document.getElementById("ball");
+        let ballCoordsStart = ball.getBoundingClientRect();
+
+        ball.onmousedown = function(event) {
+
+            // 设置ball成绝对定位
+            ball.style.position = "absolute";
+            // 将ball添加到body中, 让ball相对body进行定位
+            document.body.append(ball);
+
+            // 修正定位, 在鼠标点击的位置是球的非中心时，不移动球
+            let ballCoords = ball.getBoundingClientRect()
+            shiftX = event.clientX - ballCoords.left;
+            shiftY = event.clientY - ballCoords.top;
+
+            function onMouseMove(event) {
+                ball.style.left = event.pageX - shiftX +"px";
+                ball.style.top = event.pageY - shiftY +"px";
+
+                // 判断球跟随鼠标移动时，当前位置最底层的元素是什么
+                ball.hidden = true;
+                // elemBelow 球下方的元素是什么
+                let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
+                if (elemBelow===null) {
+                    // 如果球当前离开了窗口，则直接移除mousemove事件
+                    document.removeEventListener('mousemove', onMouseMove);
+                    // 让球回到初始位置
+                    ball.style.left =  ballCoordsStart.left + "px";
+                    ball.style.top =  ballCoordsStart.top + "px";
+                }
+                ball.hidden = false;
+
+                // 限制球的位置
+                if (event.pageX - shiftX<0) ball.style.left = 0 + "px";
+                if (event.pageY - shiftY<0) ball.style.top = 0 + "px";
+
+            };
+
+            // 在文档上添加鼠标移动事件
+            document.addEventListener('mousemove', onMouseMove);
+
+            // mouseup事件
+            document.onmouseup = function() {
+                // 在文档上移除鼠标移动事件
+                document.removeEventListener('mousemove', onMouseMove);
+                // 终止onmouseup事件
+                document.onmouseup = null;
+            };
+        };
+
+        ball.ondragstart = function() {
+            return false;
+        };
+
+    </script>
+</body>
+</html>
